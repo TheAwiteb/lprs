@@ -26,6 +26,7 @@ use crate::{
 pub mod add_command;
 pub mod clean_command;
 pub mod edit_command;
+pub mod gen_command;
 pub mod list_command;
 
 crate::create_commands!(
@@ -34,6 +35,7 @@ crate::create_commands!(
     "List your password and search", List => list_command::List
     "Clean the password file", Clean => clean_command::Clean
     "Edit the password content", Edit => edit_command::Edit
+    "Generate password", Gen => gen_command::Gen
     // TODO: Remove command
     // TODO: Export command
     // TODO: Import command
@@ -63,7 +65,7 @@ impl Cli {
             "Getting password file: {}",
             passwords_file.to_string_lossy()
         );
-        let password_manager = if matches!(self.command, Commands::Clean(..)) {
+        let password_manager = if matches!(self.command, Commands::Clean(..) | Commands::Gen(..)) {
             Passwords {
                 passwords_file,
                 ..Default::default()
