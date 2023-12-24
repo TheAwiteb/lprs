@@ -26,6 +26,7 @@ use crate::{
 pub mod add_command;
 pub mod clean_command;
 pub mod edit_command;
+pub mod gen_command;
 pub mod list_command;
 
 crate::create_commands!(
@@ -34,6 +35,7 @@ crate::create_commands!(
     "List your password and search", List => list_command::List
     "Clean the password file", Clean => clean_command::Clean
     "Edit the password content", Edit => edit_command::Edit
+    "Generate password", Gen => gen_command::Gen
     // TODO: Remove command
     // TODO: Export command
     // TODO: Import command
@@ -63,26 +65,33 @@ impl Cli {
             "Getting password file: {}",
             passwords_file.to_string_lossy()
         );
-        let password = scanpw::scanpw!("Master Password: ");
-
-        if password::is_new_password_file(&passwords_file)? {
-            let analyzed = passwords::analyzer::analyze(&password);
-            if analyzed.length() < 15 {
-                return Err(PassrsError::WeakPassword(
-                    "The password length must be beggier then 15".to_owned(),
-                ));
-            } else if passwords::scorer::score(&analyzed) < 80.0 {
-                return Err(PassrsError::WeakPassword(
-                    "Your password is not stronge enough".to_owned(),
-                ));
+        let password_manager = if matches!(self.command, Commands::Clean(..) | Commands::Gen(..)) {
+            Passwords {
+                passwords_file,
+                ..Default::default()
             }
-        }
+        } else {
+            let password = scanpw::scanpw!("Master Password: ");
 
-        let master_password = sha256::digest(password);
-        let password_manager = Passwords::try_reload(
-            passwords_file,
-            master_password.into_bytes().into_iter().take(32).collect(),
-        )?;
+            if password::is_new_password_file(&passwords_file)? {
+                let analyzed = passwords::analyzer::analyze(&password);
+                if analyzed.length() < 15 {
+                    return Err(PassrsError::WeakPassword(
+                        "The password length must be beggier then 15".to_owned(),
+                    ));
+                } else if passwords::scorer::score(&analyzed) < 80.0 {
+                    return Err(PassrsError::WeakPassword(
+                        "Your password is not stronge enough".to_owned(),
+                    ));
+                }
+            }
+
+            let master_password = sha256::digest(password);
+            Passwords::try_reload(
+                passwords_file,
+                master_password.into_bytes().into_iter().take(32).collect(),
+            )?
+        };
         self.command.run(password_manager)?;
 
         Ok(())

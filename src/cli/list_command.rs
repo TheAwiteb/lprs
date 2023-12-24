@@ -51,7 +51,9 @@ pub struct List {
 impl RunCommand for List {
     fn run(&self, password_manager: Passwords) -> PassrsResult<()> {
         if password_manager.passwords.is_empty() {
-            println!("Looks like there is no passwords to list")
+            Err(PassrsError::Other(
+                "Looks like there is no passwords to list".to_owned(),
+            ))
         } else {
             if self.get.is_some() && self.search.is_some() {
                 return Err(PassrsError::ArgsConflict(
@@ -132,7 +134,7 @@ impl RunCommand for List {
                 table.add_row(row);
             }
             println!("{table}");
+            Ok(())
         }
-        Ok(())
     }
 }
