@@ -27,7 +27,7 @@ mod validator;
 pub use validator::*;
 
 /// The passwords manager
-#[derive(Deserialize, Serialize)]
+#[derive(Default, Deserialize, Serialize)]
 pub struct Passwords {
     /// Hash of the master password
     #[serde(skip)]
