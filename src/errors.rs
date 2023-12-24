@@ -34,6 +34,10 @@ pub enum Error {
     WeakPassword(String),
     #[error("Args Conflict Error: {0}")]
     ArgsConflict(String),
+    #[error("Invalid Password Index Error: {0}")]
+    InvalidPasswordIndex(String),
+    #[error("{0}")]
+    Other(String),
 
     #[error("Invalid Regex: {0}")]
     InvalidRegex(#[from] regex::Error),

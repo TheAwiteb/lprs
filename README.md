@@ -34,6 +34,7 @@ Commands:
   add    Add new password
   list   List your password and search
   clean  Clean the password file
+  edit   Edit the password content
   help   Print this message or the help of the given subcommand(s)
 
 Options:

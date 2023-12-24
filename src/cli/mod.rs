@@ -25,6 +25,7 @@ use crate::{
 
 pub mod add_command;
 pub mod clean_command;
+pub mod edit_command;
 pub mod list_command;
 
 crate::create_commands!(
@@ -32,8 +33,8 @@ crate::create_commands!(
     "Add new password", Add => add_command::Add
     "List your password and search", List => list_command::List
     "Clean the password file", Clean => clean_command::Clean
-    // TODO: Edit command
-    // TODO: Delete command
+    "Edit the password content", Edit => edit_command::Edit
+    // TODO: Remove command
     // TODO: Export command
     // TODO: Import command
 );
