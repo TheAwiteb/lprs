@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
+use std::num::NonZeroU64;
+
 use clap::Args;
 use comfy_table::Table;
 use regex::Regex;
@@ -35,7 +37,7 @@ pub struct List {
 
     /// Return the password with spesifc index
     #[arg(short, long, value_name = "INDEX")]
-    get: Option<usize>,
+    get: Option<NonZeroU64>,
     /// Search and display only matching passwords.
     ///
     /// The name and username will be searched. And service and note if included
@@ -79,7 +81,7 @@ impl RunCommand for List {
                 .enumerate()
                 .filter(|(idx, pass)| {
                     if let Some(index) = self.get {
-                        return (idx + 1) == index;
+                        return (idx + 1) == index.get() as usize;
                     }
                     if let Some(ref pattern) = self.search {
                         if self.regex {
