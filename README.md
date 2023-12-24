@@ -35,6 +35,7 @@ Commands:
   list   List your password and search
   clean  Clean the password file
   edit   Edit the password content
+  gen    Generate password
   help   Print this message or the help of the given subcommand(s)
 
 Options:
@@ -45,6 +46,24 @@ Options:
   -V, --version
           Print version
 ```
+
+### Example
+```bash
+passrs add -n "Gmail" -u "some@gmail.com" -p $(passrs gen 19 -u -l -s) -s "https://mail.google.com"
+```
+
+#### Result
+This is the result when search for it
+```
+$ passrs list -e "mail" -p -s
+Master Password: ***************
++-------+-------+----------------+---------------------+-------------------------+
+| Index | Name  | Username       | Password            | Service                 |
++================================================================================+
+| 31    | Gmail | some@gmail.com | >NC`q$%+Nno<y&<y]VB | https://mail.google.com |
++-------+-------+----------------+---------------------+-------------------------+
+```
+
 
 <!--
 ### Backup
