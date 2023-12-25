@@ -40,6 +40,7 @@ pub struct Passwords {
 }
 
 /// The password struct
+#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Serialize, Parser)]
 pub struct Password {
     /// The name of the password
