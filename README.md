@@ -32,6 +32,7 @@ Usage: passrs [OPTIONS] <COMMAND>
 
 Commands:
   add    Add new password
+  remove  Remove password
   list   List your password and search
   clean  Clean the password file
   edit   Edit the password content
