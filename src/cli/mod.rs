@@ -28,15 +28,16 @@ pub mod clean_command;
 pub mod edit_command;
 pub mod gen_command;
 pub mod list_command;
+pub mod remove_command;
 
 crate::create_commands!(
     enum Commands
     "Add new password", Add => add_command::Add
+    "Remove password", Remove => remove_command::Remove
     "List your password and search", List => list_command::List
     "Clean the password file", Clean => clean_command::Clean
     "Edit the password content", Edit => edit_command::Edit
     "Generate password", Gen => gen_command::Gen
-    // TODO: Remove command
     // TODO: Export command
     // TODO: Import command
 );
