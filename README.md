@@ -1,34 +1,34 @@
-# Passrs
+# Lprs
 
-Passrs is a local password manager designed to securely store and manage your passwords.
+Lprs is a local password manager designed to securely store and manage your passwords.
 
 ## Installation
 
-To install Passrs, you will need to have the Cargo package manager installed. If you do not have Cargo installed, you can install it by following the instructions [here](https://doc.rust-lang.org/cargo/getting-started/installation.html). Note the Minimum Supported Rust Version (MSRV) for Passrs is `1.70.0`.
+To install Lprs, you will need to have the Cargo package manager installed. If you do not have Cargo installed, you can install it by following the instructions [here](https://doc.rust-lang.org/cargo/getting-started/installation.html). Note the Minimum Supported Rust Version (MSRV) for Lprs is `1.70.0`.
 
-1. Clone the Passrs repository:
+1. Clone the Lprs repository:
     ```bash
-    cargo install --locked --git https://github.com/theawiteb/passrs.git
+    cargo install --locked --git https://github.com/theawiteb/lprs.git
     ```
 
-2. Run Passrs:
+2. Run Lprs:
     ```bash
-    passrs --help
+    lprs --help
     ```
 
 ## Uninstallation
 ```bash
-cargo uninstall passrs
+cargo uninstall lprs
 ```
 
 ## Usage
 
-Passrs provides a command-line interface for managing your passwords. The following commands are available:
+Lprs provides a command-line interface for managing your passwords. The following commands are available:
 
 ```
 Local CLI password manager
 
-Usage: passrs [OPTIONS] <COMMAND>
+Usage: lprs [OPTIONS] <COMMAND>
 
 Commands:
   add    Add new password
@@ -41,7 +41,7 @@ Commands:
 
 Options:
   -p, --passwords-file <PASSWORDS_FILE>
-          The passwords json file, default: $HOME/.local/share/passrs/passwords.json
+          The passwords json file, default: $HOME/.local/share/lprs/passwords.json
   -h, --help
           Print help
   -V, --version
@@ -50,13 +50,13 @@ Options:
 
 ### Example
 ```bash
-passrs add -n "Gmail" -u "some@gmail.com" -p $(passrs gen 19 -u -l -s) -s "https://mail.google.com"
+lprs add -n "Gmail" -u "some@gmail.com" -p $(lprs gen 19 -u -l -s) -s "https://mail.google.com"
 ```
 
 #### Result
 This is the result when search for it
 ```
-$ passrs list -e "mail" -p -s
+$ lprs list -e "mail" -p -s
 Master Password: ***************
 +-------+-------+----------------+---------------------+-------------------------+
 | Index | Name  | Username       | Password            | Service                 |
@@ -69,13 +69,13 @@ Master Password: ***************
 <!--
 ### Backup
 
-It is important to regularly backup your passwords to prevent data loss. Passrs does not provide an automatic backup feature. To backup your passwords, you can use the export command provided by Passrs. This command allows you to export your encrypted passwords to a json file, which you can then manually backup to a secure location. -->
+It is important to regularly backup your passwords to prevent data loss. Lprs does not provide an automatic backup feature. To backup your passwords, you can use the export command provided by Lprs. This command allows you to export your encrypted passwords to a json file, which you can then manually backup to a secure location. -->
 
 
 ## Contributing
 
-Contributions to Passrs are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING](CONTRIBUTING.md) file.
+Contributions to Lprs are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING](CONTRIBUTING.md) file.
 
 ## License
 
-Passrs is licensed under the GPL-3.0 License. This means that you are free to use, modify, and distribute the software under the terms of this license. Please refer to the [LICENSE](LICENSE) file for more details.
+Lprs is licensed under the GPL-3.0 License. This means that you are free to use, modify, and distribute the software under the terms of this license. Please refer to the [LICENSE](LICENSE) file for more details.

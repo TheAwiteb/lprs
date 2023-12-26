@@ -20,7 +20,7 @@ use clap::Args;
 
 use crate::{
     password::{Password, Passwords},
-    PassrsError, PassrsResult, RunCommand,
+    LprsError, LprsResult, RunCommand,
 };
 
 #[derive(Debug, Args)]
@@ -47,7 +47,7 @@ pub struct Edit {
 }
 
 impl RunCommand for Edit {
-    fn run(&self, mut password_manager: Passwords) -> PassrsResult<()> {
+    fn run(&self, mut password_manager: Passwords) -> LprsResult<()> {
         let index = self.index.get() as usize;
 
         if let Some(password) = password_manager.passwords.get_mut(index - 1) {
@@ -57,7 +57,7 @@ impl RunCommand for Edit {
                 && self.service.is_none()
                 && self.note.is_none()
             {
-                Err(PassrsError::Other(
+                Err(LprsError::Other(
                     "You must edit one option at least".to_owned(),
                 ))
             } else {
@@ -79,7 +79,7 @@ impl RunCommand for Edit {
                 password_manager.try_export()
             }
         } else {
-            Err(PassrsError::InvalidPasswordIndex(format!(
+            Err(LprsError::InvalidPasswordIndex(format!(
                 "The index `{}` is greater than the passwords count {}",
                 self.index,
                 password_manager.passwords.len()

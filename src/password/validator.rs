@@ -16,12 +16,12 @@
 
 use std::{fs, path::Path};
 
-use crate::PassrsResult;
+use crate::LprsResult;
 
 use super::Password;
 
 /// Return if the password file new file or not
-pub fn is_new_password_file(path: &Path) -> PassrsResult<bool> {
+pub fn is_new_password_file(path: &Path) -> LprsResult<bool> {
     if path.exists() {
         let file_content = fs::read_to_string(path)?;
         if !file_content.is_empty()

@@ -18,7 +18,7 @@ use std::num::NonZeroU64;
 
 use clap::Args;
 
-use crate::{password::Passwords, PassrsError, PassrsResult, RunCommand};
+use crate::{password::Passwords, LprsError, LprsResult, RunCommand};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -42,7 +42,7 @@ pub struct Gen {
 }
 
 impl RunCommand for Gen {
-    fn run(&self, _password_manager: Passwords) -> PassrsResult<()> {
+    fn run(&self, _password_manager: Passwords) -> LprsResult<()> {
         if self.uppercase || self.lowercase || self.numbers || self.symbols {
             println!(
                 "{}",
@@ -58,7 +58,7 @@ impl RunCommand for Gen {
             );
             Ok(())
         } else {
-            Err(PassrsError::Other(
+            Err(LprsError::Other(
                 "You need to enable at least one kind of characters".to_owned(),
             ))
         }

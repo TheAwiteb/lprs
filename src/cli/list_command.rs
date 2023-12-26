@@ -20,7 +20,7 @@ use clap::Args;
 use comfy_table::Table;
 use regex::Regex;
 
-use crate::{password::Passwords, PassrsError, PassrsResult, RunCommand};
+use crate::{password::Passwords, LprsError, LprsResult, RunCommand};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -49,19 +49,19 @@ pub struct List {
 }
 
 impl RunCommand for List {
-    fn run(&self, password_manager: Passwords) -> PassrsResult<()> {
+    fn run(&self, password_manager: Passwords) -> LprsResult<()> {
         if password_manager.passwords.is_empty() {
-            Err(PassrsError::Other(
+            Err(LprsError::Other(
                 "Looks like there is no passwords to list".to_owned(),
             ))
         } else {
             if self.get.is_some() && self.search.is_some() {
-                return Err(PassrsError::ArgsConflict(
+                return Err(LprsError::ArgsConflict(
                     "You cannot use `--get` arg with `--search` arg".to_owned(),
                 ));
             }
             if self.regex && self.search.is_none() {
-                return Err(PassrsError::ArgsConflict(
+                return Err(LprsError::ArgsConflict(
                     "You cannot use `--regex` without `--search` arg".to_owned(),
                 ));
             }

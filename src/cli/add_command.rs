@@ -18,7 +18,7 @@ use clap::Args;
 
 use crate::{
     password::{Password, Passwords},
-    PassrsResult, RunCommand,
+    LprsResult, RunCommand,
 };
 
 #[derive(Debug, Args)]
@@ -29,7 +29,7 @@ pub struct Add {
 }
 
 impl RunCommand for Add {
-    fn run(&self, mut password_manager: Passwords) -> PassrsResult<()> {
+    fn run(&self, mut password_manager: Passwords) -> LprsResult<()> {
         password_manager.add_password(self.password_info.clone());
         password_manager.try_export()
     }

@@ -20,7 +20,7 @@ use clap::Parser;
 
 use crate::{
     password::{self, Passwords},
-    PassrsError, PassrsResult, RunCommand,
+    LprsError, LprsResult, RunCommand,
 };
 
 pub mod add_command;
@@ -45,7 +45,7 @@ crate::create_commands!(
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-    /// The passwords json file, default: $HOME/.local/share/passrs/passwords.json
+    /// The passwords json file, default: $HOME/.local/share/lprs/passwords.json
     #[arg(short, long)]
     passwords_file: Option<PathBuf>,
 
@@ -56,7 +56,7 @@ pub struct Cli {
 
 impl Cli {
     /// Run the cli
-    pub fn run(self) -> PassrsResult<()> {
+    pub fn run(self) -> LprsResult<()> {
         let passwords_file = if let Some(ref path) = self.passwords_file {
             path.clone()
         } else {
@@ -77,11 +77,11 @@ impl Cli {
             if password::is_new_password_file(&passwords_file)? {
                 let analyzed = passwords::analyzer::analyze(&password);
                 if analyzed.length() < 15 {
-                    return Err(PassrsError::WeakPassword(
+                    return Err(LprsError::WeakPassword(
                         "The password length must be beggier then 15".to_owned(),
                     ));
                 } else if passwords::scorer::score(&analyzed) < 80.0 {
-                    return Err(PassrsError::WeakPassword(
+                    return Err(LprsError::WeakPassword(
                         "Your password is not stronge enough".to_owned(),
                     ));
                 }

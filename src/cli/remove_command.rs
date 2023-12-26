@@ -18,7 +18,7 @@ use std::num::NonZeroU64;
 
 use clap::Args;
 
-use crate::{password::Passwords, PassrsError, PassrsResult, RunCommand};
+use crate::{password::Passwords, LprsError, LprsResult, RunCommand};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -32,11 +32,11 @@ pub struct Remove {
 }
 
 impl RunCommand for Remove {
-    fn run(&self, mut password_manager: Passwords) -> PassrsResult<()> {
+    fn run(&self, mut password_manager: Passwords) -> LprsResult<()> {
         let index = (self.index.get() - 1) as usize;
         if index > password_manager.passwords.len() {
             if !self.force {
-                return Err(PassrsError::Other(
+                return Err(LprsError::Other(
                     "The index is greater than the passwords counts".to_owned(),
                 ));
             }

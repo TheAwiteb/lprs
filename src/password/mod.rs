@@ -19,7 +19,7 @@ use std::{fs, path::PathBuf};
 use clap::Parser;
 use serde::{Deserialize, Serialize};
 
-use crate::{PassrsError, PassrsResult};
+use crate::{LprsError, LprsResult};
 
 pub mod cipher;
 mod validator;
@@ -62,7 +62,7 @@ pub struct Password {
 
 impl Password {
     /// Encrypt the password data
-    pub fn encrypt(self, master_password: &[u8]) -> PassrsResult<Self> {
+    pub fn encrypt(self, master_password: &[u8]) -> LprsResult<Self> {
         Ok(Self {
             name: cipher::encrypt(master_password, &self.name)?,
             username: cipher::encrypt(master_password, &self.username)?,
@@ -79,7 +79,7 @@ impl Password {
     }
 
     /// Decrypt the password data
-    pub fn decrypt(self, master_password: &[u8]) -> PassrsResult<Self> {
+    pub fn decrypt(self, master_password: &[u8]) -> LprsResult<Self> {
         Ok(Self {
             name: cipher::decrypt(master_password, &self.name)?,
             username: cipher::decrypt(master_password, &self.username)?,
@@ -111,32 +111,32 @@ impl Passwords {
     }
 
     /// Encrypt the passwords
-    fn encrypt(self) -> PassrsResult<Self> {
+    fn encrypt(self) -> LprsResult<Self> {
         Ok(Self {
             passwords: self
                 .passwords
                 .into_iter()
                 .map(|p| p.encrypt(&self.master_password))
-                .collect::<PassrsResult<Vec<Password>>>()?,
+                .collect::<LprsResult<Vec<Password>>>()?,
             ..self
         })
     }
 
     /// Reload the passwords from the file
-    pub fn try_reload(passwords_file: PathBuf, master_password: Vec<u8>) -> PassrsResult<Self> {
+    pub fn try_reload(passwords_file: PathBuf, master_password: Vec<u8>) -> LprsResult<Self> {
         let passwords =
             serde_json::from_str::<Vec<Password>>(&fs::read_to_string(&passwords_file)?)?
                 .into_iter()
                 .map(|p| p.decrypt(master_password.as_slice()))
-                .collect::<PassrsResult<Vec<Password>>>()?;
+                .collect::<LprsResult<Vec<Password>>>()?;
 
         Ok(Self::new(master_password, passwords_file, passwords))
     }
 
     /// Export the passwords to the file
-    pub fn try_export(self) -> PassrsResult<()> {
+    pub fn try_export(self) -> LprsResult<()> {
         let path = self.passwords_file.to_path_buf();
-        fs::write(path, serde_json::to_string(&self.encrypt()?.passwords)?).map_err(PassrsError::Io)
+        fs::write(path, serde_json::to_string(&self.encrypt()?.passwords)?).map_err(LprsError::Io)
     }
 
     /// Add new password

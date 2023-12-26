@@ -16,11 +16,11 @@
 
 use std::{fs, path::PathBuf};
 
-use crate::{PassrsError, PassrsResult};
+use crate::{LprsError, LprsResult};
 
 /// Return the default passwords json file
-pub fn passwords_file() -> PassrsResult<PathBuf> {
-    if let Some(path) = directories::ProjectDirs::from("", "", "passrs")
+pub fn passwords_file() -> LprsResult<PathBuf> {
+    if let Some(path) = directories::ProjectDirs::from("", "", "lprs")
         .map(|d| d.data_local_dir().to_path_buf().join("passwords.json"))
     {
         if let Some(parent) = path.parent() {
@@ -31,7 +31,7 @@ pub fn passwords_file() -> PassrsResult<PathBuf> {
         }
         Ok(path)
     } else {
-        Err(PassrsError::ProjectDir(
+        Err(LprsError::ProjectDir(
             "Can't extract the project_dir from this OS".to_owned(),
         ))
     }

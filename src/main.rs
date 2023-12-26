@@ -32,7 +32,7 @@ mod traits;
 
 pub use {macros::*, traits::*};
 
-pub use errors::{Error as PassrsError, Result as PassrsResult};
+pub use errors::{Error as LprsError, Result as LprsResult};
 
 pub const STANDARDBASE: GeneralPurpose = GeneralPurpose::new(&alphabet::STANDARD, PAD);
 

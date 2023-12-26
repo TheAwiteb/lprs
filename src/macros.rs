@@ -29,7 +29,7 @@
 /// ```
 /// #### Output
 /// ```rust
-/// ///The passrs commands
+/// ///The lprs commands
 /// pub enum TestCommands {
 ///     ///Test command
 ///     Test(TestArgs),
@@ -41,7 +41,7 @@
 ///     fn run(
 ///         &self,
 ///         password_manager: crate::password::Passwords,
-///     ) -> crate::PassrsResult<()> {
+///     ) -> crate::LprsResult<()> {
 ///         match self {
 ///             Self::Test(command) => command.run(password_manager),
 ///             Self::Some(command) => command.run(password_manager),
@@ -52,7 +52,7 @@
 #[macro_export]
 macro_rules! create_commands {
     (enum $enum_name: ident $($doc:tt, $varint: ident => $command: ty)+) => {
-        #[doc = "The passrs commands"]
+        #[doc = "The lprs commands"]
         #[derive(Debug, clap::Subcommand)]
         pub enum $enum_name {
             $(
@@ -63,7 +63,7 @@ macro_rules! create_commands {
 
         #[automatically_derived]
         impl $crate::RunCommand for $enum_name{
-            fn run(&self, password_manager: $crate::password::Passwords) -> $crate::PassrsResult<()> {
+            fn run(&self, password_manager: $crate::password::Passwords) -> $crate::LprsResult<()> {
                 match self {
                     $(
                         Self::$varint(command) => command.run(password_manager),
