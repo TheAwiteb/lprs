@@ -28,6 +28,7 @@ pub mod clean_command;
 pub mod edit_command;
 pub mod export_command;
 pub mod gen_command;
+pub mod import_command;
 pub mod list_command;
 pub mod remove_command;
 
@@ -40,8 +41,7 @@ crate::create_commands!(
     "Edit the password content", Edit => edit_command::Edit
     "Generate password", Gen => gen_command::Gen
     "Export the passwords", Export => export_command::Export
-    // TODO: Export command
-    // TODO: Import command
+    "Import passwords", Import => import_command::Import
 );
 
 #[derive(Parser, Debug)]

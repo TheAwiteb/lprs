@@ -38,6 +38,7 @@ Commands:
   edit    Edit the password content
   gen     Generate password
   export  Export the passwords
+  import  Import passwords
   help    Print this message or the help of the given subcommand(s)
 
 Options:
