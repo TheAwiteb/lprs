@@ -16,7 +16,7 @@
 
 use std::{fs, path::PathBuf};
 
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use serde::{Deserialize, Serialize};
 
 use crate::{LprsError, LprsResult};
@@ -28,6 +28,12 @@ mod validator;
 
 pub use bitwarden::*;
 pub use validator::*;
+
+#[derive(Clone, Debug, ValueEnum)]
+pub enum Format {
+    Lprs,
+    BitWarden,
+}
 
 /// The password struct
 #[serde_with_macros::skip_serializing_none]
@@ -143,5 +149,14 @@ impl Passwords {
     /// Add new password
     pub fn add_password(&mut self, password: Password) {
         self.passwords.push(password)
+    }
+}
+
+impl ToString for Format {
+    fn to_string(&self) -> String {
+        self.to_possible_value()
+            .expect("There is no skiped values")
+            .get_name()
+            .to_owned()
     }
 }
