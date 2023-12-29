@@ -26,7 +26,7 @@ cargo uninstall lprs
 Lprs provides a command-line interface for managing your passwords. The following commands are available:
 
 ```
-Local CLI password manager
+A local CLI password manager
 
 Usage: lprs [OPTIONS] <COMMAND>
 

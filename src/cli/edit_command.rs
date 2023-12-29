@@ -1,4 +1,4 @@
-// Local CLI password manager
+// Lprs - A local CLI password manager
 // Copyright (C) 2024  Awiteb
 //
 // This program is free software: you can redistribute it and/or modify
