@@ -1,4 +1,4 @@
-// Local CLI password manager
+// Lprs - A local CLI password manager
 // Copyright (C) 2024  Awiteb
 //
 // This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ use crate::{
 pub mod add_command;
 pub mod clean_command;
 pub mod edit_command;
+pub mod export_command;
 pub mod gen_command;
 pub mod list_command;
 pub mod remove_command;
@@ -38,6 +39,7 @@ crate::create_commands!(
     "Clean the password file", Clean => clean_command::Clean
     "Edit the password content", Edit => edit_command::Edit
     "Generate password", Gen => gen_command::Gen
+    "Export the passwords", Export => export_command::Export
     // TODO: Export command
     // TODO: Import command
 );
