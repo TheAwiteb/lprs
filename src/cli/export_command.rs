@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::{fs, path::PathBuf};
+use std::{fs, io::Error as IoError, io::ErrorKind as IoErrorKind, path::PathBuf};
 
 use clap::Args;
 
@@ -35,12 +35,32 @@ pub struct Export {
 
 impl RunCommand for Export {
     fn run(&self, password_manager: Passwords) -> LprsResult<()> {
-        let exported_data = match self.format {
-            Format::Lprs => serde_json::to_string(&password_manager.encrypt()?.passwords),
-            Format::BitWarden => serde_json::to_string(&BitWardenPasswords::from(password_manager)),
-        }
-        .map_err(LprsError::from)?;
+        if self
+            .path
+            .extension()
+            .is_some_and(|e| e.to_string_lossy().eq_ignore_ascii_case("json"))
+        {
+            if !self.path.exists() {
+                let exported_data = match self.format {
+                    Format::Lprs => serde_json::to_string(&password_manager.encrypt()?.passwords),
+                    Format::BitWarden => {
+                        serde_json::to_string(&BitWardenPasswords::from(password_manager))
+                    }
+                }
+                .map_err(LprsError::from)?;
 
-        fs::write(&self.path, exported_data).map_err(LprsError::from)
+                fs::write(&self.path, exported_data).map_err(LprsError::from)
+            } else {
+                Err(LprsError::Io(IoError::new(
+                    IoErrorKind::AlreadyExists,
+                    format!("file `{}` is already exists", self.path.display()),
+                )))
+            }
+        } else {
+            Err(LprsError::Io(IoError::new(
+                IoErrorKind::InvalidInput,
+                format!("file `{}` is not a json file", self.path.display()),
+            )))
+        }
     }
 }
