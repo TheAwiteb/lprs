@@ -22,22 +22,12 @@ use serde::{Deserialize, Serialize};
 use crate::{LprsError, LprsResult};
 
 pub mod cipher;
+
+mod bitwarden;
 mod validator;
 
+pub use bitwarden::*;
 pub use validator::*;
-
-/// The passwords manager
-#[derive(Default, Deserialize, Serialize)]
-pub struct Passwords {
-    /// Hash of the master password
-    #[serde(skip)]
-    pub master_password: Vec<u8>,
-    /// The json passwords file
-    #[serde(skip)]
-    pub passwords_file: PathBuf,
-    /// The passwords
-    pub passwords: Vec<Password>,
-}
 
 /// The password struct
 #[serde_with_macros::skip_serializing_none]
@@ -58,6 +48,17 @@ pub struct Password {
     /// The note of the password
     #[arg(short = 'o', long)]
     pub note: Option<String>,
+}
+
+/// The passwords manager
+#[derive(Default)]
+pub struct Passwords {
+    /// Hash of the master password
+    pub master_password: Vec<u8>,
+    /// The json passwords file
+    pub passwords_file: PathBuf,
+    /// The passwords
+    pub passwords: Vec<Password>,
 }
 
 impl Password {
@@ -111,7 +112,7 @@ impl Passwords {
     }
 
     /// Encrypt the passwords
-    fn encrypt(self) -> LprsResult<Self> {
+    pub fn encrypt(self) -> LprsResult<Self> {
         Ok(Self {
             passwords: self
                 .passwords
