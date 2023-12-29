@@ -39,6 +39,21 @@ pub struct BitWardenPasswords {
     pub items: Vec<BitWardenPassword>,
 }
 
+impl From<BitWardenPassword> for Password {
+    fn from(value: BitWardenPassword) -> Self {
+        Self {
+            name: value.name,
+            username: value.login.username,
+            password: value.login.password,
+            service: value
+                .login
+                .uris
+                .and_then(|p| p.first().map(|u| u.uri.clone())),
+            note: value.notes,
+        }
+    }
+}
+
 impl From<Password> for BitWardenPassword {
     fn from(value: Password) -> Self {
         Self {
