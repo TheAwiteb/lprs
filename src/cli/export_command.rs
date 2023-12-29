@@ -46,8 +46,7 @@ impl RunCommand for Export {
                     Format::BitWarden => {
                         serde_json::to_string(&BitWardenPasswords::from(password_manager))
                     }
-                }
-                .map_err(LprsError::from)?;
+                }?;
 
                 fs::write(&self.path, exported_data).map_err(LprsError::from)
             } else {
