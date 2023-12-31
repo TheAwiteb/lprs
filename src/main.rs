@@ -30,7 +30,7 @@ pub mod utils;
 mod macros;
 mod traits;
 
-pub use {macros::*, traits::*};
+pub use traits::*;
 
 pub use errors::{Error as LprsError, Result as LprsResult};
 
