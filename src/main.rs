@@ -30,14 +30,36 @@ pub mod utils;
 mod macros;
 mod traits;
 
+pub use errors::{Error as LprsError, Result as LprsResult};
 pub use traits::*;
 
-pub use errors::{Error as LprsError, Result as LprsResult};
-
 pub const STANDARDBASE: GeneralPurpose = GeneralPurpose::new(&alphabet::STANDARD, PAD);
+pub const DEFAULT_PASSWORD_FILE: &str = "passwords.json";
+
+#[cfg(feature = "update-notify")]
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+#[cfg(feature = "update-notify")]
+pub const LAST_VERSION_CHECK_FILE: &str = ".last_version_check";
 
 fn main() -> ExitCode {
     pretty_env_logger::init();
+
+    #[cfg(feature = "update-notify")]
+    {
+        match utils::lprs_version() {
+            Ok(Some(new_version)) => {
+                println!(
+                    "Warning: The version you are using of lprs is outdated. There is a newer version, which is `{new_version}`, and your version is `{VERSION}`
+                \rYou can update via: `cargo install lprs -F update-notify --locked`\n\n"
+                )
+            }
+            Err(err) => {
+                eprintln!("{err}");
+                return ExitCode::FAILURE;
+            }
+            _ => {}
+        }
+    }
 
     if let Err(err) = cli::Cli::parse().run() {
         eprintln!("{err}");

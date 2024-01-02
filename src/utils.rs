@@ -18,21 +18,65 @@ use std::{fs, path::PathBuf};
 
 use crate::{LprsError, LprsResult};
 
-/// Return the default passwords json file
+/// Returns the local project dir joined with the given file name
+pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
+    directories::ProjectDirs::from("", "", "lprs")
+        .map(|d| d.data_local_dir().to_path_buf().join(filename))
+        .ok_or_else(|| {
+            LprsError::ProjectDir("Can't extract the project_dir from this OS".to_owned())
+        })
+}
+
+/// Returns the default passwords json file
 pub fn passwords_file() -> LprsResult<PathBuf> {
-    if let Some(path) = directories::ProjectDirs::from("", "", "lprs")
-        .map(|d| d.data_local_dir().to_path_buf().join("passwords.json"))
-    {
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)?;
-        }
-        if !path.exists() {
-            fs::write(&path, "[]")?;
-        }
-        Ok(path)
-    } else {
-        Err(LprsError::ProjectDir(
-            "Can't extract the project_dir from this OS".to_owned(),
-        ))
+    let password_file = local_project_file(crate::DEFAULT_PASSWORD_FILE)?;
+    if let Some(parent) = password_file.parent() {
+        std::fs::create_dir_all(parent)?;
     }
+    if !password_file.exists() {
+        fs::write(&password_file, "[]")?;
+    }
+    Ok(password_file)
+}
+
+/// Retuns the current lprs version from `crates.io`
+#[cfg(feature = "update-notify")]
+pub fn lprs_version() -> LprsResult<Option<String>> {
+    use std::time::SystemTime;
+
+    let last_version_check_file = local_project_file(crate::LAST_VERSION_CHECK_FILE)?;
+    let current_time = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .map_err(|_| LprsError::Other("The system time is before UNIX EPOCH!".to_owned()))?
+        .as_secs();
+    let last_check: u64 = fs::read_to_string(&last_version_check_file)
+        .unwrap_or_else(|_| current_time.to_string())
+        .parse()
+        .map_err(|err| {
+            LprsError::Other(format!(
+                "Check update file content is invalid time `{}`: {err}",
+                last_version_check_file.display()
+            ))
+        })?;
+    fs::write(last_version_check_file, current_time.to_string())?;
+
+    // Check if the last check is before one hour or not
+    if (current_time - last_check) >= (60 * 60) || current_time == last_check {
+        if let Ok(Ok(response)) = reqwest::blocking::Client::new()
+            .get("https://crates.io/api/v1/crates/lprs")
+            .header(
+                "User-Agent",
+                format!("Lprs <{current_time}> (https://github.com/theawiteb/lprs)"),
+            )
+            .send()
+            .map(|r| r.text())
+        {
+            let re =
+                regex::Regex::new(r#""max_stable_version":"(?<version>\d+\.\d+\.\d+)""#).unwrap();
+            if let Some(cap) = re.captures(&response) {
+                return Ok(cap.name("version").map(|m| m.as_str().to_string()));
+            }
+        }
+    }
+    Ok(None)
 }
