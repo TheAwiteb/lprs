@@ -11,9 +11,10 @@ To get started with contributing to lprs, please follow these steps:
 3. Create a new branch for your changes: `git checkout -b my-branch-name`.
 4. Make your desired changes to the codebase.
 5. Test your changes to ensure they work as expected.
-6. Commit your changes: `git commit -m "Add my changes"`.
-7. Push your changes to your forked repository: `git push origin my-branch-name`.
-8. Open a pull request from your forked repository to the main lprs repository.
+6. Run `just ci` to run the continuous integration.
+7. Commit your changes: `git commit -m "Add my changes"`.
+8. Push your changes to your forked repository: `git push origin my-branch-name`.
+9. Open a pull request from your forked repository to the main lprs repository.
 
 ## Code Style
 
