@@ -20,19 +20,20 @@ use crate::{LprsError, LprsResult};
 
 /// Returns the local project dir joined with the given file name
 pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
-    directories::ProjectDirs::from("", "", "lprs")
-        .map(|d| d.data_local_dir().to_path_buf().join(filename))
+    let local_dir = directories::ProjectDirs::from("", "", "lprs")
+        .map(|d| d.data_local_dir().to_path_buf())
         .ok_or_else(|| {
             LprsError::ProjectDir("Can't extract the project_dir from this OS".to_owned())
-        })
+        })?;
+    if !local_dir.exists() {
+        fs::create_dir_all(&local_dir)?;
+    }
+    Ok(local_dir.join(filename))
 }
 
 /// Returns the default passwords json file
 pub fn passwords_file() -> LprsResult<PathBuf> {
     let password_file = local_project_file(crate::DEFAULT_PASSWORD_FILE)?;
-    if let Some(parent) = password_file.parent() {
-        std::fs::create_dir_all(parent)?;
-    }
     if !password_file.exists() {
         fs::write(&password_file, "[]")?;
     }
