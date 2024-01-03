@@ -7,14 +7,18 @@ Lprs is a local password manager designed to securely store and manage your pass
 To install Lprs, you will need to have the Cargo package manager installed. If you do not have Cargo installed, you can install it by following the instructions [here](https://doc.rust-lang.org/cargo/getting-started/installation.html). Note the Minimum Supported Rust Version (MSRV) for Lprs is `1.70.0`.
 
 1. Install using [cargo-install](https://doc.rust-lang.org/cargo/commands/cargo-install.html):
-    ```bash
-    cargo install --locked --git https://github.com/theawiteb/lprs.git
-    ```
+```bash
+cargo install lprs --locked
+```
+This will enable the update notifications for Lprs. If you don't want to enable update notifications, you can install Lprs using:
+```bash
+cargo install lprs --locked --no-default-features
+```
 
 2. Run Lprs:
-    ```bash
-    lprs --help
-    ```
+```bash
+lprs --help
+```
 
 ## Uninstallation
 ```bash
