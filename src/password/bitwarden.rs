@@ -4,8 +4,8 @@ use super::{Password, Passwords};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BitWardenLoginData {
-    pub username: String,
-    pub password: String,
+    pub username: Option<String>,
+    pub password: Option<String>,
     pub uris: Option<Vec<BitWardenUri>>,
 }
 
@@ -27,7 +27,7 @@ pub struct BitWardenPassword {
     #[serde(rename = "type")]
     pub ty: i32,
     pub name: String,
-    pub login: BitWardenLoginData,
+    pub login: Option<BitWardenLoginData>,
     pub notes: Option<String>,
 }
 
@@ -43,12 +43,17 @@ impl From<BitWardenPassword> for Password {
     fn from(value: BitWardenPassword) -> Self {
         Self {
             name: value.name,
-            username: value.login.username,
-            password: value.login.password,
+            username: value
+                .login
+                .as_ref()
+                .map_or_else(String::new, |l| l.username.to_owned().unwrap_or_default()),
+            password: value
+                .login
+                .as_ref()
+                .map_or_else(String::new, |l| l.password.to_owned().unwrap_or_default()),
             service: value
                 .login
-                .uris
-                .and_then(|p| p.first().map(|u| u.uri.clone())),
+                .and_then(|l| l.uris.and_then(|p| p.first().map(|u| u.uri.clone()))),
             note: value.notes,
         }
     }
@@ -59,13 +64,13 @@ impl From<Password> for BitWardenPassword {
         Self {
             ty: 1,
             name: value.name,
-            login: BitWardenLoginData {
-                username: value.username,
-                password: value.password,
+            login: Some(BitWardenLoginData {
+                username: Some(value.username),
+                password: Some(value.password),
                 uris: value
                     .service
                     .map(|s| vec![BitWardenUri { mt: None, uri: s }]),
-            },
+            }),
             notes: value.note,
         }
     }
