@@ -47,7 +47,7 @@ fn main() -> ExitCode {
     #[cfg(feature = "update-notify")]
     {
         match utils::lprs_version() {
-            Ok(Some(new_version)) if new_version == VERSION => {
+            Ok(Some(new_version)) if new_version != VERSION => {
                 println!(
                     "Warning: The version you are using of lprs is outdated. There is a newer version, which is `{new_version}`, and your version is `{VERSION}`
                     \rYou can update via: `cargo install lprs --locked`
