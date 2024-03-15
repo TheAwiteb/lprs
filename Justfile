@@ -1,7 +1,7 @@
 # This justfile is for the contrbutors of this project, not for the end user.
 #
 # Requirements for this justfile:
-# - Linux distribution, the real programer does not program on garbage OS like Windows or MacOS
+# - Linux distribution
 # - just (Of course) <https://github.com/casey/just>
 # - cargo (For the build and tests) <https://doc.rust-lang.org/cargo/getting-started/installation.html>
 
