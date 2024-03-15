@@ -1,0 +1,36 @@
+name: Write changelog
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  write-changelog:
+    runs-on: debian
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install git-cliff
+        run: |
+          version="2.1.2"
+          wget "https://github.com/orhun/git-cliff/releases/download/v$version/git-cliff-$version-x86_64-unknown-linux-gnu.tar.gz"
+          tar -xvzf git-cliff-*.tar.gz
+          mv "git-cliff-$version/git-cliff" /usr/local/bin
+          rm -fr git-cliff-*          
+      - name: Write changelog
+        run: |
+          git config user.name forgejo-actions
+          git config user.email forgejo-actions@noreply.localhost
+          git-cliff > CHANGELOG.md
+          if [[ $(git status | grep --extended-regexp '^\s+modified:\s+CHANGELOG.md$') ]]; then
+            git add CHANGELOG.md
+            git commit -m "chore(changelog): Update changelog"
+            git push
+            echo "Changelog updated"
+          else
+            echo "No changes to changelog"
+          fi

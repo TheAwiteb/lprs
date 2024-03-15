@@ -1,0 +1,48 @@
+name: CD
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+
+
+jobs:
+  release:
+    runs-on: debian
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install git-cliff
+        run: |
+          version="2.1.2"
+          wget "https://github.com/orhun/git-cliff/releases/download/v$version/git-cliff-$version-x86_64-unknown-linux-gnu.tar.gz"
+          tar -xvzf git-cliff-*.tar.gz
+          mv "git-cliff-$version/git-cliff" /usr/local/bin
+          rm -fr git-cliff-*
+      - name: Write changelog
+        run: |
+          git config user.name forgejo-actions
+          git config user.email forgejo-actions@noreply.localhost
+          echo 'TAG_CHANGELOG=$(if [[ $(git tag --sort=committerdate | tail -n 1) == *"-rc"* ]]; then git-cliff --strip all $(git tag --sort=committerdate | tail -n 2 | sed ":a; N; $!ba; s/\n/../g") | sed "s/## unreleased.*$//g"; else git-cliff -l --strip all | sed "s/^## \[.*$//g";fi)' | sed "s/\"/'/g" >> $GITHUB_ENV
+          if [[ $(git tag --sort=committerdate | tail -n 1) != *'-rc'* ]]; then
+            echo "The latest tag is not a release candidate, updating changelog for $GITHUB_REF_NAME"
+            git-cliff > CHANGELOG.md
+            git add CHANGELOG.md
+            git commit -m "Update changelog for $GITHUB_REF_NAME"
+            git push
+            echo "Changelog updated"
+          else
+            echo "The latest tag is a release candidate, not updating changelog"
+          fi
+      - name: Create Release
+        uses: actions/forgejo-release@v1
+        with:
+          direction: upload
+          url: https://git.4rs.nl
+          token: ${{ env.GITHUB_TOKEN }}
+          release-dir: release-dir
+          release-notes: ${{ env.TAG_CHANGELOG }}
+          prerelease: ${{ contains(env.GITHUB_REF_NAME, '-rc') }}

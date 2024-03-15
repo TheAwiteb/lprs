@@ -1,5 +1,5 @@
 // Lprs - A local CLI password manager
-// Copyright (C) 2024  Awiteb
+// Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ fn main() -> ExitCode {
                 println!(
                     "Warning: The version you are using of lprs is outdated. There is a newer version, which is `{new_version}`, and your version is `{VERSION}`
                     \rYou can update via: `cargo install lprs --locked`
-                    \rOr via git repo: `cargo install --locked --git https://github.com/TheAwiteb/lprs.git`
+                    \rOr via git repo: `cargo install --locked --git https://git.4rs.nl/awiteb/lprs.git`
                     \rTo disable update notification: `cargo install lprs --locked --no-default-features`\n\n"
                 )
             }

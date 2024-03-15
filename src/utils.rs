@@ -1,5 +1,5 @@
 // Lprs - A local CLI password manager
-// Copyright (C) 2024  Awiteb
+// Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ pub fn lprs_version() -> LprsResult<Option<String>> {
             .get("https://crates.io/api/v1/crates/lprs")
             .header(
                 "User-Agent",
-                format!("Lprs <{current_time}> (https://github.com/theawiteb/lprs)"),
+                format!("Lprs <{current_time}> (https://git.4rs.nl/awiteb/lprs)"),
             )
             .send()
             .map(|r| r.text())

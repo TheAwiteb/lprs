@@ -2,7 +2,7 @@
 name: Question
 about: Ask a question about Lprs
 title: '[Question]: ...'
-labels: ["💬 Question"]
+labels: ["Kind/Question"]
 assignees: ''
 ---
 
