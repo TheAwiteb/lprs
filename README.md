@@ -2,9 +2,13 @@
 
 Lprs is a local password manager designed to securely store and manage your passwords.
 
+### MSRV
+The Minimum Supported Rust Version (MSRV) is `1.70.0`.
+
 ## Installation
 
-To install Lprs, you will need to have the Cargo package manager installed. If you do not have Cargo installed, you can install it by following the instructions [here](https://doc.rust-lang.org/cargo/getting-started/installation.html). Note the Minimum Supported Rust Version (MSRV) for Lprs is `1.70.0`.
+To install Lprs, you will need to have the Cargo package manager installed. If you do not have Cargo installed, you can install it by following the instructions [here](https://doc.rust-lang.org/cargo/getting-started/installation.html).
+
 
 1. Install using [cargo-install](https://doc.rust-lang.org/cargo/commands/cargo-install.html):
 ```bash
@@ -86,8 +90,18 @@ The format of the exported file can be specified using the `--format` option. Th
 
 ## Contributing
 
-Contributions to Lprs are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING](CONTRIBUTING.md) file.
+Contributions to Lprs are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING]
+(CONTRIBUTING.md) file.
+
+## Mirrors
+This repository is mirrored on the following platforms:
+- [GitHub](https://github.com/TheAwiteb/lprs)
+- [Codeberg](https://codeberg.org/awiteb/lprs)
 
 ## License
 
 Lprs is licensed under the GPL-3.0 License. This means that you are free to use, modify, and distribute the software under the terms of this license. Please refer to the [LICENSE](LICENSE) file for more details.
+
+---
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/awiteb)
