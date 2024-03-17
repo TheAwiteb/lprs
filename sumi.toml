@@ -20,7 +20,7 @@ gitmoji = false
 
 # Rule: Description must start with the specified case.
 # Options: 'any', 'lower', 'upper'.
-description_case = "any"
+description_case = "upper"
 
 # Rule: Use the imperative mood in the description.
 # Example: 'Fix bug' instead of 'Fixed bug'.
@@ -54,4 +54,4 @@ types_allowed = ["feat", "fix", "docs", "refactor", "change", "deprecate", "remo
 
 # Rule: Header must match regex pattern.
 # Example: '^JIRA-\d+:'.
-header_pattern = '^\w+(\(\w+\))?(!)?: \w'
+header_pattern = '^\w+(\([\w-]+\))?(!)?: \w'
