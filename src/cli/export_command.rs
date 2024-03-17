@@ -19,7 +19,7 @@ use std::{fs, io::Error as IoError, io::ErrorKind as IoErrorKind, path::PathBuf}
 use clap::Args;
 
 use crate::{
-    password::{BitWardenPasswords, Format, Passwords},
+    password::{BitWardenPasswords, Format, Vaults},
     LprsError, LprsResult, RunCommand,
 };
 
@@ -28,13 +28,13 @@ use crate::{
 pub struct Export {
     /// The path to export to
     path: PathBuf,
-    /// Format to export passwords in
+    /// Format to export vaults in
     #[arg(short, long, value_name = "FORMAT", default_value_t= Format::Lprs)]
     format: Format,
 }
 
 impl RunCommand for Export {
-    fn run(&self, password_manager: Passwords) -> LprsResult<()> {
+    fn run(&self, password_manager: Vaults) -> LprsResult<()> {
         if self
             .path
             .extension()

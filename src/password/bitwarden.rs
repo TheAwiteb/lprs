@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{Password, Passwords};
+use super::{Vault, Vaults};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BitWardenLoginData {
@@ -39,7 +39,7 @@ pub struct BitWardenPasswords {
     pub items: Vec<BitWardenPassword>,
 }
 
-impl From<BitWardenPassword> for Password {
+impl From<BitWardenPassword> for Vault {
     fn from(value: BitWardenPassword) -> Self {
         Self {
             name: value.name,
@@ -59,8 +59,8 @@ impl From<BitWardenPassword> for Password {
     }
 }
 
-impl From<Password> for BitWardenPassword {
-    fn from(value: Password) -> Self {
+impl From<Vault> for BitWardenPassword {
+    fn from(value: Vault) -> Self {
         Self {
             ty: 1,
             name: value.name,
@@ -76,8 +76,8 @@ impl From<Password> for BitWardenPassword {
     }
 }
 
-impl From<Passwords> for BitWardenPasswords {
-    fn from(value: Passwords) -> Self {
+impl From<Vaults> for BitWardenPasswords {
+    fn from(value: Vaults) -> Self {
         Self {
             encrypted: false,
             folders: Vec::new(),

@@ -19,7 +19,7 @@ use std::path::PathBuf;
 use clap::Parser;
 
 use crate::{
-    password::{self, Passwords},
+    password::{self, Vaults},
     LprsError, LprsResult, RunCommand,
 };
 
@@ -47,7 +47,7 @@ crate::create_commands!(
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-    /// The passwords json file, default: $HOME/.local/share/lprs/passwords.json
+    /// The vaults json file
     #[arg(short, long)]
     passwords_file: Option<PathBuf>,
 
@@ -64,33 +64,30 @@ impl Cli {
         } else {
             crate::utils::passwords_file()?
         };
-        log::debug!(
-            "Getting password file: {}",
-            passwords_file.to_string_lossy()
-        );
-        let password_manager = if matches!(self.command, Commands::Clean(..) | Commands::Gen(..)) {
-            Passwords {
+        log::debug!("Getting the vaults file: {}", vaults_file.to_string_lossy());
+        let vault_manager = if matches!(self.command, Commands::Clean(..) | Commands::Gen(..)) {
+            Vaults {
                 passwords_file,
                 ..Default::default()
             }
         } else {
-            let password = scanpw::scanpw!("Master Password: ");
+            let master_password = scanpw::scanpw!("Master Password: ");
 
-            if password::is_new_password_file(&passwords_file)? {
-                let analyzed = passwords::analyzer::analyze(&password);
+            if vault::is_new_vaults_file(&vaults_file)? {
+                let analyzed = passwords::analyzer::analyze(&master_password);
                 if analyzed.length() < 15 {
                     return Err(LprsError::WeakPassword(
-                        "The password length must be beggier then 15".to_owned(),
+                        "The master password length must be beggier then 15".to_owned(),
                     ));
                 } else if passwords::scorer::score(&analyzed) < 80.0 {
                     return Err(LprsError::WeakPassword(
-                        "Your password is not stronge enough".to_owned(),
+                        "Your master password is not stronge enough".to_owned(),
                     ));
                 }
             }
 
-            let master_password = sha256::digest(password);
-            Passwords::try_reload(
+            let master_password = sha256::digest(master_password);
+            Vaults::try_reload(
                 passwords_file,
                 master_password.into_bytes().into_iter().take(32).collect(),
             )?

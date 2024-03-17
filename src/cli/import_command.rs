@@ -19,7 +19,7 @@ use std::{fs::File, io::Error as IoError, io::ErrorKind as IoErrorKind, path::Pa
 use clap::Args;
 
 use crate::{
-    password::{BitWardenPasswords, Format, Password, Passwords},
+    password::{BitWardenPasswords, Format, Vault, Vaults},
     LprsError, LprsResult, RunCommand,
 };
 
@@ -35,7 +35,7 @@ pub struct Import {
 }
 
 impl RunCommand for Import {
-    fn run(&self, mut password_manager: Passwords) -> LprsResult<()> {
+    fn run(&self, mut password_manager: Vaults) -> LprsResult<()> {
         if self.path.exists() {
             if self
                 .path
@@ -44,30 +44,30 @@ impl RunCommand for Import {
             {
                 let imported_passwords_len = match self.format {
                     Format::Lprs => {
-                        let passwords = Passwords::try_reload(
+                        let vaults = Vaults::try_reload(
                             self.path.to_path_buf(),
                             password_manager.master_password.to_vec(),
                         )?;
-                        let passwords_len = passwords.passwords.len();
+                        let vaults_len = vaults.vaults.len();
 
-                        password_manager.passwords.extend(passwords.passwords);
-                        password_manager.try_export()?;
-                        passwords_len
+                        vault_manager.vaults.extend(vaults.vaults);
+                        vault_manager.try_export()?;
+                        vaults_len
                     }
                     Format::BitWarden => {
-                        let passwords: BitWardenPasswords =
+                        let vaults: BitWardenPasswords =
                             serde_json::from_reader(File::open(&self.path)?)?;
-                        let passwords_len = passwords.items.len();
+                        let vaults_len = vaults.items.len();
 
-                        password_manager
-                            .passwords
-                            .extend(passwords.items.into_iter().map(Password::from));
-                        password_manager.try_export()?;
-                        passwords_len
+                        vault_manager
+                            .vaults
+                            .extend(vaults.items.into_iter().map(Vault::from));
+                        vault_manager.try_export()?;
+                        vaults_len
                     }
                 };
                 println!(
-                    "{imported_passwords_len} password{s} were imported successfully",
+                    "{imported_passwords_len} vault{s} were imported successfully",
                     s = if imported_passwords_len >= 2 { "s" } else { "" }
                 );
 

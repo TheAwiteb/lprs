@@ -19,7 +19,7 @@ use std::num::NonZeroU64;
 use clap::Args;
 
 use crate::{
-    password::{Password, Passwords},
+    password::{Vault, Vaults},
     LprsError, LprsResult, RunCommand,
 };
 
@@ -30,27 +30,27 @@ pub struct Edit {
     index: NonZeroU64,
 
     #[arg(short, long)]
-    /// The new password name
+    /// The new vault name
     name: Option<String>,
     #[arg(short, long)]
-    /// The new password username
+    /// The new vault username
     username: Option<String>,
     #[arg(short, long)]
     /// The new password
     password: Option<String>,
     #[arg(short, long)]
-    /// The new password service
+    /// The new vault service
     service: Option<String>,
     #[arg(short = 'o', long)]
-    /// The new password note
+    /// The new vault note
     note: Option<String>,
 }
 
 impl RunCommand for Edit {
-    fn run(&self, mut password_manager: Passwords) -> LprsResult<()> {
+    fn run(&self, mut password_manager: Vaults) -> LprsResult<()> {
         let index = self.index.get() as usize;
 
-        if let Some(password) = password_manager.passwords.get_mut(index - 1) {
+        if let Some(vault) = vault_manager.vaults.get_mut(index - 1) {
             if self.name.is_none()
                 && self.username.is_none()
                 && self.password.is_none()
@@ -61,26 +61,18 @@ impl RunCommand for Edit {
                     "You must edit one option at least".to_owned(),
                 ))
             } else {
-                *password = Password {
-                    name: self.name.as_ref().unwrap_or(&password.name).to_string(),
-                    username: self
-                        .username
-                        .as_ref()
-                        .unwrap_or(&password.username)
-                        .to_string(),
-                    password: self
-                        .password
-                        .as_ref()
-                        .unwrap_or(&password.password)
-                        .to_string(),
-                    service: self.service.as_ref().or(password.service.as_ref()).cloned(),
-                    note: self.note.as_ref().or(password.note.as_ref()).cloned(),
-                };
-                password_manager.try_export()
+                *vault = Vault::<Plain>::new(
+                    self.name.as_ref().unwrap_or(&vault.name),
+                    self.username.as_ref().unwrap_or(&vault.username),
+                    self.password.as_ref().unwrap_or(&vault.password),
+                    self.service.as_ref().or(vault.service.as_ref()),
+                    self.note.as_ref().or(vault.note.as_ref()),
+                );
+                vault_manager.try_export()
             }
         } else {
-            Err(LprsError::InvalidPasswordIndex(format!(
-                "The index `{}` is greater than the passwords count {}",
+            Err(LprsError::InvalidVaultIndex(format!(
+                "The index `{}` is greater than the vaults count {}",
                 self.index,
                 password_manager.passwords.len()
             )))

@@ -20,7 +20,7 @@ use clap::Args;
 use comfy_table::Table;
 use regex::Regex;
 
-use crate::{password::Passwords, LprsError, LprsResult, RunCommand};
+use crate::{password::Vaults, LprsError, LprsResult, RunCommand};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -49,7 +49,7 @@ pub struct List {
 }
 
 impl RunCommand for List {
-    fn run(&self, password_manager: Passwords) -> LprsResult<()> {
+    fn run(&self, password_manager: Vaults) -> LprsResult<()> {
         if password_manager.passwords.is_empty() {
             Err(LprsError::Other(
                 "Looks like there is no passwords to list".to_owned(),
@@ -77,8 +77,8 @@ impl RunCommand for List {
             let re = Regex::new(self.search.as_deref().unwrap_or("."))?;
 
             table.set_header(header);
-            let passwords = password_manager
-                .passwords
+            let vaults = vault_manager
+                .vaults
                 .iter()
                 .enumerate()
                 .filter(|(idx, pass)| {
@@ -112,24 +112,24 @@ impl RunCommand for List {
 
                     true
                 });
-            for (idx, password) in passwords {
-                let hide_password = "*".repeat(password.password.chars().count());
+            for (idx, vault) in vaults {
+                let hide_password = "*".repeat(vault.password.chars().count());
                 let idx = (idx + 1).to_string();
                 let mut row = vec![
                     idx.as_str(),
-                    password.name.as_str(),
-                    password.username.as_str(),
+                    vault.name.as_str(),
+                    vault.username.as_str(),
                     if self.unhide_password {
-                        password.password.as_str()
+                        vault.password.as_str()
                     } else {
                         hide_password.as_str()
                     },
                 ];
                 if self.with_service {
-                    row.push(password.service.as_deref().unwrap_or("Not Set"))
+                    row.push(vault.service.as_deref().unwrap_or("Not Set"))
                 }
                 if self.with_note {
-                    row.push(password.note.as_deref().unwrap_or("Not Set"))
+                    row.push(vault.note.as_deref().unwrap_or("Not Set"))
                 }
                 table.add_row(row);
             }

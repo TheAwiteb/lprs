@@ -18,7 +18,7 @@ use std::num::NonZeroU64;
 
 use clap::Args;
 
-use crate::{password::Passwords, LprsError, LprsResult, RunCommand};
+use crate::{password::Vaults, LprsError, LprsResult, RunCommand};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -32,7 +32,7 @@ pub struct Remove {
 }
 
 impl RunCommand for Remove {
-    fn run(&self, mut password_manager: Passwords) -> LprsResult<()> {
+    fn run(&self, mut password_manager: Vaults) -> LprsResult<()> {
         let index = (self.index.get() - 1) as usize;
         if index > password_manager.passwords.len() {
             if !self.force {

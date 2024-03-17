@@ -17,7 +17,7 @@
 use clap::Args;
 
 use crate::{
-    password::{Password, Passwords},
+    password::{Vault, Vaults},
     LprsResult, RunCommand,
 };
 
@@ -25,12 +25,12 @@ use crate::{
 #[command(author, version, about, long_about = None)]
 pub struct Add {
     #[command(flatten)]
-    password_info: Password,
+    vault_info: Vault<Plain>,
 }
 
 impl RunCommand for Add {
-    fn run(&self, mut password_manager: Passwords) -> LprsResult<()> {
-        password_manager.add_password(self.password_info.clone());
-        password_manager.try_export()
+    fn run(&self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+        vault_manager.add_vault(self.vault_info.clone());
+        vault_manager.try_export()
     }
 }

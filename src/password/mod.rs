@@ -38,7 +38,7 @@ pub enum Format {
 /// The password struct
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Serialize, Parser)]
-pub struct Password {
+pub struct Vault {
     /// The name of the password
     #[arg(short, long)]
     pub name: String,
@@ -58,16 +58,16 @@ pub struct Password {
 
 /// The passwords manager
 #[derive(Default)]
-pub struct Passwords {
+pub struct Vaults {
     /// Hash of the master password
     pub master_password: Vec<u8>,
     /// The json passwords file
     pub passwords_file: PathBuf,
     /// The passwords
-    pub passwords: Vec<Password>,
+    pub passwords: Vec<Vault>,
 }
 
-impl Password {
+impl Vault {
     /// Encrypt the password data
     pub fn encrypt(self, master_password: &[u8]) -> LprsResult<Self> {
         Ok(Self {
@@ -103,13 +103,9 @@ impl Password {
     }
 }
 
-impl Passwords {
+impl Vaults {
     /// Create new Passwords instnce
-    pub fn new(
-        master_password: Vec<u8>,
-        passwords_file: PathBuf,
-        passwords: Vec<Password>,
-    ) -> Self {
+    pub fn new(master_password: Vec<u8>, passwords_file: PathBuf, passwords: Vec<Vault>) -> Self {
         Self {
             master_password,
             passwords_file,
@@ -124,18 +120,17 @@ impl Passwords {
                 .passwords
                 .into_iter()
                 .map(|p| p.encrypt(&self.master_password))
-                .collect::<LprsResult<Vec<Password>>>()?,
+                .collect::<LprsResult<Vec<Vault>>>()?,
             ..self
         })
     }
 
     /// Reload the passwords from the file
     pub fn try_reload(passwords_file: PathBuf, master_password: Vec<u8>) -> LprsResult<Self> {
-        let passwords =
-            serde_json::from_str::<Vec<Password>>(&fs::read_to_string(&passwords_file)?)?
-                .into_iter()
-                .map(|p| p.decrypt(master_password.as_slice()))
-                .collect::<LprsResult<Vec<Password>>>()?;
+        let passwords = serde_json::from_str::<Vec<Vault>>(&fs::read_to_string(&passwords_file)?)?
+            .into_iter()
+            .map(|p| p.decrypt(master_password.as_slice()))
+            .collect::<LprsResult<Vec<Vault>>>()?;
 
         Ok(Self::new(master_password, passwords_file, passwords))
     }
@@ -147,7 +142,7 @@ impl Passwords {
     }
 
     /// Add new password
-    pub fn add_password(&mut self, password: Password) {
+    pub fn add_password(&mut self, password: Vault) {
         self.passwords.push(password)
     }
 }
