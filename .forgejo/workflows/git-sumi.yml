@@ -1,3 +1,5 @@
+name: Check PR title
+
 on:
   pull_request:
     types:
@@ -6,13 +8,15 @@ on:
       - reopened
 
 jobs:
-  main:
+  check_pr_title:
     runs-on: debian
     steps:
       - uses: https://code.forgejo.org/actions/checkout@v4
-      - run: |
-          curl -L "https://github.com/welpo/git-sumi/releases/download/v0.0.6/git-sumi-x86_64-unknown-linux-gnu.tar.xz" -o git-sumi.tar.xz
+      - name: Install git-sumi
+        run: |
+          curl -s -L "https://github.com/welpo/git-sumi/releases/download/v0.0.6/git-sumi-x86_64-unknown-linux-gnu.tar.xz" -o git-sumi.tar.xz
           tar -xf git-sumi.tar.xz
           mv git-sumi-x86_64-unknown-linux-gnu/git-sumi git-sumi
           chmod +x git-sumi
-          ./git-sumi "${{ github.event.pull_request.title }}"
+      - name: Run git-sumi
+        run: ./git-sumi "${{ github.event.pull_request.title }}"

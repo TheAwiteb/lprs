@@ -1,4 +1,4 @@
-name: CI
+name: Rust CI
 
 on:
   push:
@@ -7,32 +7,17 @@ on:
     branches: [master]
 
 jobs:
-  build:
-    name: Rust build
+  rust_ci:
+    name: Rust CI
     runs-on: debian
     steps:
       - uses: actions/checkout@v4
       - uses: https://codeberg.org/TheAwiteb/rust-action@v1.70
-      - run: cargo build
-  rustfmt:
-    name: Rust format
-    runs-on: debian
-    steps:
-      - uses: actions/checkout@v4
-      - uses: https://codeberg.org/TheAwiteb/rust-action@v1.70
-      - run: cargo fmt -- --check
-  check:
-    name: Rust check
-    runs-on: debian
-    steps:
-      - uses: actions/checkout@v4
-      - uses: https://codeberg.org/TheAwiteb/rust-action@v1.70
-      - run: cargo check
-  clippy:
-    name: Rust clippy
-    runs-on: debian
-    steps:
-      - uses: actions/checkout@v4
-      - uses: https://codeberg.org/TheAwiteb/rust-action@v1.70
-      - run: cargo clippy -- -D warnings
-
+      - name: Build the source code
+        run: cargo build
+      - name: Check the code format
+        run: cargo fmt -- --check
+      - name: Run cargo-check
+        run: cargo check
+      - name: Run cargo-clippy
+        run: cargo clippy -- -D warnings

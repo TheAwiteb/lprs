@@ -54,4 +54,4 @@ types_allowed = ["feat", "fix", "docs", "refactor", "change", "deprecate", "remo
 
 # Rule: Header must match regex pattern.
 # Example: '^JIRA-\d+:'.
-header_pattern = '^\w+(\s\(\w+\))?(!)?: \w'
+header_pattern = '^\w+(\(\w+\))?(!)?: \w'
