@@ -31,13 +31,13 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
     Ok(local_dir.join(filename))
 }
 
-/// Returns the default passwords json file
-pub fn passwords_file() -> LprsResult<PathBuf> {
-    let password_file = local_project_file(crate::DEFAULT_PASSWORD_FILE)?;
-    if !password_file.exists() {
-        fs::write(&password_file, "[]")?;
+/// Returns the default vaults json file
+pub fn vaults_file() -> LprsResult<PathBuf> {
+    let vaults_file = local_project_file(crate::DEFAULT_VAULTS_FILE)?;
+    if !vaults_file.exists() {
+        fs::write(&vaults_file, "[]")?;
     }
-    Ok(password_file)
+    Ok(vaults_file)
 }
 
 /// Retuns the current lprs version from `crates.io`

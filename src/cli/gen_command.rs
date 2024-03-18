@@ -18,7 +18,10 @@ use std::num::NonZeroU64;
 
 use clap::Args;
 
-use crate::{password::Vaults, LprsError, LprsResult, RunCommand};
+use crate::{
+    vault::{vault_state::*, Vaults},
+    LprsError, LprsResult, RunCommand,
+};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -42,7 +45,7 @@ pub struct Gen {
 }
 
 impl RunCommand for Gen {
-    fn run(&self, _password_manager: Vaults) -> LprsResult<()> {
+    fn run(&self, _password_manager: Vaults<Plain>) -> LprsResult<()> {
         if self.uppercase || self.lowercase || self.numbers || self.symbols {
             println!(
                 "{}",

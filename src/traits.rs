@@ -14,9 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use crate::{password::Vaults, LprsResult};
+use crate::{
+    vault::{vault_state::*, Vaults},
+    LprsResult,
+};
 
 /// Trait to run the command
 pub trait RunCommand {
-    fn run(&self, password_manager: Vaults) -> LprsResult<()>;
+    fn run(&self, password_manager: Vaults<Plain>) -> LprsResult<()>;
 }

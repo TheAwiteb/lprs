@@ -19,7 +19,7 @@ use std::{fs::File, io::Error as IoError, io::ErrorKind as IoErrorKind, path::Pa
 use clap::Args;
 
 use crate::{
-    password::{BitWardenPasswords, Format, Vault, Vaults},
+    vault::{vault_state::*, BitWardenPasswords, Format, Vault, Vaults},
     LprsError, LprsResult, RunCommand,
 };
 
@@ -35,7 +35,7 @@ pub struct Import {
 }
 
 impl RunCommand for Import {
-    fn run(&self, mut password_manager: Vaults) -> LprsResult<()> {
+    fn run(&self, mut password_manager: Vaults<Plain>) -> LprsResult<()> {
         if self.path.exists() {
             if self
                 .path

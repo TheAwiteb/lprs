@@ -17,7 +17,7 @@
 use clap::Args;
 
 use crate::{
-    password::{Vault, Vaults},
+    vault::{vault_state::*, Vault, Vaults},
     LprsResult, RunCommand,
 };
 

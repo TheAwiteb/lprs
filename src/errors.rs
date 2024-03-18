@@ -34,8 +34,8 @@ pub enum Error {
     WeakPassword(String),
     #[error("Args Conflict Error: {0}")]
     ArgsConflict(String),
-    #[error("Invalid Password Index Error: {0}")]
-    InvalidPasswordIndex(String),
+    #[error("Invalid Vault Index Error: {0}")]
+    InvalidVaultIndex(String),
     #[error("{0}")]
     Other(String),
 
@@ -56,6 +56,7 @@ pub enum Error {
 impl Error {
     /// Return the exit code of the error
     pub fn exit_code(&self) -> ExitCode {
+        // TODO: Exit with more specific exit code
         ExitCode::FAILURE
     }
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{Vault, Vaults};
+use super::{vault_state::*, Vault, Vaults};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BitWardenLoginData {
@@ -39,28 +39,28 @@ pub struct BitWardenPasswords {
     pub items: Vec<BitWardenPassword>,
 }
 
-impl From<BitWardenPassword> for Vault {
+impl From<BitWardenPassword> for Vault<Plain> {
     fn from(value: BitWardenPassword) -> Self {
-        Self {
-            name: value.name,
-            username: value
+        Self::new(
+            value.name,
+            value
                 .login
                 .as_ref()
                 .map_or_else(String::new, |l| l.username.to_owned().unwrap_or_default()),
-            password: value
+            value
                 .login
                 .as_ref()
                 .map_or_else(String::new, |l| l.password.to_owned().unwrap_or_default()),
-            service: value
+            value
                 .login
                 .and_then(|l| l.uris.and_then(|p| p.first().map(|u| u.uri.clone()))),
-            note: value.notes,
-        }
+            value.notes,
+        )
     }
 }
 
-impl From<Vault> for BitWardenPassword {
-    fn from(value: Vault) -> Self {
+impl From<Vault<Plain>> for BitWardenPassword {
+    fn from(value: Vault<Plain>) -> Self {
         Self {
             ty: 1,
             name: value.name,
@@ -76,13 +76,13 @@ impl From<Vault> for BitWardenPassword {
     }
 }
 
-impl From<Vaults> for BitWardenPasswords {
-    fn from(value: Vaults) -> Self {
+impl From<Vaults<Plain>> for BitWardenPasswords {
+    fn from(value: Vaults<Plain>) -> Self {
         Self {
             encrypted: false,
             folders: Vec::new(),
             items: value
-                .passwords
+                .vaults
                 .into_iter()
                 .map(BitWardenPassword::from)
                 .collect(),

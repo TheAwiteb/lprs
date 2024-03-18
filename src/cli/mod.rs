@@ -19,7 +19,7 @@ use std::path::PathBuf;
 use clap::Parser;
 
 use crate::{
-    password::{self, Vaults},
+    vault::{self, Vaults},
     LprsError, LprsResult, RunCommand,
 };
 
@@ -34,14 +34,14 @@ pub mod remove_command;
 
 crate::create_commands!(
     enum Commands
-    "Add new password", Add => add_command::Add
-    "Remove password", Remove => remove_command::Remove
-    "List your password and search", List => list_command::List
-    "Clean the password file", Clean => clean_command::Clean
-    "Edit the password content", Edit => edit_command::Edit
-    "Generate password", Gen => gen_command::Gen
-    "Export the passwords", Export => export_command::Export
-    "Import passwords", Import => import_command::Import
+    "Add new vault", Add => add_command::Add
+    "Remove vault", Remove => remove_command::Remove
+    "List your vaults and search", List => list_command::List
+    "Clean the vaults file", Clean => clean_command::Clean
+    "Edit the vault content", Edit => edit_command::Edit
+    "Generate a password", Gen => gen_command::Gen
+    "Export the vaults", Export => export_command::Export
+    "Import vaults", Import => import_command::Import
 );
 
 #[derive(Parser, Debug)]
@@ -49,7 +49,7 @@ crate::create_commands!(
 pub struct Cli {
     /// The vaults json file
     #[arg(short, long)]
-    passwords_file: Option<PathBuf>,
+    vaults_file: Option<PathBuf>,
 
     // TODO: verbose flag
     #[command(subcommand)]
@@ -59,15 +59,15 @@ pub struct Cli {
 impl Cli {
     /// Run the cli
     pub fn run(self) -> LprsResult<()> {
-        let passwords_file = if let Some(ref path) = self.passwords_file {
+        let vaults_file = if let Some(ref path) = self.vaults_file {
             path.clone()
         } else {
-            crate::utils::passwords_file()?
+            crate::utils::vaults_file()?
         };
         log::debug!("Getting the vaults file: {}", vaults_file.to_string_lossy());
         let vault_manager = if matches!(self.command, Commands::Clean(..) | Commands::Gen(..)) {
             Vaults {
-                passwords_file,
+                vaults_file,
                 ..Default::default()
             }
         } else {
@@ -88,7 +88,7 @@ impl Cli {
 
             let master_password = sha256::digest(master_password);
             Vaults::try_reload(
-                passwords_file,
+                vaults_file,
                 master_password.into_bytes().into_iter().take(32).collect(),
             )?
         };

@@ -20,7 +20,10 @@ use clap::Args;
 use comfy_table::Table;
 use regex::Regex;
 
-use crate::{password::Vaults, LprsError, LprsResult, RunCommand};
+use crate::{
+    vault::{vault_state::*, Vaults},
+    LprsError, LprsResult, RunCommand,
+};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -49,8 +52,8 @@ pub struct List {
 }
 
 impl RunCommand for List {
-    fn run(&self, password_manager: Vaults) -> LprsResult<()> {
-        if password_manager.passwords.is_empty() {
+    fn run(&self, password_manager: Vaults<Plain>) -> LprsResult<()> {
+        if password_manager.vaults.is_empty() {
             Err(LprsError::Other(
                 "Looks like there is no passwords to list".to_owned(),
             ))

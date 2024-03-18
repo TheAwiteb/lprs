@@ -19,7 +19,7 @@ use std::num::NonZeroU64;
 use clap::Args;
 
 use crate::{
-    password::{Vault, Vaults},
+    vault::{vault_state::*, Vault, Vaults},
     LprsError, LprsResult, RunCommand,
 };
 
@@ -47,7 +47,7 @@ pub struct Edit {
 }
 
 impl RunCommand for Edit {
-    fn run(&self, mut password_manager: Vaults) -> LprsResult<()> {
+    fn run(&self, mut password_manager: Vaults<Plain>) -> LprsResult<()> {
         let index = self.index.get() as usize;
 
         if let Some(vault) = vault_manager.vaults.get_mut(index - 1) {
@@ -74,7 +74,7 @@ impl RunCommand for Edit {
             Err(LprsError::InvalidVaultIndex(format!(
                 "The index `{}` is greater than the vaults count {}",
                 self.index,
-                password_manager.passwords.len()
+                password_manager.vaults.len()
             )))
         }
     }

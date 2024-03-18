@@ -24,8 +24,8 @@ use clap::Parser;
 
 pub mod cli;
 pub mod errors;
-pub mod password;
 pub mod utils;
+pub mod vault;
 
 mod macros;
 mod traits;
@@ -34,7 +34,7 @@ pub use errors::{Error as LprsError, Result as LprsResult};
 pub use traits::*;
 
 pub const STANDARDBASE: GeneralPurpose = GeneralPurpose::new(&alphabet::STANDARD, PAD);
-pub const DEFAULT_PASSWORD_FILE: &str = "passwords.json";
+pub const DEFAULT_VAULTS_FILE: &str = "vaults.json";
 
 #[cfg(feature = "update-notify")]
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

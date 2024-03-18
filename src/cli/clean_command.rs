@@ -18,14 +18,17 @@ use std::fs;
 
 use clap::Args;
 
-use crate::{password::Vaults, LprsError, LprsResult, RunCommand};
+use crate::{
+    vault::{vault_state::*, Vaults},
+    LprsError, LprsResult, RunCommand,
+};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
 pub struct Clean {}
 
 impl RunCommand for Clean {
-    fn run(&self, password_manager: Vaults) -> LprsResult<()> {
-        fs::write(password_manager.passwords_file, "[]").map_err(LprsError::Io)
+    fn run(&self, password_manager: Vaults<Plain>) -> LprsResult<()> {
+        fs::write(password_manager.vaults_file, "[]").map_err(LprsError::Io)
     }
 }
