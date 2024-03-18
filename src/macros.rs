@@ -1,4 +1,4 @@
-// Lprs - A local CLI password manager
+// Lprs - A local CLI vault manager
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -43,8 +43,8 @@
 ///         vault_manager: crate::vault::Vaults,
 ///     ) -> crate::LprsResult<()> {
 ///         match self {
-///             Self::Test(command) => command.run(password_manager),
-///             Self::Some(command) => command.run(password_manager),
+///             Self::Test(command) => command.run(vault_manager),
+///             Self::Some(command) => command.run(vault_manager),
 ///         }
 ///     }
 /// }
@@ -63,10 +63,10 @@ macro_rules! create_commands {
 
         #[automatically_derived]
         impl $crate::RunCommand for $enum_name{
-            fn run(&self, password_manager: $crate::vault::Vaults<$crate::vault::vault_state::Plain>) -> $crate::LprsResult<()> {
+            fn run(&self, vault_manager: $crate::vault::Vaults<$crate::vault::vault_state::Plain>) -> $crate::LprsResult<()> {
                 match self {
                     $(
-                        Self::$varint(command) => command.run(password_manager),
+                        Self::$varint(command) => command.run(vault_manager),
                     )+
                 }
             }

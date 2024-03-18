@@ -1,4 +1,4 @@
-// Lprs - A local CLI password manager
+// Lprs - A local CLI vault manager
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -92,7 +92,7 @@ impl Cli {
                 master_password.into_bytes().into_iter().take(32).collect(),
             )?
         };
-        self.command.run(password_manager)?;
+        self.command.run(vault_manager)?;
 
         Ok(())
     }

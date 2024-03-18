@@ -1,4 +1,4 @@
-// Lprs - A local CLI password manager
+// Lprs - A local CLI vault manager
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -52,8 +52,8 @@ pub struct List {
 }
 
 impl RunCommand for List {
-    fn run(&self, password_manager: Vaults<Plain>) -> LprsResult<()> {
-        if password_manager.vaults.is_empty() {
+    fn run(&self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+        if vault_manager.vaults.is_empty() {
             Err(LprsError::Other(
                 "Looks like there is no passwords to list".to_owned(),
             ))

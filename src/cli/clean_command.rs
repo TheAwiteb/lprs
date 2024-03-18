@@ -1,4 +1,4 @@
-// Lprs - A local CLI password manager
+// Lprs - A local CLI vault manager
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ use crate::{
 pub struct Clean {}
 
 impl RunCommand for Clean {
-    fn run(&self, password_manager: Vaults<Plain>) -> LprsResult<()> {
-        fs::write(password_manager.vaults_file, "[]").map_err(LprsError::Io)
+    fn run(&self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+        fs::write(vault_manager.vaults_file, "[]").map_err(LprsError::Io)
     }
 }

@@ -1,4 +1,4 @@
-// Lprs - A local CLI password manager
+// Lprs - A local CLI vault manager
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ pub struct Gen {
 }
 
 impl RunCommand for Gen {
-    fn run(&self, _password_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(&self, _vault_manager: Vaults<Plain>) -> LprsResult<()> {
         if self.uppercase || self.lowercase || self.numbers || self.symbols {
             println!(
                 "{}",

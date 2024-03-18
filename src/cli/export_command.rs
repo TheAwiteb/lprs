@@ -1,4 +1,4 @@
-// Lprs - A local CLI password manager
+// Lprs - A local CLI vault manager
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ pub struct Export {
 }
 
 impl RunCommand for Export {
-    fn run(&self, password_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(&self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
         if self
             .path
             .extension()
@@ -43,10 +43,10 @@ impl RunCommand for Export {
             if !self.path.exists() {
                 let exported_data = match self.format {
                     Format::Lprs => serde_json::to_string::<Vec<Vault<Encrypted>>>(
-                        &password_manager.encrypt_vaults()?,
+                        &vault_manager.encrypt_vaults()?,
                     ),
                     Format::BitWarden => {
-                        serde_json::to_string(&BitWardenPasswords::from(password_manager))
+                        serde_json::to_string(&BitWardenPasswords::from(vault_manager))
                     }
                 }?;
 

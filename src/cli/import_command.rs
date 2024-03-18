@@ -1,4 +1,4 @@
-// Lprs - A local CLI password manager
+// Lprs - A local CLI vault manager
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ pub struct Import {
 }
 
 impl RunCommand for Import {
-    fn run(&self, mut password_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(&self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         if self.path.exists() {
             if self
                 .path
@@ -46,7 +46,7 @@ impl RunCommand for Import {
                     Format::Lprs => {
                         let vaults = Vaults::try_reload(
                             self.path.to_path_buf(),
-                            password_manager.master_password.to_vec(),
+                            vault_manager.master_password.to_vec(),
                         )?;
                         let vaults_len = vaults.vaults.len();
 

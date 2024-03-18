@@ -1,4 +1,4 @@
-// Lprs - A local CLI password manager
+// Lprs - A local CLI vault manager
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -35,17 +35,17 @@ pub struct Remove {
 }
 
 impl RunCommand for Remove {
-    fn run(&self, mut password_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(&self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         let index = (self.index.get() - 1) as usize;
-        if index > password_manager.vaults.len() {
+        if index > vault_manager.vaults.len() {
             if !self.force {
                 return Err(LprsError::Other(
                     "The index is greater than the passwords counts".to_owned(),
                 ));
             }
         } else {
-            password_manager.vaults.remove(index);
-            password_manager.try_export()?;
+            vault_manager.vaults.remove(index);
+            vault_manager.try_export()?;
         }
         Ok(())
     }

@@ -1,4 +1,4 @@
-// Lprs - A local CLI password manager
+// Lprs - A local CLI vault manager
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -21,5 +21,5 @@ use crate::{
 
 /// Trait to run the command
 pub trait RunCommand {
-    fn run(&self, password_manager: Vaults<Plain>) -> LprsResult<()>;
+    fn run(&self, vault_manager: Vaults<Plain>) -> LprsResult<()>;
 }
