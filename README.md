@@ -1,6 +1,6 @@
 # Lprs
 
-Lprs is a local password manager designed to securely store and manage your passwords.
+Lprs is a local vault manager designed to securely store and manage your vaults.
 
 ### MSRV
 The Minimum Supported Rust Version (MSRV) is `1.70.0`.
@@ -31,7 +31,7 @@ cargo uninstall lprs
 
 ## Usage
 
-Lprs provides a command-line interface for managing your passwords. The following commands are available:
+Lprs provides a command-line interface for managing your vaults. The following commands are available:
 
 ```
 A local CLI password manager
@@ -39,23 +39,20 @@ A local CLI password manager
 Usage: lprs [OPTIONS] <COMMAND>
 
 Commands:
-  add     Add new password
-  remove  Remove password
-  list    List your password and search
-  clean   Clean the password file
-  edit    Edit the password content
-  gen     Generate password
-  export  Export the passwords
-  import  Import passwords
+  add     Add new vault
+  remove  Remove vault
+  list    List your vaults and search
+  clean   Clean the vaults file
+  edit    Edit the vault content
+  gen     Generate a password
+  export  Export the vaults
+  import  Import vaults
   help    Print this message or the help of the given subcommand(s)
 
 Options:
-  -p, --passwords-file <PASSWORDS_FILE>
-          The passwords json file, default: $HOME/.local/share/lprs/passwords.json
-  -h, --help
-          Print help
-  -V, --version
-          Print version
+  -v, --vaults-file <VAULTS_FILE>  The vaults json file
+  -h, --help                       Print help
+  -V, --version                    Print version
 ```
 
 ### Example
@@ -78,7 +75,7 @@ Master Password: ***************
 
 ### Backup
 
-It is important to regularly backup your passwords to prevent data loss. Lprs does not provide an automatic backup feature. To backup your passwords, you can use the `export` command provided by Lprs. This command allows you to export your encrypted passwords to a json file, which you can then manually backup to a secure location.
+It is important to regularly backup your vaults to prevent data loss. Lprs does not provide an automatic backup feature. To backup your vaults, you can use the `export` command provided by Lprs. This command allows you to export your encrypted vaults to a json file, which you can then manually backup to a secure location.
 
 #### Formats
 The format of the exported file can be specified using the `--format` option. The following formats are supported:
