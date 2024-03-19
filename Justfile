@@ -21,6 +21,7 @@ _default:
     cargo +stable build -q
     cargo +stable fmt -- --check
     cargo +stable clippy -- -D warnings
+    cargo +{{msrv}} clippy -- -D warnings
 
 # Check that the current MSRV is correct
 @msrv:
