@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Changed
+-  Change 'password manager' to 'vault manager' ([`078b047`](https://git.4rs.nl/awiteb/lprs/commit/078b047e04c5c2d6aafcb4e07cc9c96cdd72bcf0))
 -  Rename just file ([`e231352`](https://git.4rs.nl/awiteb/lprs/commit/e231352009c21886772b8f039d3e51ba0aeb7616))
+-  Add a ecryption state to the vault ([`dc24d35`](https://git.4rs.nl/awiteb/lprs/commit/dc24d355690c2b476819adc3ca5da5f1f927e98e))
 -  Move from GitHub to Forgejo ([`6163c3f`](https://git.4rs.nl/awiteb/lprs/commit/6163c3ff26ab81b07490a798f4047a09565ab1ac))
+-  Rename `Password`s `Vault`s ([`f6aaecb`](https://git.4rs.nl/awiteb/lprs/commit/f6aaecb9cf43d7dfa3ef653ff0cd117b3197308b))
 ### Fixed
 -  Merge rust ci jobs into one job ([**#2**](https://git.4rs.nl/awiteb/lprs/issues/2)) ([`34eb9d1`](https://git.4rs.nl/awiteb/lprs/commit/34eb9d10f0ad514c6a7878fd8415a50f04db2be8))
 
