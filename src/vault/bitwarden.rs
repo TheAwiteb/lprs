@@ -43,17 +43,13 @@ impl From<BitWardenPassword> for Vault<Plain> {
     fn from(value: BitWardenPassword) -> Self {
         Self::new(
             value.name,
-            value
-                .login
-                .as_ref()
-                .map_or_else(String::new, |l| l.username.to_owned().unwrap_or_default()),
-            value
-                .login
-                .as_ref()
-                .map_or_else(String::new, |l| l.password.to_owned().unwrap_or_default()),
-            value
-                .login
-                .and_then(|l| l.uris.and_then(|p| p.first().map(|u| u.uri.clone()))),
+            value.login.as_ref().and_then(|l| l.username.as_ref()),
+            value.login.as_ref().and_then(|l| l.password.as_ref()),
+            value.login.as_ref().and_then(|l| {
+                l.uris
+                    .as_ref()
+                    .and_then(|p| p.first().map(|u| u.uri.clone()))
+            }),
             value.notes,
         )
     }
@@ -65,8 +61,8 @@ impl From<Vault<Plain>> for BitWardenPassword {
             ty: 1,
             name: value.name,
             login: Some(BitWardenLoginData {
-                username: Some(value.username),
-                password: Some(value.password),
+                username: value.username,
+                password: value.password,
                 uris: value
                     .service
                     .map(|s| vec![BitWardenUri { mt: None, uri: s }]),

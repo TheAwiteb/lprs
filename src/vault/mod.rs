@@ -58,10 +58,10 @@ where
     pub name: String,
     /// The username
     #[arg(short, long)]
-    pub username: String,
+    pub username: Option<String>,
     /// The password
     #[arg(short, long)]
-    pub password: String,
+    pub password: Option<String>,
     /// The service name. e.g the website url
     #[arg(short, long)]
     pub service: Option<String>,
@@ -96,17 +96,17 @@ where
     /// Create new [`Vault`] instance
     pub fn new(
         name: impl Into<String>,
-        username: impl Into<String>,
-        password: impl Into<String>,
+        username: Option<impl Into<String>>,
+        password: Option<impl Into<String>>,
         service: Option<impl Into<String>>,
         note: Option<impl Into<String>>,
     ) -> Self {
         Self {
             name: name.into(),
-            username: username.into(),
-            password: password.into(),
-            service: service.map(|s| s.into()),
-            note: note.map(|s| s.into()),
+            username: username.map(Into::into),
+            password: password.map(Into::into),
+            service: service.map(Into::into),
+            note: note.map(Into::into),
             phantom: std::marker::PhantomData,
         }
     }
@@ -117,16 +117,10 @@ impl Vault<Encrypted> {
     pub fn decrypt(&self, master_password: &[u8]) -> LprsResult<Vault<Plain>> {
         Ok(Vault::<Plain>::new(
             cipher::decrypt(master_password, &self.name)?,
-            cipher::decrypt(master_password, &self.username)?,
-            cipher::decrypt(master_password, &self.password)?,
-            self.service
-                .as_ref()
-                .map(|url| cipher::decrypt(master_password, url))
-                .transpose()?,
-            self.note
-                .as_ref()
-                .map(|note| cipher::decrypt(master_password, note))
-                .transpose()?,
+            cipher::decrypt_some(master_password, self.username.as_ref())?,
+            cipher::decrypt_some(master_password, self.password.as_ref())?,
+            cipher::decrypt_some(master_password, self.service.as_ref())?,
+            cipher::decrypt_some(master_password, self.note.as_ref())?,
         ))
     }
 }
@@ -136,16 +130,10 @@ impl Vault<Plain> {
     pub fn encrypt(&self, master_password: &[u8]) -> LprsResult<Vault<Encrypted>> {
         Ok(Vault::<Encrypted>::new(
             cipher::encrypt(master_password, &self.name)?,
-            cipher::encrypt(master_password, &self.username)?,
-            cipher::encrypt(master_password, &self.password)?,
-            self.service
-                .as_ref()
-                .map(|url| cipher::encrypt(master_password, url))
-                .transpose()?,
-            self.note
-                .as_ref()
-                .map(|note| cipher::encrypt(master_password, note))
-                .transpose()?,
+            cipher::encrypt_some(master_password, self.username.as_ref())?,
+            cipher::encrypt_some(master_password, self.password.as_ref())?,
+            cipher::encrypt_some(master_password, self.service.as_ref())?,
+            cipher::encrypt_some(master_password, self.note.as_ref())?,
         ))
     }
 }

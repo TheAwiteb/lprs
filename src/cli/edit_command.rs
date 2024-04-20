@@ -63,8 +63,8 @@ impl RunCommand for Edit {
             } else {
                 *vault = Vault::<Plain>::new(
                     self.name.as_ref().unwrap_or(&vault.name),
-                    self.username.as_ref().unwrap_or(&vault.username),
-                    self.password.as_ref().unwrap_or(&vault.password),
+                    self.username.as_ref().or(vault.username.as_ref()),
+                    self.password.as_ref().or(vault.password.as_ref()),
                     self.service.as_ref().or(vault.service.as_ref()),
                     self.note.as_ref().or(vault.note.as_ref()),
                 );

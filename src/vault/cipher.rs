@@ -46,3 +46,21 @@ pub fn decrypt(master_password: &[u8], data: &str) -> LprsResult<String> {
     })
     .map(|d| String::from_utf8(d).map_err(LprsError::Utf8))?
 }
+
+/// Encrypt if the `Option` are `Some`
+pub fn encrypt_some(
+    master_password: &[u8],
+    data: Option<impl AsRef<str>>,
+) -> LprsResult<Option<String>> {
+    data.map(|d| encrypt(master_password, d.as_ref()))
+        .transpose()
+}
+
+/// Decrypt if the `Option` are `Some`
+pub fn decrypt_some(
+    master_password: &[u8],
+    data: Option<impl AsRef<str>>,
+) -> LprsResult<Option<String>> {
+    data.map(|d| decrypt(master_password, d.as_ref()))
+        .transpose()
+}

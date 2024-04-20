@@ -18,7 +18,7 @@ use clap::Args;
 
 use crate::{
     vault::{vault_state::*, Vault, Vaults},
-    LprsResult, RunCommand,
+    LprsError, LprsResult, RunCommand,
 };
 
 #[derive(Debug, Args)]
@@ -30,6 +30,13 @@ pub struct Add {
 
 impl RunCommand for Add {
     fn run(&self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+        if self.vault_info.username.is_none()
+            && self.vault_info.password.is_none()
+            && self.vault_info.service.is_none()
+            && self.vault_info.note.is_none()
+        {
+            return Err(LprsError::Other("You can't add empty vault".to_owned()));
+        }
         vault_manager.add_vault(self.vault_info.clone());
         vault_manager.try_export()
     }
