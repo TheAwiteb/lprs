@@ -50,7 +50,7 @@ pub struct List {
 }
 
 impl RunCommand for List {
-    fn run(&self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
         if vault_manager.vaults.is_empty() {
             return Err(LprsError::Other(
                 "Looks like there is no passwords to list".to_owned(),

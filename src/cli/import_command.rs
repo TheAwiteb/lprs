@@ -35,7 +35,7 @@ pub struct Import {
 }
 
 impl RunCommand for Import {
-    fn run(&self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         if self.path.exists() {
             if self
                 .path
@@ -44,10 +44,8 @@ impl RunCommand for Import {
             {
                 let imported_passwords_len = match self.format {
                     Format::Lprs => {
-                        let vaults = Vaults::try_reload(
-                            self.path.to_path_buf(),
-                            vault_manager.master_password.to_vec(),
-                        )?;
+                        let vaults =
+                            Vaults::try_reload(self.path, vault_manager.master_password.to_vec())?;
                         let vaults_len = vaults.vaults.len();
 
                         vault_manager.vaults.extend(vaults.vaults);

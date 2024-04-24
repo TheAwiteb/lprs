@@ -60,7 +60,7 @@ where
     #[arg(short, long)]
     pub username: Option<String>,
     /// The password
-    #[arg(short, long)]
+    #[arg(skip)]
     pub password: Option<String>,
     /// The service name. e.g the website url
     #[arg(short, long)]
@@ -187,11 +187,14 @@ impl Vaults<Plain> {
     }
 }
 
-impl ToString for Format {
-    fn to_string(&self) -> String {
-        self.to_possible_value()
-            .expect("There is no skiped values")
-            .get_name()
-            .to_owned()
+impl std::fmt::Display for Format {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.to_possible_value()
+                .expect("There is no skiped values")
+                .get_name()
+        )
     }
 }

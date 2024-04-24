@@ -35,7 +35,7 @@ pub struct Remove {
 }
 
 impl RunCommand for Remove {
-    fn run(&self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         let index = (self.index.get() - 1) as usize;
         if index > vault_manager.vaults.len() {
             if !self.force {

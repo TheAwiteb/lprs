@@ -45,7 +45,7 @@ pub struct Gen {
 }
 
 impl RunCommand for Gen {
-    fn run(&self, _vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, _vault_manager: Vaults<Plain>) -> LprsResult<()> {
         if self.uppercase || self.lowercase || self.numbers || self.symbols {
             println!(
                 "{}",

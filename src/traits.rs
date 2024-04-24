@@ -21,5 +21,5 @@ use crate::{
 
 /// Trait to run the command
 pub trait RunCommand {
-    fn run(&self, vault_manager: Vaults<Plain>) -> LprsResult<()>;
+    fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()>;
 }

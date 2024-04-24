@@ -34,7 +34,7 @@ pub struct Export {
 }
 
 impl RunCommand for Export {
-    fn run(&self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
         if self
             .path
             .extension()

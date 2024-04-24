@@ -36,8 +36,8 @@ pub struct Edit {
     /// The new vault username
     username: Option<String>,
     #[arg(short, long)]
-    /// The new password
-    password: Option<String>,
+    /// The new password, if there is no value for it you will prompt it
+    password: Option<Option<String>>,
     #[arg(short, long)]
     /// The new vault service
     service: Option<String>,
@@ -47,35 +47,48 @@ pub struct Edit {
 }
 
 impl RunCommand for Edit {
-    fn run(&self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         let index = self.index.get() as usize;
 
-        if let Some(vault) = vault_manager.vaults.get_mut(index - 1) {
-            if self.name.is_none()
-                && self.username.is_none()
-                && self.password.is_none()
-                && self.service.is_none()
-                && self.note.is_none()
-            {
-                Err(LprsError::Other(
-                    "You must edit one option at least".to_owned(),
-                ))
-            } else {
-                *vault = Vault::<Plain>::new(
-                    self.name.as_ref().unwrap_or(&vault.name),
-                    self.username.as_ref().or(vault.username.as_ref()),
-                    self.password.as_ref().or(vault.password.as_ref()),
-                    self.service.as_ref().or(vault.service.as_ref()),
-                    self.note.as_ref().or(vault.note.as_ref()),
-                );
-                vault_manager.try_export()
-            }
-        } else {
-            Err(LprsError::InvalidVaultIndex(format!(
+        let Some(vault) = vault_manager.vaults.get_mut(index - 1) else {
+            return Err(LprsError::InvalidVaultIndex(format!(
                 "The index `{}` is greater than the vaults count {}",
                 self.index,
                 vault_manager.vaults.len()
-            )))
+            )));
+        };
+
+        if self.name.is_none()
+            && self.username.is_none()
+            && self.password.is_none()
+            && self.service.is_none()
+            && self.note.is_none()
+        {
+            return Err(LprsError::Other(
+                "You must edit one option at least".to_owned(),
+            ));
         }
+
+        // Get the password from stdin or from its value if provided
+        let password = match self.password {
+            Some(Some(password)) => Some(password),
+            Some(None) => Some(
+                inquire::Password::new("New vault password:")
+                    .without_confirmation()
+                    .with_formatter(&|p| "*".repeat(p.chars().count()))
+                    .with_display_mode(inquire::PasswordDisplayMode::Masked)
+                    .prompt()?,
+            ),
+            None => None,
+        };
+
+        *vault = Vault::<Plain>::new(
+            self.name.as_ref().unwrap_or(&vault.name),
+            self.username.as_ref().or(vault.username.as_ref()),
+            password.as_ref().or(vault.password.as_ref()),
+            self.service.as_ref().or(vault.service.as_ref()),
+            self.note.as_ref().or(vault.note.as_ref()),
+        );
+        vault_manager.try_export()
     }
 }

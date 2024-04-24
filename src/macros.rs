@@ -63,7 +63,7 @@ macro_rules! create_commands {
 
         #[automatically_derived]
         impl $crate::RunCommand for $enum_name{
-            fn run(&self, vault_manager: $crate::vault::Vaults<$crate::vault::vault_state::Plain>) -> $crate::LprsResult<()> {
+            fn run(self, vault_manager: $crate::vault::Vaults<$crate::vault::vault_state::Plain>) -> $crate::LprsResult<()> {
                 match self {
                     $(
                         Self::$varint(command) => command.run(vault_manager),

@@ -26,18 +26,36 @@ use crate::{
 pub struct Add {
     #[command(flatten)]
     vault_info: Vault<Plain>,
+    /// The password, if there is no value for it you will prompt it
+    #[arg(short, long)]
+    password: Option<Option<String>>,
 }
 
 impl RunCommand for Add {
-    fn run(&self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(mut self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         if self.vault_info.username.is_none()
-            && self.vault_info.password.is_none()
+            && self.password.is_none()
             && self.vault_info.service.is_none()
             && self.vault_info.note.is_none()
         {
             return Err(LprsError::Other("You can't add empty vault".to_owned()));
         }
-        vault_manager.add_vault(self.vault_info.clone());
+
+        match self.password {
+            Some(Some(password)) => self.vault_info.password = Some(password),
+            Some(None) => {
+                self.vault_info.password = Some(
+                    inquire::Password::new("Vault password:")
+                        .without_confirmation()
+                        .with_formatter(&|p| "*".repeat(p.chars().count()))
+                        .with_display_mode(inquire::PasswordDisplayMode::Masked)
+                        .prompt()?,
+                );
+            }
+            None => {}
+        };
+
+        vault_manager.add_vault(self.vault_info);
         vault_manager.try_export()
     }
 }

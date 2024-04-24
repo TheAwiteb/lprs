@@ -28,7 +28,7 @@ use crate::{
 pub struct Clean {}
 
 impl RunCommand for Clean {
-    fn run(&self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
         fs::write(vault_manager.vaults_file, "[]").map_err(LprsError::Io)
     }
 }
