@@ -18,10 +18,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
-use crate::{
-    vault::{self, Vaults},
-    LprsError, LprsResult, RunCommand,
-};
+use crate::{utils, vault::Vaults, LprsResult, RunCommand};
 
 pub mod add_command;
 pub mod clean_command;
@@ -65,35 +62,21 @@ impl Cli {
             crate::utils::vaults_file()?
         };
         log::debug!("Getting the vaults file: {}", vaults_file.to_string_lossy());
+
         let vault_manager = if matches!(self.command, Commands::Clean(..) | Commands::Gen(..)) {
+            // Returns empty vault manager for those commands don't need it
             Vaults {
                 vaults_file,
                 ..Default::default()
             }
         } else {
-            let master_password = scanpw::scanpw!("Master Password: ");
-
-            if vault::is_new_vaults_file(&vaults_file)? {
-                let analyzed = passwords::analyzer::analyze(&master_password);
-                if analyzed.length() < 15 {
-                    return Err(LprsError::WeakPassword(
-                        "The master password length must be beggier then 15".to_owned(),
-                    ));
-                } else if passwords::scorer::score(&analyzed) < 80.0 {
-                    return Err(LprsError::WeakPassword(
-                        "Your master password is not stronge enough".to_owned(),
-                    ));
-                }
-            }
-
-            let master_password = sha256::digest(master_password);
+            let master_password = utils::master_password_prompt(&vaults_file)?;
             Vaults::try_reload(
                 vaults_file,
                 master_password.into_bytes().into_iter().take(32).collect(),
             )?
         };
-        self.command.run(vault_manager)?;
 
-        Ok(())
+        self.command.run(vault_manager)
     }
 }

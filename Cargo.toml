@@ -20,7 +20,6 @@ log = "0.4.20"
 passwords = { version = "3.1.16", features = ["common-password"] }
 pretty_env_logger = "0.5.0"
 regex = "1.10.2"
-scanpw = "1.0.0"
 serde = { version = "1.0.193", features = ["derive"] }
 serde_json = "1.0.108"
 serde_with_macros = "3.4.0"
@@ -29,6 +28,7 @@ soft-aes = "0.1.0"
 thiserror = "1.0.51"
 url = { version = "2.5.0", features = ["serde"] }
 reqwest = {version = "0.11.23", optional = true}
+inquire = "0.7.4"
 
 [features]
 default = ["update-notify"]

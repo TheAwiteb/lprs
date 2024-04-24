@@ -39,6 +39,8 @@ pub enum Error {
     #[error("{0}")]
     Other(String),
 
+    #[error("CLI error: {0}")]
+    Inquire(#[from] inquire::InquireError),
     #[error("Invalid Regex: {0}")]
     InvalidRegex(#[from] regex::Error),
     #[error("UTF8 Error: {0}")]

@@ -14,9 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::{fs, path::PathBuf};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
-use crate::{LprsError, LprsResult};
+use inquire::validator::Validation;
+
+use crate::{vault, LprsError, LprsResult};
 
 /// Returns the local project dir joined with the given file name
 pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
@@ -38,6 +43,46 @@ pub fn vaults_file() -> LprsResult<PathBuf> {
         fs::write(&vaults_file, "[]")?;
     }
     Ok(vaults_file)
+}
+
+/// Validate the password
+///
+/// ## To pass
+/// - The length must be higher than 14 (>=15)
+/// - Its score must be greater than 80.0
+pub fn password_validator(password: &str) -> Result<Validation, inquire::CustomUserError> {
+    let analyzed = passwords::analyzer::analyze(password);
+    if analyzed.length() < 15 {
+        return Ok(Validation::Invalid(
+            "The master password length must be beggier then 15".into(),
+        ));
+    } else if passwords::scorer::score(&analyzed) < 80.0 {
+        return Ok(Validation::Invalid(
+            "Your master password is not stronge enough".into(),
+        ));
+    }
+    Ok(Validation::Valid)
+}
+
+/// Ask the user for the master password, then returns it
+pub fn master_password_prompt(vaults_file: &Path) -> LprsResult<String> {
+    let is_new_vaults_file = vault::is_new_vaults_file(vaults_file)?;
+
+    inquire::Password {
+        message: "Master Password:",
+        enable_confirmation: is_new_vaults_file,
+        validators: if is_new_vaults_file {
+            vec![Box::new(password_validator)]
+        } else {
+            vec![]
+        },
+        ..inquire::Password::new("")
+    }
+    .with_formatter(&|p| "*".repeat(p.chars().count()))
+    .with_display_mode(inquire::PasswordDisplayMode::Masked)
+    .prompt()
+    .map(sha256::digest)
+    .map_err(Into::into)
 }
 
 /// Retuns the current lprs version from `crates.io`
