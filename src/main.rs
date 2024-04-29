@@ -31,6 +31,7 @@ mod macros;
 mod traits;
 
 pub use errors::{Error as LprsError, Result as LprsResult};
+use inquire::InquireError;
 pub use traits::*;
 
 pub const STANDARDBASE: GeneralPurpose = GeneralPurpose::new(&alphabet::STANDARD, PAD);
@@ -64,9 +65,14 @@ fn main() -> ExitCode {
     }
 
     if let Err(err) = cli::Cli::parse().run() {
-        eprintln!("{err}");
-        err.exit_code()
-    } else {
-        ExitCode::SUCCESS
+        if !matches!(
+            err,
+            LprsError::Inquire(InquireError::OperationCanceled)
+                | LprsError::Inquire(InquireError::OperationInterrupted)
+        ) {
+            eprintln!("{err}");
+            return err.exit_code();
+        }
     }
+    ExitCode::SUCCESS
 }

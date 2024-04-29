@@ -136,6 +136,22 @@ impl Vault<Plain> {
             cipher::encrypt_some(master_password, self.note.as_ref())?,
         ))
     }
+
+    /// Return the name of the vault with the service if there
+    pub fn list_name(&self) -> String {
+        use std::fmt::Write;
+        let mut list_name = self.name.clone();
+        if let Some(ref username) = self.username {
+            write!(&mut list_name, " <{username}>").expect("String never fail");
+        }
+        if let Some(ref service) = self.service {
+            write!(&mut list_name, " ({service})").expect("String never fail");
+        }
+        if self.username.is_none() && self.password.is_none() && self.note.is_some() {
+            write!(&mut list_name, " *Note").expect("String never fail");
+        }
+        list_name
+    }
 }
 
 impl<T> Vaults<T>
@@ -196,5 +212,25 @@ impl std::fmt::Display for Format {
                 .expect("There is no skiped values")
                 .get_name()
         )
+    }
+}
+
+impl<T: std::fmt::Debug + Clone> std::fmt::Display for Vault<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Name: {}", self.name)?;
+        if let Some(ref username) = self.username {
+            write!(f, "\nUsername: {username}")?;
+        }
+        if let Some(ref password) = self.password {
+            write!(f, "\nPassword: {password}")?;
+        }
+        if let Some(ref service) = self.service {
+            write!(f, "\nService: {service}")?;
+        }
+        if let Some(ref note) = self.note {
+            write!(f, "\nNote:\n{note}")?;
+        }
+
+        Ok(())
     }
 }
