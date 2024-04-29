@@ -19,7 +19,13 @@ use crate::{
     LprsResult,
 };
 
-/// Trait to run the command
-pub trait RunCommand {
+/// Trait to work with the commands
+pub trait LprsCommand {
+    /// Run the command, should do all the logic, even the export
     fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()>;
+
+    /// Validate the gaiven args from the user.
+    fn validate_args(&self) -> LprsResult<()> {
+        Ok(())
+    }
 }

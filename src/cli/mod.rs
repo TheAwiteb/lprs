@@ -18,7 +18,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
-use crate::{utils, vault::Vaults, LprsResult, RunCommand};
+use crate::{utils, vault::Vaults, LprsCommand, LprsResult};
 
 pub mod add_command;
 pub mod clean_command;
@@ -62,6 +62,8 @@ impl Cli {
             crate::utils::vaults_file()?
         };
         log::debug!("Getting the vaults file: {}", vaults_file.to_string_lossy());
+
+        self.command.validate_args()?;
 
         let vault_manager = if matches!(self.command, Commands::Clean(..) | Commands::Gen(..)) {
             // Returns empty vault manager for those commands don't need it

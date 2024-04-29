@@ -20,14 +20,14 @@ use clap::Args;
 
 use crate::{
     vault::{vault_state::*, Vaults},
-    LprsError, LprsResult, RunCommand,
+    LprsCommand, LprsError, LprsResult,
 };
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
 pub struct Clean {}
 
-impl RunCommand for Clean {
+impl LprsCommand for Clean {
     fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
         fs::write(vault_manager.vaults_file, "[]").map_err(LprsError::Io)
     }

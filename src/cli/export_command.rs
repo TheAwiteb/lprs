@@ -20,7 +20,7 @@ use clap::Args;
 
 use crate::{
     vault::{vault_state::*, BitWardenPasswords, Format, Vault, Vaults},
-    LprsError, LprsResult, RunCommand,
+    LprsCommand, LprsError, LprsResult,
 };
 
 #[derive(Debug, Args)]
@@ -33,24 +33,26 @@ pub struct Export {
     format: Format,
 }
 
-impl RunCommand for Export {
+impl LprsCommand for Export {
     fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+        let exported_data = match self.format {
+            Format::Lprs => {
+                serde_json::to_string::<Vec<Vault<Encrypted>>>(&vault_manager.encrypt_vaults()?)
+            }
+            Format::BitWarden => serde_json::to_string(&BitWardenPasswords::from(vault_manager)),
+        }?;
+
+        fs::write(&self.path, exported_data).map_err(LprsError::from)
+    }
+
+    fn validate_args(&self) -> LprsResult<()> {
         if self
             .path
             .extension()
             .is_some_and(|e| e.to_string_lossy().eq_ignore_ascii_case("json"))
         {
             if !self.path.exists() {
-                let exported_data = match self.format {
-                    Format::Lprs => serde_json::to_string::<Vec<Vault<Encrypted>>>(
-                        &vault_manager.encrypt_vaults()?,
-                    ),
-                    Format::BitWarden => {
-                        serde_json::to_string(&BitWardenPasswords::from(vault_manager))
-                    }
-                }?;
-
-                fs::write(&self.path, exported_data).map_err(LprsError::from)
+                Ok(())
             } else {
                 Err(LprsError::Io(IoError::new(
                     IoErrorKind::AlreadyExists,

@@ -20,7 +20,7 @@ use clap::Args;
 
 use crate::{
     vault::{vault_state::*, Vault, Vaults},
-    LprsError, LprsResult, RunCommand,
+    LprsCommand, LprsError, LprsResult,
 };
 
 #[derive(Debug, Args)]
@@ -46,7 +46,7 @@ pub struct Edit {
     note: Option<String>,
 }
 
-impl RunCommand for Edit {
+impl LprsCommand for Edit {
     fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         let index = self.index.get() as usize;
 
@@ -57,17 +57,6 @@ impl RunCommand for Edit {
                 vault_manager.vaults.len()
             )));
         };
-
-        if self.name.is_none()
-            && self.username.is_none()
-            && self.password.is_none()
-            && self.service.is_none()
-            && self.note.is_none()
-        {
-            return Err(LprsError::Other(
-                "You must edit one option at least".to_owned(),
-            ));
-        }
 
         // Get the password from stdin or from its value if provided
         let password = match self.password {
@@ -90,5 +79,19 @@ impl RunCommand for Edit {
             self.note.as_ref().or(vault.note.as_ref()),
         );
         vault_manager.try_export()
+    }
+
+    fn validate_args(&self) -> LprsResult<()> {
+        if self.name.is_none()
+            && self.username.is_none()
+            && self.password.is_none()
+            && self.service.is_none()
+            && self.note.is_none()
+        {
+            return Err(LprsError::Other(
+                "You must edit one option at least".to_owned(),
+            ));
+        }
+        Ok(())
     }
 }

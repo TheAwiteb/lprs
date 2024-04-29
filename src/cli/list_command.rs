@@ -20,7 +20,7 @@ use clap::Args;
 
 use crate::{
     vault::{vault_state::*, Vaults},
-    LprsError, LprsResult, RunCommand,
+    LprsCommand, LprsError, LprsResult,
 };
 
 #[derive(Debug, Args)]
@@ -49,7 +49,7 @@ pub struct List {
     regex: bool,
 }
 
-impl RunCommand for List {
+impl LprsCommand for List {
     fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
         if vault_manager.vaults.is_empty() {
             return Err(LprsError::Other(

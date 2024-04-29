@@ -20,7 +20,7 @@ use clap::Args;
 
 use crate::{
     vault::{vault_state::*, Vaults},
-    LprsError, LprsResult, RunCommand,
+    LprsCommand, LprsError, LprsResult,
 };
 
 #[derive(Debug, Args)]
@@ -34,7 +34,7 @@ pub struct Remove {
     force: bool,
 }
 
-impl RunCommand for Remove {
+impl LprsCommand for Remove {
     fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         let index = (self.index.get() - 1) as usize;
         if index > vault_manager.vaults.len() {

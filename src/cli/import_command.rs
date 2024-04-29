@@ -20,7 +20,7 @@ use clap::Args;
 
 use crate::{
     vault::{vault_state::*, BitWardenPasswords, Format, Vault, Vaults},
-    LprsError, LprsResult, RunCommand,
+    LprsCommand, LprsError, LprsResult,
 };
 
 #[derive(Debug, Args)]
@@ -34,41 +34,42 @@ pub struct Import {
     format: Format,
 }
 
-impl RunCommand for Import {
+impl LprsCommand for Import {
     fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+        let imported_passwords_len = match self.format {
+            Format::Lprs => {
+                let vaults = Vaults::try_reload(self.path, vault_manager.master_password.to_vec())?;
+                let vaults_len = vaults.vaults.len();
+
+                vault_manager.vaults.extend(vaults.vaults);
+                vault_manager.try_export()?;
+                vaults_len
+            }
+            Format::BitWarden => {
+                let vaults: BitWardenPasswords = serde_json::from_reader(File::open(&self.path)?)?;
+                let vaults_len = vaults.items.len();
+
+                vault_manager
+                    .vaults
+                    .extend(vaults.items.into_iter().map(Vault::from));
+                vault_manager.try_export()?;
+                vaults_len
+            }
+        };
+        println!(
+            "{imported_passwords_len} vault{s} were imported successfully",
+            s = if imported_passwords_len >= 2 { "s" } else { "" }
+        );
+        Ok(())
+    }
+
+    fn validate_args(&self) -> LprsResult<()> {
         if self.path.exists() {
             if self
                 .path
                 .extension()
                 .is_some_and(|e| e.to_string_lossy().eq_ignore_ascii_case("json"))
             {
-                let imported_passwords_len = match self.format {
-                    Format::Lprs => {
-                        let vaults =
-                            Vaults::try_reload(self.path, vault_manager.master_password.to_vec())?;
-                        let vaults_len = vaults.vaults.len();
-
-                        vault_manager.vaults.extend(vaults.vaults);
-                        vault_manager.try_export()?;
-                        vaults_len
-                    }
-                    Format::BitWarden => {
-                        let vaults: BitWardenPasswords =
-                            serde_json::from_reader(File::open(&self.path)?)?;
-                        let vaults_len = vaults.items.len();
-
-                        vault_manager
-                            .vaults
-                            .extend(vaults.items.into_iter().map(Vault::from));
-                        vault_manager.try_export()?;
-                        vaults_len
-                    }
-                };
-                println!(
-                    "{imported_passwords_len} vault{s} were imported successfully",
-                    s = if imported_passwords_len >= 2 { "s" } else { "" }
-                );
-
                 Ok(())
             } else {
                 Err(LprsError::Io(IoError::new(

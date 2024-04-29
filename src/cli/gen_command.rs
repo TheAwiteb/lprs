@@ -20,7 +20,7 @@ use clap::Args;
 
 use crate::{
     vault::{vault_state::*, Vaults},
-    LprsError, LprsResult, RunCommand,
+    LprsCommand, LprsError, LprsResult,
 };
 
 #[derive(Debug, Args)]
@@ -44,26 +44,29 @@ pub struct Gen {
     symbols: bool,
 }
 
-impl RunCommand for Gen {
+impl LprsCommand for Gen {
     fn run(self, _vault_manager: Vaults<Plain>) -> LprsResult<()> {
-        if self.uppercase || self.lowercase || self.numbers || self.symbols {
-            println!(
-                "{}",
-                passwords::PasswordGenerator::new()
-                    .length(self.length.get() as usize)
-                    .uppercase_letters(self.uppercase)
-                    .lowercase_letters(self.lowercase)
-                    .numbers(self.numbers)
-                    .symbols(self.symbols)
-                    .strict(true)
-                    .generate_one()
-                    .expect("The length cannot be zero")
-            );
-            Ok(())
-        } else {
-            Err(LprsError::Other(
+        println!(
+            "{}",
+            passwords::PasswordGenerator::new()
+                .length(self.length.get() as usize)
+                .uppercase_letters(self.uppercase)
+                .lowercase_letters(self.lowercase)
+                .numbers(self.numbers)
+                .symbols(self.symbols)
+                .strict(true)
+                .generate_one()
+                .expect("The length cannot be zero")
+        );
+        Ok(())
+    }
+
+    fn validate_args(&self) -> LprsResult<()> {
+        if !(self.uppercase || self.lowercase || self.numbers || self.symbols) {
+            return Err(LprsError::Other(
                 "You need to enable at least one kind of characters".to_owned(),
-            ))
+            ));
         }
+        Ok(())
     }
 }

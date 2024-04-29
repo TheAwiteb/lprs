@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-/// Creates commands macro, to create the `Commands` enum and impl `RunCommand` to it.
+/// Creates commands macro, to create the `Commands` enum and impl `LprsCommand` to it.
 ///
 /// ### Notes:
-/// The `$command` must impl `RunCommand` trait
+/// The `$command` must impl `LprsCommand` trait
 ///
 /// ### Example:
 /// ```rust
@@ -37,7 +37,7 @@
 ///     Some(SomeArgs),
 /// }
 ///
-/// impl crate::RunCommand for TestCommands {
+/// impl crate::LprsCommand for TestCommands {
 ///     fn run(
 ///         &self,
 ///         vault_manager: crate::vault::Vaults,
@@ -62,11 +62,19 @@ macro_rules! create_commands {
         }
 
         #[automatically_derived]
-        impl $crate::RunCommand for $enum_name{
+        impl $crate::LprsCommand for $enum_name{
             fn run(self, vault_manager: $crate::vault::Vaults<$crate::vault::vault_state::Plain>) -> $crate::LprsResult<()> {
                 match self {
                     $(
                         Self::$varint(command) => command.run(vault_manager),
+                    )+
+                }
+            }
+
+            fn validate_args(&self) -> LprsResult<()> {
+                match self {
+                    $(
+                        Self::$varint(command) => command.validate_args(),
                     )+
                 }
             }
