@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-/// Creates commands macro, to create the `Commands` enum and impl `LprsCommand` to it.
+/// Impl `LprsCommand` to the given subcommand.
 ///
 /// ### Notes:
 /// The `$command` must impl `LprsCommand` trait
@@ -22,21 +22,12 @@
 /// ### Example:
 /// ```rust
 /// create_commands!(
-///     enum TestCommands
-///     "Test command", Test => TestArgs
-///     "Do something", Some => SomeArgs
+///     TestCommands,
+///     Test Some
 /// );
 /// ```
 /// #### Output
 /// ```rust
-/// ///The lprs commands
-/// pub enum TestCommands {
-///     ///Test command
-///     Test(TestArgs),
-///     ///Do something
-///     Some(SomeArgs),
-/// }
-///
 /// impl crate::LprsCommand for TestCommands {
 ///     fn run(
 ///         &self,
@@ -47,20 +38,19 @@
 ///             Self::Some(command) => command.run(vault_manager),
 ///         }
 ///     }
+///
+///     fn validate_args(&self) -> crate::LprsResult<()> {
+///         match self {
+///             Self::Test(command) => command.validate_args(),
+///             Self::Some(command) => command.validate_args(),
+///         }
+///     }
 /// }
+
 /// ```
 #[macro_export]
-macro_rules! create_commands {
-    (enum $enum_name: ident $($doc:tt, $varint: ident => $command: ty)+) => {
-        #[doc = "The lprs commands"]
-        #[derive(Debug, clap::Subcommand)]
-        pub enum $enum_name {
-            $(
-                #[doc = $doc]
-                $varint($command),
-            )+
-        }
-
+macro_rules! impl_commands {
+    ($enum_name: ident, $($varint: ident)+) => {
         #[automatically_derived]
         impl $crate::LprsCommand for $enum_name{
             fn run(self, vault_manager: $crate::vault::Vaults<$crate::vault::vault_state::Plain>) -> $crate::LprsResult<()> {

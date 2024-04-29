@@ -18,7 +18,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
-use crate::{utils, vault::Vaults, LprsCommand, LprsResult};
+use crate::{impl_commands, utils, vault::Vaults, LprsCommand, LprsResult};
 
 pub mod add_command;
 pub mod clean_command;
@@ -29,17 +29,30 @@ pub mod import_command;
 pub mod list_command;
 pub mod remove_command;
 
-crate::create_commands!(
-    enum Commands
-    "Add new vault", Add => add_command::Add
-    "Remove vault", Remove => remove_command::Remove
-    "List your vaults and search", List => list_command::List
-    "Clean the vaults file", Clean => clean_command::Clean
-    "Edit the vault content", Edit => edit_command::Edit
-    "Generate a password", Gen => gen_command::Gen
-    "Export the vaults", Export => export_command::Export
-    "Import vaults", Import => import_command::Import
-);
+/// The lprs commands
+#[derive(Debug, clap::Subcommand)]
+pub enum Commands {
+    /// Add new vault
+    Add(add_command::Add),
+    /// Remove vault [alias `rm`]
+    #[command(alias = "rm")]
+    Remove(remove_command::Remove),
+    /// List your vaults and search [alias `ls`]
+    #[command(alias = "ls")]
+    List(list_command::List),
+    /// Clean the vaults file
+    Clean(clean_command::Clean),
+    /// Edit the vault content
+    Edit(edit_command::Edit),
+    /// Generate a password
+    Gen(gen_command::Gen),
+    /// Export the vaults
+    Export(export_command::Export),
+    /// Import vaults
+    Import(import_command::Import),
+}
+
+impl_commands!(Commands, Add Remove List Clean Edit Gen Export Import);
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
