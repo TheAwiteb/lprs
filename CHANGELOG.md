@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 -  Ability to enter password via stdin `add`&`edit` ([**#15**](https://git.4rs.nl/awiteb/lprs/issues/15)) ([`5f357b8`](https://git.4rs.nl/awiteb/lprs/commit/5f357b89cb6a49be1c5461fa4b6cd5aaec8e541f))
 -  Make the username & password optional in the vault ([**#12**](https://git.4rs.nl/awiteb/lprs/issues/12)) ([`af6664d`](https://git.4rs.nl/awiteb/lprs/commit/af6664da5c08cc39cf732d64ba74de1731095723))
+-  Validate args before ask for the master password ([**#17**](https://git.4rs.nl/awiteb/lprs/issues/17)) ([`b4bcaa9`](https://git.4rs.nl/awiteb/lprs/commit/b4bcaa92ca63b7c71ea5c28d5e9a6af3ecb88a91))
 ### Changed
 -  Change 'password manager' to 'vault manager' ([`bae0cf1`](https://git.4rs.nl/awiteb/lprs/commit/bae0cf174736d9a1cd61becd20f7d87cf137249c))
 -  Rename just file ([`e231352`](https://git.4rs.nl/awiteb/lprs/commit/e231352009c21886772b8f039d3e51ba0aeb7616))
