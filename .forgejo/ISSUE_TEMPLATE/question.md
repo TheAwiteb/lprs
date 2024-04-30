@@ -1,7 +1,7 @@
 ---
 name: Question
 about: Ask a question about Lprs
-title: '[Question]: ...'
+title: '...'
 labels: ["Kind/Question"]
 assignees: ''
 ---

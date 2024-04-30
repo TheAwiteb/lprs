@@ -1,7 +1,7 @@
 ---
 name: Bug
 about: Create a bug report to help us improve Lprs
-title: '[Bug]: ...'
+title: '...'
 labels: ["Kind/Bug"]
 assignees: ''
 ---

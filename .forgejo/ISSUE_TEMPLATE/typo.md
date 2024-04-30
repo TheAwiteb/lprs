@@ -1,7 +1,7 @@
 ---
 name: Typo report
 about: Report a typo in the documentation or the code
-title: '[Typo]: ...'
+title: '...'
 labels: ["Kind/Documentation"]
 assignees: ''
 ---
