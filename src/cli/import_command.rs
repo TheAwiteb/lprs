@@ -36,6 +36,13 @@ pub struct Import {
 
 impl LprsCommand for Import {
     fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+        log::debug!(
+            "Importing vaults from: {} with format: {} to the vault: {}",
+            self.path.display(),
+            self.format,
+            vault_manager.vaults_file.display()
+        );
+
         let imported_passwords_len = match self.format {
             Format::Lprs => {
                 let vaults = Vaults::try_reload(self.path, vault_manager.master_password.to_vec())?;

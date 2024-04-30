@@ -37,11 +37,17 @@ pub struct Remove {
 impl LprsCommand for Remove {
     fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         let index = (self.index.get() - 1) as usize;
+        log::debug!("Removing vault at index: {index}");
+
         if index > vault_manager.vaults.len() {
             if !self.force {
                 return Err(LprsError::Other(
                     "The index is greater than the passwords counts".to_owned(),
                 ));
+            } else {
+                log::error!(
+                    "The index is greater than the passwords counts, but the force flag is enabled"
+                );
             }
         } else {
             vault_manager.vaults.remove(index);

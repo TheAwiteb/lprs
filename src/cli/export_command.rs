@@ -35,6 +35,12 @@ pub struct Export {
 
 impl LprsCommand for Export {
     fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+        log::debug!(
+            "Exporting vault {} to: {} with format: {}",
+            vault_manager.vaults_file.display(),
+            self.path.display(),
+            self.format
+        );
         let exported_data = match self.format {
             Format::Lprs => {
                 serde_json::to_string::<Vec<Vault<Encrypted>>>(&vault_manager.encrypt_vaults()?)

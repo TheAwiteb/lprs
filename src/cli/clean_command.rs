@@ -29,6 +29,10 @@ pub struct Clean {}
 
 impl LprsCommand for Clean {
     fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+        log::info!(
+            "Cleaning the vaults file: {:?}",
+            vault_manager.vaults_file.display()
+        );
         fs::write(vault_manager.vaults_file, "[]").map_err(LprsError::Io)
     }
 }

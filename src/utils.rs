@@ -30,7 +30,9 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
         .ok_or_else(|| {
             LprsError::ProjectDir("Can't extract the project_dir from this OS".to_owned())
         })?;
+    log::debug!("Local project dir: {:?}", local_dir.display());
     if !local_dir.exists() {
+        log::info!("Creating the local project dir: {:?}", local_dir.display());
         fs::create_dir_all(&local_dir)?;
     }
     Ok(local_dir.join(filename))
@@ -40,6 +42,10 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
 pub fn vaults_file() -> LprsResult<PathBuf> {
     let vaults_file = local_project_file(crate::DEFAULT_VAULTS_FILE)?;
     if !vaults_file.exists() {
+        log::info!(
+            "Vaults file not found, creating a new one: {:?}",
+            vaults_file.display()
+        );
         fs::write(&vaults_file, "[]")?;
     }
     Ok(vaults_file)

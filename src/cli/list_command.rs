@@ -46,6 +46,7 @@ impl LprsCommand for List {
             ));
         }
         if let Some(user_vault_index) = self.get.map(|n| (n.get() - 1) as usize) {
+            log::info!("Getting the vault at index: {user_vault_index}");
             if user_vault_index >= vault_manager.vaults.len() {
                 return Err(LprsError::Other(
                     "The `--get` index is great then the vaults length".to_owned(),
@@ -67,6 +68,7 @@ impl LprsCommand for List {
                     regex::escape(self.filter.as_deref().unwrap_or(""))
                 )
             };
+            log::debug!("Listing vaults filtered by: {pattern}");
 
             let re = regex::Regex::new(&pattern)?;
 
@@ -106,6 +108,8 @@ impl LprsCommand for List {
                 .0
                 .parse::<usize>()
                 .unwrap_or_default();
+
+            log::debug!("The user selected the vault at index: {vault_idx}");
 
             println!(
                 "{}",

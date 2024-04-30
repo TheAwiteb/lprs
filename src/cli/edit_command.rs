@@ -49,6 +49,7 @@ pub struct Edit {
 impl LprsCommand for Edit {
     fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         let index = self.index.get() as usize;
+        log::debug!("Editing vault at index: {index}");
 
         let Some(vault) = vault_manager.vaults.get_mut(index - 1) else {
             return Err(LprsError::InvalidVaultIndex(format!(
@@ -71,6 +72,7 @@ impl LprsCommand for Edit {
             None => None,
         };
 
+        log::info!("Applying the new values to the vault");
         *vault = Vault::<Plain>::new(
             self.name.as_ref().unwrap_or(&vault.name),
             self.username.as_ref().or(vault.username.as_ref()),

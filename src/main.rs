@@ -43,10 +43,15 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const LAST_VERSION_CHECK_FILE: &str = ".last_version_check";
 
 fn main() -> ExitCode {
+    let lprs_cli = cli::Cli::parse();
+    if lprs_cli.verbose {
+        std::env::set_var("RUST_LOG", "lprs");
+    }
     pretty_env_logger::init();
 
     #[cfg(feature = "update-notify")]
     {
+        log::info!("Checking for new version of lprs...");
         match utils::lprs_version() {
             Ok(Some(new_version)) if new_version != VERSION => {
                 println!(
@@ -60,11 +65,13 @@ fn main() -> ExitCode {
                 eprintln!("{err}");
                 return ExitCode::FAILURE;
             }
-            _ => {}
+            _ => {
+                log::info!("No new version found.");
+            }
         }
     }
 
-    if let Err(err) = cli::Cli::parse().run() {
+    if let Err(err) = lprs_cli.run() {
         if !matches!(
             err,
             LprsError::Inquire(InquireError::OperationCanceled)

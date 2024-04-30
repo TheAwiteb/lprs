@@ -190,6 +190,10 @@ impl Vaults<Plain> {
 
     /// Encrypt the vaults then export it to the file
     pub fn try_export(self) -> LprsResult<()> {
+        log::debug!(
+            "Trying to export the vaults to the file: {}",
+            self.vaults_file.display()
+        );
         fs::write(
             &self.vaults_file,
             serde_json::to_string(&self.encrypt_vaults()?)?,

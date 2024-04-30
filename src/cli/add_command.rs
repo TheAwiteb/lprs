@@ -34,8 +34,12 @@ pub struct Add {
 impl LprsCommand for Add {
     fn run(mut self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
         match self.password {
-            Some(Some(password)) => self.vault_info.password = Some(password),
+            Some(Some(password)) => {
+                log::debug!("User provided a password");
+                self.vault_info.password = Some(password);
+            }
             Some(None) => {
+                log::debug!("User didn't provide a password, prompting it");
                 self.vault_info.password = Some(
                     inquire::Password::new("Vault password:")
                         .without_confirmation()

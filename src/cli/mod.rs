@@ -58,33 +58,39 @@ impl_commands!(Commands, Add Remove List Clean Edit Gen Export Import);
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
     /// The vaults json file
+    #[arg(short = 'f', long)]
+    pub vaults_file: Option<PathBuf>,
+    /// Show the logs in the stdout
     #[arg(short, long)]
-    vaults_file: Option<PathBuf>,
+    pub verbose: bool,
 
-    // TODO: verbose flag
     #[command(subcommand)]
-    command: Commands,
+    pub command: Commands,
 }
 
 impl Cli {
     /// Run the cli
     pub fn run(self) -> LprsResult<()> {
-        let vaults_file = if let Some(ref path) = self.vaults_file {
-            path.clone()
+        let vaults_file = if let Some(path) = self.vaults_file {
+            log::info!("Using the given vaults file");
+            path
         } else {
+            log::info!("Using the default vaults file");
             crate::utils::vaults_file()?
         };
-        log::debug!("Getting the vaults file: {}", vaults_file.to_string_lossy());
+        log::debug!("Vaults file: {}", vaults_file.display());
 
         self.command.validate_args()?;
 
         let vault_manager = if matches!(self.command, Commands::Clean(..) | Commands::Gen(..)) {
+            log::info!("Running command that don't need the vault manager");
             // Returns empty vault manager for those commands don't need it
             Vaults {
                 vaults_file,
                 ..Default::default()
             }
         } else {
+            log::info!("Reloading the vaults file");
             let master_password = utils::master_password_prompt(&vaults_file)?;
             Vaults::try_reload(
                 vaults_file,
