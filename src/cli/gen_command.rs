@@ -18,10 +18,7 @@ use std::num::NonZeroU64;
 
 use clap::Args;
 
-use crate::{
-    vault::{vault_state::*, Vaults},
-    LprsCommand, LprsError, LprsResult,
-};
+use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -45,7 +42,7 @@ pub struct Gen {
 }
 
 impl LprsCommand for Gen {
-    fn run(self, _vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, _vault_manager: Vaults) -> LprsResult<()> {
         println!(
             "{}",
             passwords::PasswordGenerator::new()

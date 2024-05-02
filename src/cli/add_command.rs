@@ -17,7 +17,7 @@
 use clap::Args;
 
 use crate::{
-    vault::{vault_state::*, Vault, Vaults},
+    vault::{Vault, Vaults},
     LprsCommand, LprsError, LprsResult,
 };
 
@@ -25,14 +25,14 @@ use crate::{
 #[command(author, version, about, long_about = None)]
 pub struct Add {
     #[command(flatten)]
-    vault_info: Vault<Plain>,
+    vault_info: Vault,
     /// The password, if there is no value for it you will prompt it
     #[arg(short, long)]
     password: Option<Option<String>>,
 }
 
 impl LprsCommand for Add {
-    fn run(mut self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(mut self, mut vault_manager: Vaults) -> LprsResult<()> {
         match self.password {
             Some(Some(password)) => {
                 log::debug!("User provided a password");

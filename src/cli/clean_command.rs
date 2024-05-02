@@ -18,17 +18,14 @@ use std::fs;
 
 use clap::Args;
 
-use crate::{
-    vault::{vault_state::*, Vaults},
-    LprsCommand, LprsError, LprsResult,
-};
+use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
 pub struct Clean {}
 
 impl LprsCommand for Clean {
-    fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, vault_manager: Vaults) -> LprsResult<()> {
         log::info!(
             "Cleaning the vaults file: {:?}",
             vault_manager.vaults_file.display()

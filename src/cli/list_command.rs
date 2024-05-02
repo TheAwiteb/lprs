@@ -19,10 +19,7 @@ use std::num::NonZeroU64;
 use clap::Args;
 use inquire::Select;
 
-use crate::{
-    vault::{vault_state::*, Vaults},
-    LprsCommand, LprsError, LprsResult,
-};
+use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -39,7 +36,7 @@ pub struct List {
 }
 
 impl LprsCommand for List {
-    fn run(self, vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, vault_manager: Vaults) -> LprsResult<()> {
         if vault_manager.vaults.is_empty() {
             return Err(LprsError::Other(
                 "Looks like there is no vaults to list".to_owned(),

@@ -53,7 +53,7 @@ macro_rules! impl_commands {
     ($enum_name: ident, $($varint: ident)+) => {
         #[automatically_derived]
         impl $crate::LprsCommand for $enum_name{
-            fn run(self, vault_manager: $crate::vault::Vaults<$crate::vault::vault_state::Plain>) -> $crate::LprsResult<()> {
+            fn run(self, vault_manager: $crate::vault::Vaults) -> $crate::LprsResult<()> {
                 match self {
                     $(
                         Self::$varint(command) => command.run(vault_manager),

@@ -18,7 +18,7 @@ use std::{fs, path::Path};
 
 use crate::LprsResult;
 
-use super::{vault_state::*, Vault};
+use super::Vault;
 
 /// Return if the vaults file new file or not
 pub fn is_new_vaults_file(path: &Path) -> LprsResult<bool> {
@@ -26,7 +26,7 @@ pub fn is_new_vaults_file(path: &Path) -> LprsResult<bool> {
         let file_content = fs::read_to_string(path)?;
         if !file_content.is_empty()
             && file_content.trim() != "[]"
-            && serde_json::from_str::<Vec<Vault<Encrypted>>>(&file_content).is_ok()
+            && serde_json::from_str::<Vec<Vault>>(&file_content).is_ok()
         {
             return Ok(false);
         }

@@ -14,13 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::{fs, marker::PhantomData, path::PathBuf};
+use std::{fs, path::PathBuf};
 
 use clap::{Parser, ValueEnum};
 use serde::{Deserialize, Serialize};
 
 use crate::{LprsError, LprsResult};
-use vault_state::*;
 
 pub mod cipher;
 
@@ -36,23 +35,10 @@ pub enum Format {
     BitWarden,
 }
 
-/// The states of the vaults
-pub mod vault_state {
-    /// Means the vault is encrypted
-    #[derive(Clone, Debug, Default)]
-    pub struct Encrypted;
-    /// Means the vault is not encrypted
-    #[derive(Clone, Debug, Default)]
-    pub struct Plain;
-}
-
 /// The vault struct
 #[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Serialize, Parser)]
-pub struct Vault<T>
-where
-    T: std::fmt::Debug + Clone,
-{
+pub struct Vault {
     /// The name of the vault
     #[arg(short, long)]
     pub name: String,
@@ -68,31 +54,20 @@ where
     /// Add a note to the vault
     #[arg(short = 'o', long)]
     pub note: Option<String>,
-
-    /// State phantom
-    #[serde(skip)]
-    #[arg(skip)]
-    phantom: PhantomData<T>,
 }
 
 /// The vaults manager
 #[derive(Default)]
-pub struct Vaults<T>
-where
-    T: std::fmt::Debug + Clone,
-{
+pub struct Vaults {
     /// Hash of the master password
     pub master_password: Vec<u8>,
     /// The json vaults file
     pub vaults_file: PathBuf,
     /// The vaults
-    pub vaults: Vec<Vault<T>>,
+    pub vaults: Vec<Vault>,
 }
 
-impl<T> Vault<T>
-where
-    T: std::fmt::Debug + Clone,
-{
+impl Vault {
     /// Create new [`Vault`] instance
     pub fn new(
         name: impl Into<String>,
@@ -107,15 +82,12 @@ where
             password: password.map(Into::into),
             service: service.map(Into::into),
             note: note.map(Into::into),
-            phantom: std::marker::PhantomData,
         }
     }
-}
 
-impl Vault<Encrypted> {
     /// Decrypt the vault
-    pub fn decrypt(&self, master_password: &[u8]) -> LprsResult<Vault<Plain>> {
-        Ok(Vault::<Plain>::new(
+    pub fn decrypt(&self, master_password: &[u8]) -> LprsResult<Vault> {
+        Ok(Vault::new(
             cipher::decrypt(master_password, &self.name)?,
             cipher::decrypt_some(master_password, self.username.as_ref())?,
             cipher::decrypt_some(master_password, self.password.as_ref())?,
@@ -123,12 +95,10 @@ impl Vault<Encrypted> {
             cipher::decrypt_some(master_password, self.note.as_ref())?,
         ))
     }
-}
 
-impl Vault<Plain> {
     /// Encrypt the vault
-    pub fn encrypt(&self, master_password: &[u8]) -> LprsResult<Vault<Encrypted>> {
-        Ok(Vault::<Encrypted>::new(
+    pub fn encrypt(&self, master_password: &[u8]) -> LprsResult<Vault> {
+        Ok(Vault::new(
             cipher::encrypt(master_password, &self.name)?,
             cipher::encrypt_some(master_password, self.username.as_ref())?,
             cipher::encrypt_some(master_password, self.password.as_ref())?,
@@ -154,23 +124,18 @@ impl Vault<Plain> {
     }
 }
 
-impl<T> Vaults<T>
-where
-    T: std::fmt::Debug + Clone,
-{
+impl Vaults {
     /// Create new [`Vaults`] instnce
-    pub fn new(master_password: Vec<u8>, vaults_file: PathBuf, vaults: Vec<Vault<T>>) -> Self {
+    pub fn new(master_password: Vec<u8>, vaults_file: PathBuf, vaults: Vec<Vault>) -> Self {
         Self {
             master_password,
             vaults_file,
             vaults,
         }
     }
-}
 
-impl Vaults<Plain> {
     /// Encrypt the vaults
-    pub fn encrypt_vaults(&self) -> LprsResult<Vec<Vault<Encrypted>>> {
+    pub fn encrypt_vaults(&self) -> LprsResult<Vec<Vault>> {
         self.vaults
             .iter()
             .map(|p| p.encrypt(&self.master_password))
@@ -179,11 +144,10 @@ impl Vaults<Plain> {
 
     /// Reload the vaults from the file then decrypt it
     pub fn try_reload(vaults_file: PathBuf, master_password: Vec<u8>) -> LprsResult<Self> {
-        let vaults =
-            serde_json::from_str::<Vec<Vault<Encrypted>>>(&fs::read_to_string(&vaults_file)?)?
-                .into_iter()
-                .map(|p| p.decrypt(master_password.as_slice()))
-                .collect::<LprsResult<Vec<Vault<Plain>>>>()?;
+        let vaults = serde_json::from_str::<Vec<Vault>>(&fs::read_to_string(&vaults_file)?)?
+            .into_iter()
+            .map(|p| p.decrypt(master_password.as_slice()))
+            .collect::<LprsResult<Vec<Vault>>>()?;
 
         Ok(Self::new(master_password, vaults_file, vaults))
     }
@@ -202,7 +166,7 @@ impl Vaults<Plain> {
     }
 
     /// Add new vault
-    pub fn add_vault(&mut self, vault: Vault<Plain>) {
+    pub fn add_vault(&mut self, vault: Vault) {
         self.vaults.push(vault)
     }
 }
@@ -219,7 +183,7 @@ impl std::fmt::Display for Format {
     }
 }
 
-impl<T: std::fmt::Debug + Clone> std::fmt::Display for Vault<T> {
+impl std::fmt::Display for Vault {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "Name: {}", self.name)?;
         if let Some(ref username) = self.username {

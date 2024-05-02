@@ -19,7 +19,7 @@ use std::{fs::File, io::Error as IoError, io::ErrorKind as IoErrorKind, path::Pa
 use clap::Args;
 
 use crate::{
-    vault::{vault_state::*, BitWardenPasswords, Format, Vault, Vaults},
+    vault::{BitWardenPasswords, Format, Vault, Vaults},
     LprsCommand, LprsError, LprsResult,
 };
 
@@ -35,7 +35,7 @@ pub struct Import {
 }
 
 impl LprsCommand for Import {
-    fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
         log::debug!(
             "Importing vaults from: {} with format: {} to the vault: {}",
             self.path.display(),

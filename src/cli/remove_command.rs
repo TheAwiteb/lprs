@@ -18,10 +18,7 @@ use std::num::NonZeroU64;
 
 use clap::Args;
 
-use crate::{
-    vault::{vault_state::*, Vaults},
-    LprsCommand, LprsError, LprsResult,
-};
+use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -35,7 +32,7 @@ pub struct Remove {
 }
 
 impl LprsCommand for Remove {
-    fn run(self, mut vault_manager: Vaults<Plain>) -> LprsResult<()> {
+    fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
         let index = (self.index.get() - 1) as usize;
         log::debug!("Removing vault at index: {index}");
 
