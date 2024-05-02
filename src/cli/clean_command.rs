@@ -30,6 +30,6 @@ impl LprsCommand for Clean {
             "Cleaning the vaults file: {:?}",
             vault_manager.vaults_file.display()
         );
-        fs::write(vault_manager.vaults_file, "[]").map_err(LprsError::Io)
+        fs::write(vault_manager.vaults_file, []).map_err(LprsError::Io)
     }
 }

@@ -14,53 +14,44 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use base64::Engine;
-use soft_aes::aes::{aes_dec_ecb, aes_enc_ecb};
+use aes::cipher::{block_padding::Pkcs7, BlockDecryptMut, BlockEncryptMut, KeyIvInit};
+use rand::{rngs::StdRng, Rng, SeedableRng};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::{LprsError, LprsResult};
 
-/// Encrypt the string with AEC ECB
-pub fn encrypt(master_password: &[u8], data: &str) -> LprsResult<String> {
-    let padding = Some("PKCS7");
+type Aes256CbcEnc = cbc::Encryptor<aes::Aes256>;
+type Aes256CbcDec = cbc::Decryptor<aes::Aes256>;
 
-    aes_enc_ecb(data.as_bytes(), master_password, padding)
-        .map(|d| crate::STANDARDBASE.encode(d))
-        .map_err(|err| LprsError::Encryption(err.to_string()))
-}
-
-/// Decrypt the string with AEC ECB
-pub fn decrypt(master_password: &[u8], data: &str) -> LprsResult<String> {
-    let padding = Some("PKCS7");
-
-    aes_dec_ecb(
-        crate::STANDARDBASE.decode(data)?.as_slice(),
-        master_password,
-        padding,
+/// Encrypt the given data by the given key using AES-256 CBC
+///
+/// Note: The IV will be add it to the end of the ciphertext (Last 16 bytes)
+pub(crate) fn encrypt(master_password: &[u8; 32], data: &[u8]) -> Vec<u8> {
+    let iv: [u8; 16] = StdRng::seed_from_u64(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("SystemTime before UNIX EPOCH!")
+            .as_secs(),
     )
-    .map_err(|err| {
-        if err.to_string().contains("Invalid padding") {
-            LprsError::WrongMasterPassword
-        } else {
-            LprsError::Decryption(err.to_string())
-        }
-    })
-    .map(|d| String::from_utf8(d).map_err(LprsError::Utf8))?
+    .gen();
+
+    let mut ciphertext =
+        Aes256CbcEnc::new(master_password.into(), &iv.into()).encrypt_padded_vec_mut::<Pkcs7>(data);
+    ciphertext.extend(&iv);
+    ciphertext
 }
 
-/// Encrypt if the `Option` are `Some`
-pub fn encrypt_some(
-    master_password: &[u8],
-    data: Option<impl AsRef<str>>,
-) -> LprsResult<Option<String>> {
-    data.map(|d| encrypt(master_password, d.as_ref()))
-        .transpose()
-}
+/// Decrypt the given data by the given key, the data should
+/// be encrypted by AES-256 CBC. The IV will be extraxted
+/// from the last 16 bytes.
+pub(crate) fn decrypt(master_password: &[u8; 32], data: &[u8]) -> LprsResult<Vec<u8>> {
+    let (ciphertext, iv) = data.split_at(
+        data.len()
+            .checked_sub(16)
+            .ok_or_else(|| LprsError::Decryption)?,
+    );
 
-/// Decrypt if the `Option` are `Some`
-pub fn decrypt_some(
-    master_password: &[u8],
-    data: Option<impl AsRef<str>>,
-) -> LprsResult<Option<String>> {
-    data.map(|d| decrypt(master_password, d.as_ref()))
-        .transpose()
+    Aes256CbcDec::new(master_password.into(), iv.into())
+        .decrypt_padded_vec_mut::<Pkcs7>(ciphertext)
+        .map_err(|_| LprsError::Decryption)
 }

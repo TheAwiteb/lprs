@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
 
 use clap::Parser;
 
@@ -73,6 +73,13 @@ impl Cli {
     pub fn run(self) -> LprsResult<()> {
         let vaults_file = if let Some(path) = self.vaults_file {
             log::info!("Using the given vaults file");
+            if let Some(parent) = path.parent() {
+                if parent.to_str() != Some("") && !parent.exists() {
+                    log::info!("Creating the parent vaults file directory");
+                    fs::create_dir_all(parent)?;
+                }
+            }
+            fs::File::create(&path)?;
             path
         } else {
             log::info!("Using the default vaults file");
@@ -91,11 +98,9 @@ impl Cli {
             }
         } else {
             log::info!("Reloading the vaults file");
-            let master_password = utils::master_password_prompt(&vaults_file)?;
-            Vaults::try_reload(
-                vaults_file,
-                master_password.into_bytes().into_iter().take(32).collect(),
-            )?
+            let master_password =
+                utils::master_password_prompt(fs::read(&vaults_file)?.is_empty())?;
+            Vaults::try_reload(vaults_file, master_password)?
         };
 
         self.command.run(vault_manager)

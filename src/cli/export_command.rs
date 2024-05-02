@@ -19,7 +19,7 @@ use std::{fs, io::Error as IoError, io::ErrorKind as IoErrorKind, path::PathBuf}
 use clap::Args;
 
 use crate::{
-    vault::{BitWardenPasswords, Format, Vault, Vaults},
+    vault::{BitWardenPasswords, Format, Vaults},
     LprsCommand, LprsError, LprsResult,
 };
 
@@ -31,6 +31,7 @@ pub struct Export {
     /// Format to export vaults in
     #[arg(short, long, value_name = "FORMAT", default_value_t= Format::Lprs)]
     format: Format,
+    // TODO: `force` flag to write on existing file
 }
 
 impl LprsCommand for Export {
@@ -42,9 +43,9 @@ impl LprsCommand for Export {
             self.format
         );
         let exported_data = match self.format {
-            Format::Lprs => serde_json::to_string::<Vec<Vault>>(&vault_manager.encrypt_vaults()?),
-            Format::BitWarden => serde_json::to_string(&BitWardenPasswords::from(vault_manager)),
-        }?;
+            Format::Lprs => vault_manager.json_export()?,
+            Format::BitWarden => serde_json::to_string(&BitWardenPasswords::from(vault_manager))?,
+        };
 
         fs::write(&self.path, exported_data).map_err(LprsError::from)
     }

@@ -20,15 +20,11 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("Invalid Json Path Error: {0}")]
-    InvalidJsonPath(String),
     #[error("Encryption Error: {0}")]
     Encryption(String),
-    #[error("Decryption Error: {0}")]
-    Decryption(String),
-    #[error(
-        "Wrong Master Password Error: Wrong password or you may have played with the password file"
-    )]
+    #[error("Decryption Error: The given key cannot decrypt the given data. Either the data has been tampered with or the key is incorrect.")]
+    Decryption,
+    #[error("Wrong Master Password Error: Wrong decryption password")]
     WrongMasterPassword,
     #[error("Weak Password Error: {0}")]
     WeakPassword(String),
@@ -45,6 +41,8 @@ pub enum Error {
     InvalidRegex(#[from] regex::Error),
     #[error("UTF8 Error: {0}")]
     Utf8(#[from] FromUtf8Error),
+    #[error("Bincode Error: {0}")]
+    Bincode(#[from] bincode::Error),
     #[error("Base64 Decode Error: {0}")]
     BaseDecodeError(#[from] base64::DecodeError),
     #[error("Json Error: {0}")]

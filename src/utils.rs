@@ -14,14 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::{fs, path::PathBuf};
 
 use inquire::validator::Validation;
+use sha2::Digest;
 
-use crate::{vault, LprsError, LprsResult};
+use crate::{LprsError, LprsResult};
 
 /// Returns the local project dir joined with the given file name
 pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
@@ -42,11 +40,7 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
 pub fn vaults_file() -> LprsResult<PathBuf> {
     let vaults_file = local_project_file(crate::DEFAULT_VAULTS_FILE)?;
     if !vaults_file.exists() {
-        log::info!(
-            "Vaults file not found, creating a new one: {:?}",
-            vaults_file.display()
-        );
-        fs::write(&vaults_file, "[]")?;
+        fs::File::create(&vaults_file)?;
     }
     Ok(vaults_file)
 }
@@ -71,9 +65,9 @@ pub fn password_validator(password: &str) -> Result<Validation, inquire::CustomU
 }
 
 /// Ask the user for the master password, then returns it
-pub fn master_password_prompt(vaults_file: &Path) -> LprsResult<String> {
-    let is_new_vaults_file = vault::is_new_vaults_file(vaults_file)?;
-
+///
+/// Return's the password as 32 bytes after hash it (256 bit)
+pub fn master_password_prompt(is_new_vaults_file: bool) -> LprsResult<[u8; 32]> {
     inquire::Password {
         message: "Master Password:",
         enable_confirmation: is_new_vaults_file,
@@ -87,7 +81,7 @@ pub fn master_password_prompt(vaults_file: &Path) -> LprsResult<String> {
     .with_formatter(&|p| "*".repeat(p.chars().count()))
     .with_display_mode(inquire::PasswordDisplayMode::Masked)
     .prompt()
-    .map(sha256::digest)
+    .map(|p| sha2::Sha256::digest(p).into())
     .map_err(Into::into)
 }
 

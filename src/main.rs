@@ -14,13 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::process::ExitCode;
-
-use base64::{
-    alphabet,
-    engine::{general_purpose::PAD, GeneralPurpose},
-};
 use clap::Parser;
+use inquire::InquireError;
+use std::process::ExitCode;
 
 pub mod cli;
 pub mod errors;
@@ -30,12 +26,11 @@ pub mod vault;
 mod macros;
 mod traits;
 
+pub use base64::engine::general_purpose::STANDARD as BASE64;
 pub use errors::{Error as LprsError, Result as LprsResult};
-use inquire::InquireError;
 pub use traits::*;
 
-pub const STANDARDBASE: GeneralPurpose = GeneralPurpose::new(&alphabet::STANDARD, PAD);
-pub const DEFAULT_VAULTS_FILE: &str = "vaults.json";
+pub const DEFAULT_VAULTS_FILE: &str = "vaults.lprs";
 
 #[cfg(feature = "update-notify")]
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

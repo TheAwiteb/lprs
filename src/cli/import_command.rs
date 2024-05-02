@@ -14,7 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::{fs::File, io::Error as IoError, io::ErrorKind as IoErrorKind, path::PathBuf};
+use std::{
+    fs::{self, File},
+    io::Error as IoError,
+    io::ErrorKind as IoErrorKind,
+    path::PathBuf,
+};
 
 use clap::Args;
 
@@ -45,10 +50,11 @@ impl LprsCommand for Import {
 
         let imported_passwords_len = match self.format {
             Format::Lprs => {
-                let vaults = Vaults::try_reload(self.path, vault_manager.master_password.to_vec())?;
-                let vaults_len = vaults.vaults.len();
+                let vaults =
+                    Vaults::json_reload(&vault_manager.master_password, &fs::read(self.path)?)?;
+                let vaults_len = vaults.len();
 
-                vault_manager.vaults.extend(vaults.vaults);
+                vault_manager.vaults.extend(vaults);
                 vault_manager.try_export()?;
                 vaults_len
             }

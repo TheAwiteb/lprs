@@ -16,6 +16,7 @@
 
 use std::{fs, path::PathBuf};
 
+use base64::Engine;
 use clap::{Parser, ValueEnum};
 use serde::{Deserialize, Serialize};
 
@@ -24,10 +25,8 @@ use crate::{LprsError, LprsResult};
 pub mod cipher;
 
 mod bitwarden;
-mod validator;
 
 pub use bitwarden::*;
-pub use validator::*;
 
 #[derive(Clone, Debug, ValueEnum)]
 pub enum Format {
@@ -36,7 +35,6 @@ pub enum Format {
 }
 
 /// The vault struct
-#[serde_with_macros::skip_serializing_none]
 #[derive(Clone, Debug, Deserialize, Serialize, Parser)]
 pub struct Vault {
     /// The name of the vault
@@ -60,7 +58,7 @@ pub struct Vault {
 #[derive(Default)]
 pub struct Vaults {
     /// Hash of the master password
-    pub master_password: Vec<u8>,
+    pub master_password: [u8; 32],
     /// The json vaults file
     pub vaults_file: PathBuf,
     /// The vaults
@@ -85,28 +83,6 @@ impl Vault {
         }
     }
 
-    /// Decrypt the vault
-    pub fn decrypt(&self, master_password: &[u8]) -> LprsResult<Vault> {
-        Ok(Vault::new(
-            cipher::decrypt(master_password, &self.name)?,
-            cipher::decrypt_some(master_password, self.username.as_ref())?,
-            cipher::decrypt_some(master_password, self.password.as_ref())?,
-            cipher::decrypt_some(master_password, self.service.as_ref())?,
-            cipher::decrypt_some(master_password, self.note.as_ref())?,
-        ))
-    }
-
-    /// Encrypt the vault
-    pub fn encrypt(&self, master_password: &[u8]) -> LprsResult<Vault> {
-        Ok(Vault::new(
-            cipher::encrypt(master_password, &self.name)?,
-            cipher::encrypt_some(master_password, self.username.as_ref())?,
-            cipher::encrypt_some(master_password, self.password.as_ref())?,
-            cipher::encrypt_some(master_password, self.service.as_ref())?,
-            cipher::encrypt_some(master_password, self.note.as_ref())?,
-        ))
-    }
-
     /// Return the name of the vault with the service if there
     pub fn list_name(&self) -> String {
         use std::fmt::Write;
@@ -126,7 +102,7 @@ impl Vault {
 
 impl Vaults {
     /// Create new [`Vaults`] instnce
-    pub fn new(master_password: Vec<u8>, vaults_file: PathBuf, vaults: Vec<Vault>) -> Self {
+    pub fn new(master_password: [u8; 32], vaults_file: PathBuf, vaults: Vec<Vault>) -> Self {
         Self {
             master_password,
             vaults_file,
@@ -134,22 +110,65 @@ impl Vaults {
         }
     }
 
-    /// Encrypt the vaults
-    pub fn encrypt_vaults(&self) -> LprsResult<Vec<Vault>> {
-        self.vaults
-            .iter()
-            .map(|p| p.encrypt(&self.master_password))
-            .collect()
+    /// Add new vault
+    pub fn add_vault(&mut self, vault: Vault) {
+        self.vaults.push(vault)
     }
 
-    /// Reload the vaults from the file then decrypt it
-    pub fn try_reload(vaults_file: PathBuf, master_password: Vec<u8>) -> LprsResult<Self> {
-        let vaults = serde_json::from_str::<Vec<Vault>>(&fs::read_to_string(&vaults_file)?)?
-            .into_iter()
-            .map(|p| p.decrypt(master_password.as_slice()))
-            .collect::<LprsResult<Vec<Vault>>>()?;
+    /// Encrypt the vaults then returns it as json.
+    ///
+    /// This function used to backup the vaults.
+    ///
+    /// Note: The returned string is `Vec<Vault>`
+    pub fn json_export(&self) -> LprsResult<String> {
+        let encrypt = |val: &str| {
+            LprsResult::Ok(
+                crate::BASE64.encode(cipher::encrypt(&self.master_password, val.as_ref())),
+            )
+        };
 
-        Ok(Self::new(master_password, vaults_file, vaults))
+        serde_json::to_string(
+            &self
+                .vaults
+                .iter()
+                .map(|v| {
+                    LprsResult::Ok(Vault::new(
+                        encrypt(&v.name)?,
+                        v.username.as_ref().and_then(|u| encrypt(u).ok()),
+                        v.password.as_ref().and_then(|p| encrypt(p).ok()),
+                        v.service.as_ref().and_then(|s| encrypt(s).ok()),
+                        v.note.as_ref().and_then(|n| encrypt(n).ok()),
+                    ))
+                })
+                .collect::<LprsResult<Vec<_>>>()?,
+        )
+        .map_err(Into::into)
+    }
+
+    /// Reload the vaults from json data.
+    ///
+    /// This function used to import backup vaults.
+    pub fn json_reload(master_password: &[u8; 32], json_data: &[u8]) -> LprsResult<Vec<Vault>> {
+        let decrypt = |val: &str| {
+            String::from_utf8(cipher::decrypt(
+                master_password,
+                &crate::BASE64.decode(val)?,
+            )?)
+            .map_err(|err| LprsError::Other(err.to_string()))
+        };
+
+        serde_json::from_slice::<Vec<Vault>>(json_data)?
+            .into_iter()
+            .map(|v| {
+                LprsResult::Ok(Vault::new(
+                    decrypt(&v.name)?,
+                    v.username.as_ref().and_then(|u| decrypt(u).ok()),
+                    v.password.as_ref().and_then(|p| decrypt(p).ok()),
+                    v.service.as_ref().and_then(|s| decrypt(s).ok()),
+                    v.note.as_ref().and_then(|n| decrypt(n).ok()),
+                ))
+            })
+            .collect()
     }
 
     /// Encrypt the vaults then export it to the file
@@ -160,14 +179,22 @@ impl Vaults {
         );
         fs::write(
             &self.vaults_file,
-            serde_json::to_string(&self.encrypt_vaults()?)?,
+            cipher::encrypt(&self.master_password, &bincode::serialize(&self.vaults)?),
         )
         .map_err(LprsError::Io)
     }
 
-    /// Add new vault
-    pub fn add_vault(&mut self, vault: Vault) {
-        self.vaults.push(vault)
+    /// Reload the vaults from the file then decrypt it
+    pub fn try_reload(vaults_file: PathBuf, master_password: [u8; 32]) -> LprsResult<Self> {
+        let vaults_data = fs::read(&vaults_file)?;
+
+        let vaults: Vec<Vault> = if vaults_data.is_empty() {
+            vec![]
+        } else {
+            bincode::deserialize(&cipher::decrypt(&master_password, &vaults_data)?)?
+        };
+
+        Ok(Self::new(master_password, vaults_file, vaults))
     }
 }
 
