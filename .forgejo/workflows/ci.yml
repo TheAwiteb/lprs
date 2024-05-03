@@ -12,7 +12,7 @@ jobs:
     runs-on: debian
     steps:
       - uses: actions/checkout@v4
-      - uses: https://codeberg.org/TheAwiteb/rust-action@v1.70
+      - uses: https://codeberg.org/TheAwiteb/rust-action@v1.74
       - name: Build the source code
         run: cargo build
       - name: Check the code format

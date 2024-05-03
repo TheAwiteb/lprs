@@ -7,7 +7,7 @@ authors = ["Awiteb <a@4rs.nl>"]
 readme = "README.md"
 description = "A local CLI password manager"
 repository = "https://git.4rs.nl/awiteb/lprs"
-rust-version = "1.70.0"
+rust-version = "1.74.0"
 keywords = ["password", "manager", "CLI"]
 categories = ["command-line-utilities"]
 
