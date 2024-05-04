@@ -7,7 +7,67 @@ on:
       - v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+
 
 jobs:
+  build-assets:
+    runs-on: debian
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - x86_64-unknown-linux-musl
+          - aarch64-unknown-linux-gnu
+          - aarch64-unknown-linux-musl
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 1
+      - uses: https://codeberg.org/TheAwiteb/rust-action@v1.78
+      - name: Install musl-tools
+        if: contains(${{ matrix.target }}, 'musl')
+        run: |
+          apt-get update
+          apt-get install -y musl-tools
+      - name: Install gcc-aarch64-linux-gnu linker
+        if: contains(${{ matrix.target }}, 'aarch64')
+        run: |
+          apt-get update
+          apt-get install -y gcc-aarch64-linux-gnu
+      - name: Install ${{ matrix.target }} target
+        run: rustup target install ${{ matrix.target }}
+      - name: Setup environment
+        run: |
+          BIN_NAME="$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)"
+          echo "BIN_NAME=$BIN_NAME" >> $GITHUB_ENV
+          mkdir -p release-dir
+          mkdir -p .cargo
+          echo 'target.aarch64-unknown-linux-gnu.linker = "aarch64-linux-gnu-gcc"' > .cargo/config.toml
+          echo 'target.aarch64-unknown-linux-musl.linker = "aarch64-linux-gnu-gcc"' >> .cargo/config.toml
+
+      - name: Build ${{ matrix.target }} asset
+        run: |
+          APP_NAME="$BIN_NAME-$GITHUB_REF_NAME-${{ matrix.target }}"
+          cargo clean
+          cargo build --release --no-default-features --target ${{ matrix.target }}
+          cp target/${{ matrix.target }}/release/$BIN_NAME release-dir/$APP_NAME
+          cd release-dir
+          chmod +x $APP_NAME
+          sha256sum $APP_NAME > $APP_NAME.sha256
+      - name: Build ${{ matrix.target }} asset (update-notify)
+        run: |
+          APP_NAME="$BIN_NAME-update-notify-$GITHUB_REF_NAME-${{ matrix.target }}"
+          cargo build --release -F update-notify --target ${{ matrix.target }}
+          cp ./target/${{ matrix.target }}/release/$BIN_NAME release-dir/$APP_NAME
+          cd release-dir
+          chmod +x $APP_NAME
+          sha256sum $APP_NAME > $APP_NAME.sha256
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.GITHUB_SHA }}-${{ env.GITHUB_RUN_NUMBER }}
+          path: release-dir/
+
   release:
+    needs: build-assets
     runs-on: debian
     steps:
       - uses: actions/checkout@v4
@@ -15,6 +75,10 @@ jobs:
           ref: master
           fetch-depth: 0
           fetch-tags: true
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.GITHUB_SHA }}-${{ env.GITHUB_RUN_NUMBER }}
+          path: ${{ env.GITHUB_WORKSPACE }}/release-dir
       - name: Install git-cliff
         run: |
           version="2.1.2"
