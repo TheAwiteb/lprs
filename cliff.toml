@@ -18,13 +18,25 @@ body = """
     {{commit.message | split(pat="\n") | nth(n=0) | upper_first }}\
 {% endmacro commit_header %}\
 
-{# Return the `BREAKING-CHANGE` footer message, only one line #}\
+{# Return the `BREAKING-CHANGE` footer message #}\
 {% macro bc_des(commit) %}\
-    {% for line in  commit.message | split(pat="\n") %}\
+    {% set lines = [] %}\
+    {% set found_breaking = false %}\
+    {% for line in commit.message | split(pat="\n") %}\
+        {% if found_breaking and line is not containing(":") %}\
+            {% set_global lines = lines | concat(with=line) %}\
+        {% elif found_breaking and line is containing(":") %}\
+            {% set_global found_breaking = false %}\
+        {% endif %}\
         {% if line is starting_with("BREAKING-CHANGE") %}\
-            {{line | split(pat=":") | nth(n=1) | split(pat="\n") | nth(n=0)}}\
+            {% set_global found_breaking = true %}\
+            {% set breaking_line = line | split(pat=":") | nth(n=1) %}\
+            {% set_global lines = lines | concat(with=breaking_line) %}\
         {% endif %}\
     {% endfor %}\
+    {% if lines | length != 0 %}\
+        {{ lines | join(sep="\n") | trim_end(pat="\n") }}\
+    {% endif %}\
 {% endmacro bc_des %}\
 
 {% if version %}\
