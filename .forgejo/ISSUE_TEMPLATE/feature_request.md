@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for Lprs
-title: '[Feature request]: ...'
+title: '...'
 labels: ["Kind/Feature"]
 assignees: ''
 ---
