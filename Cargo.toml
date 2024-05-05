@@ -5,10 +5,10 @@ edition = "2021"
 license = "GPL-3.0-only"
 authors = ["Awiteb <a@4rs.nl>"]
 readme = "README.md"
-description = "A local CLI password manager"
+description = "A local CLI password/vault manager"
 repository = "https://git.4rs.nl/awiteb/lprs"
 rust-version = "1.74.0"
-keywords = ["password", "manager", "CLI"]
+keywords = ["password", "vault", "manager", "CLI"]
 categories = ["command-line-utilities"]
 
 [dependencies]
@@ -34,6 +34,56 @@ base64 = "0.22.1"
 default = ["update-notify"]
 update-notify = ["reqwest/blocking"]
 reqwest = ["dep:reqwest"]
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[lints.clippy]
+# I know is huge, but I like to be explicit, it also provides
+# a better DX for new contributors (Make it easier to understand the codebase).
+# Also, this is a general linting configuration, it's not specific to this project.
+wildcard_imports = "deny"
+manual_let_else = "deny"
+match_bool = "deny"
+match_on_vec_items = "deny"
+or_fun_call = "deny"
+panic = "deny"
+unwrap_used = "deny"
+
+missing_assert_message = "warn"
+missing_const_for_fn = "warn"
+missing_errors_doc = "warn"
+absolute_paths = "warn"
+cast_lossless = "warn"
+clone_on_ref_ptr = "warn"
+cloned_instead_of_copied = "warn"
+dbg_macro = "warn"
+default_trait_access = "warn"
+empty_enum_variants_with_brackets = "warn"
+empty_line_after_doc_comments = "warn"
+empty_line_after_outer_attr = "warn"
+empty_structs_with_brackets = "warn"
+enum_glob_use = "warn"
+equatable_if_let = "warn"
+explicit_iter_loop = "warn"
+filetype_is_file = "warn"
+filter_map_next = "warn"
+flat_map_option = "warn"
+float_cmp = "warn"
+format_push_string = "warn"
+future_not_send = "warn"
+if_not_else = "warn"
+if_then_some_else_none = "warn"
+implicit_clone = "warn"
+inconsistent_struct_constructor = "warn"
+indexing_slicing = "warn"
+iter_filter_is_ok = "warn"
+iter_filter_is_some = "warn"
+iter_not_returning_iterator = "warn"
+manual_is_variant_and = "warn"
+option_if_let_else = "warn"
+option_option = "warn"
 
 [profile.release]
 strip = true # Automatically strip symbols from the binary.
