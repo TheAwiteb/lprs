@@ -1,0 +1,13 @@
+[toolchain]
+# We use nightly in development only, the project will always be compliant with
+# the latest stable release and the MSRV as defined in `Cargo.toml` file.
+channel = "nightly-2024-05-05"
+components = [
+  "rustc",
+  "cargo",
+  "rust-std",
+  "rust-src",
+  "rustfmt",
+  "rust-analyzer",
+  "clippy",
+]

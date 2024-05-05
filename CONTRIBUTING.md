@@ -13,6 +13,11 @@ If you have a feature request or an idea for improving lprs, we encourage you to
 ## Writing Code
 Before you start writing code, please open a new issue first to discuss the proposed changes. This will help ensure that your contribution is aligned with the project's goals and that you are not duplicating work that is already in progress or has been completed by someone else.
 
+### Rust Version
+In the lprs project, we always try to stay on the lowest MSRV possible for compatibility, but the development process relies on the nightly release to get the latest rust-analyzer, rustfmt, and clippy features.
+
+You can check the nightly version used in the project in the `rust-toolchain` file. And the MSRV in the `Cargo.toml` file.
+
 ### PR title
 Your PR will squash and merge, and your PR title will be used as the commit message. Please make sure your PR title is clear and concise.
 
