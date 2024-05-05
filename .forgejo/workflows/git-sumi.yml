@@ -19,4 +19,11 @@ jobs:
           mv git-sumi-x86_64-unknown-linux-gnu/git-sumi git-sumi
           chmod +x git-sumi
       - name: Run git-sumi
-        run: ./git-sumi "${{ github.event.pull_request.title }}"
+        run: |
+          # Check if the PR are WIP or not (Start with WIP: or wip:)
+          IS_WIP=$(echo ${{ github.event.pull_request.title }} | grep -i "^WIP:" | wc -l)
+          if [ $IS_WIP -eq 1 ]; then
+            echo "Is Work In Progress PR"
+            exit 0
+          fi
+          ./git-sumi "${{ github.event.pull_request.title }}"
