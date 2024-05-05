@@ -46,7 +46,6 @@
 ///         }
 ///     }
 /// }
-
 /// ```
 #[macro_export]
 macro_rules! impl_commands {

@@ -30,6 +30,7 @@ use crate::{
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
+/// Import command, used to import vaults from the exported files, `lprs` or `BitWarden`
 pub struct Import {
     /// The file path to import from
     path: PathBuf,
@@ -77,24 +78,29 @@ impl LprsCommand for Import {
     }
 
     fn validate_args(&self) -> LprsResult<()> {
-        if self.path.exists() {
-            if self
-                .path
-                .extension()
-                .is_some_and(|e| e.to_string_lossy().eq_ignore_ascii_case("json"))
-            {
-                Ok(())
-            } else {
-                Err(LprsError::Io(IoError::new(
-                    IoErrorKind::InvalidInput,
-                    format!("file `{}` is not a json file", self.path.display()),
-                )))
-            }
-        } else {
-            Err(LprsError::Io(IoError::new(
+        if self
+            .path
+            .extension()
+            .is_some_and(|e| e.to_string_lossy().eq_ignore_ascii_case("json"))
+        {
+            return Err(LprsError::Io(IoError::new(
+                IoErrorKind::InvalidInput,
+                format!("file `{}` is not a json file", self.path.display()),
+            )));
+        }
+        if !self.path.exists() {
+            return Err(LprsError::Io(IoError::new(
                 IoErrorKind::NotFound,
                 format!("file `{}` not found", self.path.display()),
-            )))
+            )));
         }
+        if self.path.is_dir() {
+            return Err(LprsError::Io(IoError::new(
+                IoErrorKind::InvalidInput,
+                format!("file `{}` is a directory", self.path.display()),
+            )));
+        }
+
+        Ok(())
     }
 }

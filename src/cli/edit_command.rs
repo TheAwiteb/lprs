@@ -17,6 +17,7 @@
 use std::num::NonZeroU64;
 
 use clap::Args;
+use inquire::{Password, PasswordDisplayMode};
 
 use crate::{
     vault::{Vault, Vaults},
@@ -25,6 +26,7 @@ use crate::{
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
+/// Edit command, used to edit the vault content
 pub struct Edit {
     /// The password index. Check it from list command
     index: NonZeroU64,
@@ -37,6 +39,8 @@ pub struct Edit {
     username: Option<String>,
     #[arg(short, long)]
     /// The new password, if there is no value for it you will prompt it
+    // FIXME: I think replacing `Option<Option<String>>` with custom type will be better
+    #[allow(clippy::option_option)]
     password: Option<Option<String>>,
     #[arg(short, long)]
     /// The new vault service
@@ -63,10 +67,10 @@ impl LprsCommand for Edit {
         let password = match self.password {
             Some(Some(password)) => Some(password),
             Some(None) => Some(
-                inquire::Password::new("New vault password:")
+                Password::new("New vault password:")
                     .without_confirmation()
                     .with_formatter(&|p| "*".repeat(p.chars().count()))
-                    .with_display_mode(inquire::PasswordDisplayMode::Masked)
+                    .with_display_mode(PasswordDisplayMode::Masked)
                     .prompt()?,
             ),
             None => None,

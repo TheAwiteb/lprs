@@ -20,13 +20,22 @@ use clap::Parser;
 
 use crate::{impl_commands, utils, vault::Vaults, LprsCommand, LprsResult};
 
+/// Add command, used to add new vault to the vaults file
 pub mod add_command;
+/// Clean command, used to clean the vaults file (remove all vaults)
 pub mod clean_command;
+/// Edit command, used to edit the vault content
 pub mod edit_command;
+/// Export command, used to export the vaults
+/// in `lprs` format or `BitWarden` format
 pub mod export_command;
+/// Generate command, used to generate a password
 pub mod gen_command;
+/// Import command, used to import vaults from the exported files, `lprs` or `BitWarden`
 pub mod import_command;
+/// List command, used to list the vaults and search
 pub mod list_command;
+/// Remove command, used to remove vault from the vaults file
 pub mod remove_command;
 
 /// The lprs commands
@@ -56,6 +65,7 @@ impl_commands!(Commands, Add Remove List Clean Edit Gen Export Import);
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
+/// The lprs cli, manage the CLI arguments and run the commands
 pub struct Cli {
     /// The vaults json file
     #[arg(short = 'f', long)]
@@ -65,11 +75,19 @@ pub struct Cli {
     pub verbose: bool,
 
     #[command(subcommand)]
+    /// The provided command to run
     pub command: Commands,
 }
 
 impl Cli {
     /// Run the cli
+    ///
+    /// # Errors
+    /// - If can't get the default vaults file
+    /// - If the vaults file can't be created
+    /// - If the user provide a worng CLI arguments
+    /// - If failed to write in the vaults file
+    /// - (errors from the commands)
     pub fn run(self) -> LprsResult<()> {
         let vaults_file = if let Some(path) = self.vaults_file {
             log::info!("Using the given vaults file");
@@ -83,7 +101,7 @@ impl Cli {
             path
         } else {
             log::info!("Using the default vaults file");
-            crate::utils::vaults_file()?
+            utils::vaults_file()?
         };
         log::debug!("Vaults file: {}", vaults_file.display());
 

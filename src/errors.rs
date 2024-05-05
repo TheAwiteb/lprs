@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::{process::ExitCode, string::FromUtf8Error};
+use std::{io, process::ExitCode, result, string::FromUtf8Error};
 
-pub type Result<T> = std::result::Result<T, Error>;
+/// The result type used in the whole project
+pub type Result<T> = result::Result<T, Error>;
 
 #[derive(Debug, thiserror::Error)]
+#[allow(missing_docs)]
 pub enum Error {
     #[error("Encryption Error: {0}")]
     Encryption(String),
@@ -50,12 +52,12 @@ pub enum Error {
     #[error("Project Folder Error: {0}")]
     ProjectDir(String),
     #[error("IO Error: {0}")]
-    Io(#[from] std::io::Error),
+    Io(#[from] io::Error),
 }
 
 impl Error {
     /// Return the exit code of the error
-    pub fn exit_code(&self) -> ExitCode {
+    pub const fn exit_code(&self) -> ExitCode {
         // TODO: Exit with more specific exit code
         ExitCode::FAILURE
     }

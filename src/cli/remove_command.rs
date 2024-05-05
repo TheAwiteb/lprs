@@ -22,6 +22,7 @@ use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
+/// Remove command, used to remove a vault from the vaults file
 pub struct Remove {
     /// The password index
     index: NonZeroU64,
@@ -37,14 +38,14 @@ impl LprsCommand for Remove {
         log::debug!("Removing vault at index: {index}");
 
         if index > vault_manager.vaults.len() {
-            if !self.force {
-                return Err(LprsError::Other(
-                    "The index is greater than the passwords counts".to_owned(),
-                ));
-            } else {
+            if self.force {
                 log::error!(
                     "The index is greater than the passwords counts, but the force flag is enabled"
                 );
+            } else {
+                return Err(LprsError::Other(
+                    "The index is greater than the passwords counts".to_owned(),
+                ));
             }
         } else {
             vault_manager.vaults.remove(index);

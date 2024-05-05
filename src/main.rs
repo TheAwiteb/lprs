@@ -13,14 +13,20 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
+#![doc = include_str!("../README.md")]
 
 use clap::Parser;
 use inquire::InquireError;
+use std::env;
 use std::process::ExitCode;
 
+/// The main module of the lprs crate, contains the cli and the commands.
 pub mod cli;
+/// The errors module, contains the errors and the result type.
 pub mod errors;
+/// The utils module, contains the utility functions of all the modules.
 pub mod utils;
+/// The vault module, contains the vault struct and the vaults manager.
 pub mod vault;
 
 mod macros;
@@ -30,17 +36,20 @@ pub use base64::engine::general_purpose::STANDARD as BASE64;
 pub use errors::{Error as LprsError, Result as LprsResult};
 pub use traits::*;
 
+/// The default vaults file name. Used to store the vaults.
 pub const DEFAULT_VAULTS_FILE: &str = "vaults.lprs";
 
 #[cfg(feature = "update-notify")]
+/// The version of the lprs crate.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 #[cfg(feature = "update-notify")]
+/// The last version check file. Used to store the last version check time.
 pub const LAST_VERSION_CHECK_FILE: &str = ".last_version_check";
 
 fn main() -> ExitCode {
     let lprs_cli = cli::Cli::parse();
     if lprs_cli.verbose {
-        std::env::set_var("RUST_LOG", "lprs");
+        env::set_var("RUST_LOG", "lprs");
     }
     pretty_env_logger::init();
 

@@ -23,6 +23,7 @@ use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
+/// List command, used to list the vaults and search
 pub struct List {
     /// Return the password with spesifc index
     #[arg(short, long, value_name = "INDEX")]

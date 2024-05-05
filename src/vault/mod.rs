@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::{fs, path::PathBuf};
+use std::{fmt, fs, path::PathBuf};
 
 use base64::Engine;
 use clap::{Parser, ValueEnum};
@@ -22,6 +22,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{LprsError, LprsResult};
 
+/// The chiper module, used to encrypt and decrypt the vaults
 pub mod cipher;
 
 mod bitwarden;
@@ -29,8 +30,12 @@ mod bitwarden;
 pub use bitwarden::*;
 
 #[derive(Clone, Debug, ValueEnum)]
+/// The vaults format
 pub enum Format {
+    /// The lprs format, which is the default format
+    /// and is is the result of the serialization/deserialization of the Vaults struct
     Lprs,
+    /// The BitWarden format, which is the result of the serialization/deserialization of the BitWardenPasswords struct
     BitWarden,
 }
 
@@ -85,7 +90,7 @@ impl Vault {
 
     /// Return the name of the vault with the service if there
     pub fn list_name(&self) -> String {
-        use std::fmt::Write;
+        use fmt::Write;
         let mut list_name = self.name.clone();
         if let Some(ref username) = self.username {
             write!(&mut list_name, " <{username}>").expect("String never fail");
@@ -119,6 +124,10 @@ impl Vaults {
     ///
     /// This function used to backup the vaults.
     ///
+    /// ## Errors
+    /// - If the serialization failed
+    /// - if the encryption failed
+    ///
     /// Note: The returned string is `Vec<Vault>`
     pub fn json_export(&self) -> LprsResult<String> {
         let encrypt = |val: &str| {
@@ -147,6 +156,10 @@ impl Vaults {
 
     /// Reload the vaults from json data.
     ///
+    /// ## Errors
+    /// - If base64 decoding failed (of the vault field encrypted data)
+    /// - If decryption failed (wrong master password or the data is corrupted)
+    ///
     /// This function used to import backup vaults.
     pub fn json_reload(master_password: &[u8; 32], json_data: &[u8]) -> LprsResult<Vec<Vault>> {
         let decrypt = |val: &str| {
@@ -172,6 +185,9 @@ impl Vaults {
     }
 
     /// Encrypt the vaults then export it to the file
+    ///
+    /// ## Errors
+    /// - Writing to the file failed
     pub fn try_export(self) -> LprsResult<()> {
         log::debug!(
             "Trying to export the vaults to the file: {}",
@@ -185,6 +201,11 @@ impl Vaults {
     }
 
     /// Reload the vaults from the file then decrypt it
+    ///
+    /// ## Errors
+    /// - Reading the file failed
+    /// - Decryption failed (wrong master password or the data is corrupted)
+    /// - Bytecode deserialization failed (the data is corrupted)
     pub fn try_reload(vaults_file: PathBuf, master_password: [u8; 32]) -> LprsResult<Self> {
         let vaults_data = fs::read(&vaults_file)?;
 
@@ -198,8 +219,8 @@ impl Vaults {
     }
 }
 
-impl std::fmt::Display for Format {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for Format {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "{}",
@@ -210,8 +231,8 @@ impl std::fmt::Display for Format {
     }
 }
 
-impl std::fmt::Display for Vault {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for Vault {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Name: {}", self.name)?;
         if let Some(ref username) = self.username {
             write!(f, "\nUsername: {username}")?;

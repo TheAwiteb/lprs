@@ -16,12 +16,20 @@
 
 use std::{fs, path::PathBuf};
 
-use inquire::validator::Validation;
+use inquire::{validator::Validation, PasswordDisplayMode};
+use passwords::{analyzer, scorer};
 use sha2::Digest;
+
+#[cfg(feature = "update-notify")]
+use reqwest::blocking::Client as BlockingClient;
 
 use crate::{LprsError, LprsResult};
 
 /// Returns the local project dir joined with the given file name
+///
+/// ## Errors
+/// - If the project dir can't be extracted from the OS
+/// - If the local project dir can't be created
 pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
     let local_dir = directories::ProjectDirs::from("", "", "lprs")
         .map(|d| d.data_local_dir().to_path_buf())
@@ -37,6 +45,10 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
 }
 
 /// Returns the default vaults json file
+///
+/// ## Errors
+/// - If the project dir can't be extracted from the OS
+/// - If the vaults file can't be created
 pub fn vaults_file() -> LprsResult<PathBuf> {
     let vaults_file = local_project_file(crate::DEFAULT_VAULTS_FILE)?;
     if !vaults_file.exists() {
@@ -50,21 +62,25 @@ pub fn vaults_file() -> LprsResult<PathBuf> {
 /// ## To pass
 /// - The length must be higher than 14 (>=15)
 /// - Its score must be greater than 80.0
+///
+/// ## Errors
+/// - There is no errors, just the return type of inquire validator
+///     must be Result<Validation, inquire::CustomUserError>
 pub fn password_validator(password: &str) -> Result<Validation, inquire::CustomUserError> {
-    let analyzed = passwords::analyzer::analyze(password);
-    if analyzed.length() < 15 {
-        return Ok(Validation::Invalid(
-            "The master password length must be beggier then 15".into(),
-        ));
-    } else if passwords::scorer::score(&analyzed) < 80.0 {
-        return Ok(Validation::Invalid(
-            "Your master password is not stronge enough".into(),
-        ));
-    }
-    Ok(Validation::Valid)
+    let analyzed = analyzer::analyze(password);
+    Ok(if analyzed.length() < 15 {
+        Validation::Invalid("The master password length must be beggier then 15".into())
+    } else if scorer::score(&analyzed) < 80.0 {
+        Validation::Invalid("Your master password is not stronge enough".into())
+    } else {
+        Validation::Valid
+    })
 }
 
 /// Ask the user for the master password, then returns it
+///
+/// ## Errors
+/// - Can't read the password from the user
 ///
 /// Return's the password as 32 bytes after hash it (256 bit)
 pub fn master_password_prompt(is_new_vaults_file: bool) -> LprsResult<[u8; 32]> {
@@ -79,13 +95,17 @@ pub fn master_password_prompt(is_new_vaults_file: bool) -> LprsResult<[u8; 32]> 
         ..inquire::Password::new("")
     }
     .with_formatter(&|p| "*".repeat(p.chars().count()))
-    .with_display_mode(inquire::PasswordDisplayMode::Masked)
+    .with_display_mode(PasswordDisplayMode::Masked)
     .prompt()
     .map(|p| sha2::Sha256::digest(p).into())
     .map_err(Into::into)
 }
 
 /// Retuns the current lprs version from `crates.io`
+///
+/// ## Errors
+/// - The project dir can't be extracted from the OS
+/// - If the last version check file can't be created
 #[cfg(feature = "update-notify")]
 pub fn lprs_version() -> LprsResult<Option<String>> {
     use std::time::SystemTime;
@@ -108,7 +128,7 @@ pub fn lprs_version() -> LprsResult<Option<String>> {
 
     // Check if the last check is before one hour or not
     if (current_time - last_check) >= (60 * 60) || current_time == last_check {
-        if let Ok(Ok(response)) = reqwest::blocking::Client::new()
+        if let Ok(Ok(response)) = BlockingClient::new()
             .get("https://crates.io/api/v1/crates/lprs")
             .header(
                 "User-Agent",
@@ -117,8 +137,8 @@ pub fn lprs_version() -> LprsResult<Option<String>> {
             .send()
             .map(|r| r.text())
         {
-            let re =
-                regex::Regex::new(r#""max_stable_version":"(?<version>\d+\.\d+\.\d+)""#).unwrap();
+            let re = regex::Regex::new(r#""max_stable_version":"(?<version>\d+\.\d+\.\d+)""#)
+                .expect("The regex is correct");
             if let Some(cap) = re.captures(&response) {
                 return Ok(cap.name("version").map(|m| m.as_str().to_string()));
             }

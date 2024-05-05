@@ -25,6 +25,8 @@ use crate::{
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
+/// Export command, used to export the vaults in `lprs` format or `BitWarden` format.
+/// The exported file will be a json file.
 pub struct Export {
     /// The path to export to
     path: PathBuf,
@@ -51,24 +53,29 @@ impl LprsCommand for Export {
     }
 
     fn validate_args(&self) -> LprsResult<()> {
-        if self
+        if !self
             .path
             .extension()
             .is_some_and(|e| e.to_string_lossy().eq_ignore_ascii_case("json"))
         {
-            if !self.path.exists() {
-                Ok(())
-            } else {
-                Err(LprsError::Io(IoError::new(
-                    IoErrorKind::AlreadyExists,
-                    format!("file `{}` is already exists", self.path.display()),
-                )))
-            }
-        } else {
-            Err(LprsError::Io(IoError::new(
+            return Err(LprsError::Io(IoError::new(
                 IoErrorKind::InvalidInput,
                 format!("file `{}` is not a json file", self.path.display()),
-            )))
+            )));
         }
+        if self.path.exists() {
+            return Err(LprsError::Io(IoError::new(
+                IoErrorKind::AlreadyExists,
+                format!("file `{}` is already exists", self.path.display()),
+            )));
+        }
+        if self.path.is_dir() {
+            return Err(LprsError::Io(IoError::new(
+                IoErrorKind::InvalidInput,
+                format!("file `{}` is a directory", self.path.display()),
+            )));
+        }
+
+        Ok(())
     }
 }

@@ -22,6 +22,7 @@ use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
+/// Generate command, used to generate a password
 pub struct Gen {
     /// The password length
     #[arg(default_value_t = NonZeroU64::new(18).unwrap())]

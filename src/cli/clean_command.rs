@@ -22,7 +22,8 @@ use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
-pub struct Clean {}
+/// Clean command, used to clean the vaults file (remove all vaults)
+pub struct Clean;
 
 impl LprsCommand for Clean {
     fn run(self, vault_manager: Vaults) -> LprsResult<()> {

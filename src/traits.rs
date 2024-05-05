@@ -17,6 +17,7 @@
 use crate::{vault::Vaults, LprsResult};
 
 /// Trait to work with the commands
+#[allow(clippy::missing_errors_doc)]
 pub trait LprsCommand {
     /// Run the command, should do all the logic, even the export
     fn run(self, vault_manager: Vaults) -> LprsResult<()>;
