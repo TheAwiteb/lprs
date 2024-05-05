@@ -18,10 +18,9 @@ _default:
 
 # Run the CI
 @ci: && msrv
-    cargo +stable build -q
-    cargo +stable fmt -- --check
-    cargo +stable clippy -- -D warnings
-    cargo +{{msrv}} clippy -- -D warnings
+    cargo build -q
+    cargo fmt -- --check
+    cargo clippy -- -D warnings
 
 # Check that the current MSRV is correct
 @msrv:
