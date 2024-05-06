@@ -21,7 +21,9 @@ use inquire::{Password, PasswordDisplayMode};
 
 use crate::{
     vault::{Vault, Vaults},
-    LprsCommand, LprsError, LprsResult,
+    LprsCommand,
+    LprsError,
+    LprsResult,
 };
 
 #[derive(Debug, Args)]
@@ -33,7 +35,7 @@ pub struct Edit {
 
     #[arg(short, long)]
     /// The new vault name
-    name: Option<String>,
+    name:     Option<String>,
     #[arg(short, long)]
     /// The new vault username
     username: Option<String>,
@@ -44,10 +46,10 @@ pub struct Edit {
     password: Option<Option<String>>,
     #[arg(short, long)]
     /// The new vault service
-    service: Option<String>,
+    service:  Option<String>,
     #[arg(short = 'o', long)]
     /// The new vault note
-    note: Option<String>,
+    note:     Option<String>,
 }
 
 impl LprsCommand for Edit {
@@ -66,13 +68,15 @@ impl LprsCommand for Edit {
         // Get the password from stdin or from its value if provided
         let password = match self.password {
             Some(Some(password)) => Some(password),
-            Some(None) => Some(
-                Password::new("New vault password:")
-                    .without_confirmation()
-                    .with_formatter(&|p| "*".repeat(p.chars().count()))
-                    .with_display_mode(PasswordDisplayMode::Masked)
-                    .prompt()?,
-            ),
+            Some(None) => {
+                Some(
+                    Password::new("New vault password:")
+                        .without_confirmation()
+                        .with_formatter(&|p| "*".repeat(p.chars().count()))
+                        .with_display_mode(PasswordDisplayMode::Masked)
+                        .prompt()?,
+                )
+            }
             None => None,
         };
 

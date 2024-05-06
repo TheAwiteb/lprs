@@ -27,13 +27,13 @@ use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 pub struct List {
     /// Return the password with spesifc index
     #[arg(short, long, value_name = "INDEX")]
-    get: Option<NonZeroU64>,
+    get:    Option<NonZeroU64>,
     /// Filter the select list
     #[arg(short, long, value_name = "TEXT")]
     filter: Option<String>,
     /// Enable regex when use `--filter` option
     #[arg(short, long)]
-    regex: bool,
+    regex:  bool,
 }
 
 impl LprsCommand for List {

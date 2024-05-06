@@ -15,10 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 #![doc = include_str!("../README.md")]
 
-use clap::Parser;
-use inquire::InquireError;
 use std::env;
 use std::process::ExitCode;
+
+use clap::Parser;
+use inquire::InquireError;
 
 /// The main module of the lprs crate, contains the cli and the commands.
 pub mod cli;

@@ -27,7 +27,8 @@ pub struct Remove {
     /// The password index
     index: NonZeroU64,
 
-    /// Force remove, will not return error if there is no password with this index
+    /// Force remove, will not return error if there is no password with this
+    /// index
     #[arg(short, long)]
     force: bool,
 }

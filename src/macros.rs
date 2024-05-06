@@ -29,10 +29,7 @@
 /// #### Output
 /// ```rust
 /// impl crate::LprsCommand for TestCommands {
-///     fn run(
-///         &self,
-///         vault_manager: crate::vault::Vaults,
-///     ) -> crate::LprsResult<()> {
+///     fn run(&self, vault_manager: crate::vault::Vaults) -> crate::LprsResult<()> {
 ///         match self {
 ///             Self::Test(command) => command.run(vault_manager),
 ///             Self::Some(command) => command.run(vault_manager),

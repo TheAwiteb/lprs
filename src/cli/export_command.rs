@@ -20,16 +20,18 @@ use clap::Args;
 
 use crate::{
     vault::{BitWardenPasswords, Format, Vaults},
-    LprsCommand, LprsError, LprsResult,
+    LprsCommand,
+    LprsError,
+    LprsResult,
 };
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
-/// Export command, used to export the vaults in `lprs` format or `BitWarden` format.
-/// The exported file will be a json file.
+/// Export command, used to export the vaults in `lprs` format or `BitWarden`
+/// format. The exported file will be a json file.
 pub struct Export {
     /// The path to export to
-    path: PathBuf,
+    path:   PathBuf,
     /// Format to export vaults in
     #[arg(short, long, value_name = "FORMAT", default_value_t= Format::Lprs)]
     format: Format,

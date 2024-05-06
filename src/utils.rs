@@ -18,10 +18,9 @@ use std::{fs, path::PathBuf};
 
 use inquire::{validator::Validation, PasswordDisplayMode};
 use passwords::{analyzer, scorer};
-use sha2::Digest;
-
 #[cfg(feature = "update-notify")]
 use reqwest::blocking::Client as BlockingClient;
+use sha2::Digest;
 
 use crate::{LprsError, LprsResult};
 
@@ -64,8 +63,8 @@ pub fn vaults_file() -> LprsResult<PathBuf> {
 /// - Its score must be greater than 80.0
 ///
 /// ## Errors
-/// - There is no errors, just the return type of inquire validator
-///     must be Result<Validation, inquire::CustomUserError>
+/// - There is no errors, just the return type of inquire validator must be
+///   Result<Validation, inquire::CustomUserError>
 pub fn password_validator(password: &str) -> Result<Validation, inquire::CustomUserError> {
     let analyzed = analyzer::analyze(password);
     Ok(if analyzed.length() < 15 {

@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use aes::cipher::{block_padding::Pkcs7, BlockDecryptMut, BlockEncryptMut, KeyIvInit};
 use rand::{rngs::StdRng, Rng, SeedableRng};
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::{LprsError, LprsResult};
 

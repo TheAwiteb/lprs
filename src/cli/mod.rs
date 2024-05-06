@@ -31,7 +31,8 @@ pub mod edit_command;
 pub mod export_command;
 /// Generate command, used to generate a password
 pub mod gen_command;
-/// Import command, used to import vaults from the exported files, `lprs` or `BitWarden`
+/// Import command, used to import vaults from the exported files, `lprs` or
+/// `BitWarden`
 pub mod import_command;
 /// List command, used to list the vaults and search
 pub mod list_command;
@@ -72,7 +73,7 @@ pub struct Cli {
     pub vaults_file: Option<PathBuf>,
     /// Show the logs in the stdout
     #[arg(short, long)]
-    pub verbose: bool,
+    pub verbose:     bool,
 
     #[command(subcommand)]
     /// The provided command to run

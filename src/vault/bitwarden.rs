@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-// This file is not important, it is just a struct that is used to serialize and deserialize the vaults
-// from and to the BitWarden format.
+// This file is not important, it is just a struct that is used to serialize and
+// deserialize the vaults from and to the BitWarden format.
 #![allow(missing_docs)]
 
 use serde::{Deserialize, Serialize};
@@ -26,27 +26,27 @@ use super::{Vault, Vaults};
 pub struct BitWardenLoginData {
     pub username: Option<String>,
     pub password: Option<String>,
-    pub uris: Option<Vec<BitWardenUri>>,
+    pub uris:     Option<Vec<BitWardenUri>>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BitWardenUri {
     #[serde(rename = "match")]
-    pub mt: Option<i32>,
+    pub mt:  Option<i32>,
     pub uri: String,
 }
 
 #[derive(Default, Deserialize, Serialize)]
 pub struct BitWardenFolder {
-    pub id: String,
+    pub id:   String,
     pub name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BitWardenPassword {
     #[serde(rename = "type")]
-    pub ty: i32,
-    pub name: String,
+    pub ty:    i32,
+    pub name:  String,
     pub login: Option<BitWardenLoginData>,
     pub notes: Option<String>,
 }
@@ -55,8 +55,8 @@ pub struct BitWardenPassword {
 #[derive(Default, Deserialize, Serialize)]
 pub struct BitWardenPasswords {
     pub encrypted: bool,
-    pub folders: Vec<BitWardenFolder>,
-    pub items: Vec<BitWardenPassword>,
+    pub folders:   Vec<BitWardenFolder>,
+    pub items:     Vec<BitWardenPassword>,
 }
 
 impl From<BitWardenPassword> for Vault {
@@ -78,12 +78,12 @@ impl From<BitWardenPassword> for Vault {
 impl From<Vault> for BitWardenPassword {
     fn from(value: Vault) -> Self {
         Self {
-            ty: 1,
-            name: value.name,
+            ty:    1,
+            name:  value.name,
             login: Some(BitWardenLoginData {
                 username: value.username,
                 password: value.password,
-                uris: value
+                uris:     value
                     .service
                     .map(|s| vec![BitWardenUri { mt: None, uri: s }]),
             }),
@@ -96,8 +96,8 @@ impl From<Vaults> for BitWardenPasswords {
     fn from(value: Vaults) -> Self {
         Self {
             encrypted: false,
-            folders: Vec::new(),
-            items: value
+            folders:   Vec::new(),
+            items:     value
                 .vaults
                 .into_iter()
                 .map(BitWardenPassword::from)

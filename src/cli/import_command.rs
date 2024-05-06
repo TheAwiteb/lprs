@@ -25,12 +25,15 @@ use clap::Args;
 
 use crate::{
     vault::{BitWardenPasswords, Format, Vault, Vaults},
-    LprsCommand, LprsError, LprsResult,
+    LprsCommand,
+    LprsError,
+    LprsResult,
 };
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
-/// Import command, used to import vaults from the exported files, `lprs` or `BitWarden`
+/// Import command, used to import vaults from the exported files, `lprs` or
+/// `BitWarden`
 pub struct Import {
     /// The file path to import from
     path: PathBuf,

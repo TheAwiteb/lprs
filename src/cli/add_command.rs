@@ -19,7 +19,9 @@ use inquire::{Password, PasswordDisplayMode};
 
 use crate::{
     vault::{Vault, Vaults},
-    LprsCommand, LprsError, LprsResult,
+    LprsCommand,
+    LprsError,
+    LprsResult,
 };
 
 #[derive(Debug, Args)]
@@ -32,7 +34,7 @@ pub struct Add {
     #[arg(short, long)]
     // FIXME: I think replacing `Option<Option<String>>` with custom type will be better
     #[allow(clippy::option_option)]
-    password: Option<Option<String>>,
+    password:   Option<Option<String>>,
 }
 
 impl LprsCommand for Add {

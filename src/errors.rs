@@ -24,7 +24,10 @@ pub type Result<T> = result::Result<T, Error>;
 pub enum Error {
     #[error("Encryption Error: {0}")]
     Encryption(String),
-    #[error("Decryption Error: The given key cannot decrypt the given data. Either the data has been tampered with or the key is incorrect.")]
+    #[error(
+        "Decryption Error: The given key cannot decrypt the given data. Either the data has been \
+         tampered with or the key is incorrect."
+    )]
     Decryption,
     #[error("Wrong Master Password Error: Wrong decryption password")]
     WrongMasterPassword,

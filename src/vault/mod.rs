@@ -33,9 +33,11 @@ pub use bitwarden::*;
 /// The vaults format
 pub enum Format {
     /// The lprs format, which is the default format
-    /// and is is the result of the serialization/deserialization of the Vaults struct
+    /// and is is the result of the serialization/deserialization of the Vaults
+    /// struct
     Lprs,
-    /// The BitWarden format, which is the result of the serialization/deserialization of the BitWardenPasswords struct
+    /// The BitWarden format, which is the result of the
+    /// serialization/deserialization of the BitWardenPasswords struct
     BitWarden,
 }
 
@@ -44,7 +46,7 @@ pub enum Format {
 pub struct Vault {
     /// The name of the vault
     #[arg(short, long)]
-    pub name: String,
+    pub name:     String,
     /// The username
     #[arg(short, long)]
     pub username: Option<String>,
@@ -53,10 +55,10 @@ pub struct Vault {
     pub password: Option<String>,
     /// The service name. e.g the website url
     #[arg(short, long)]
-    pub service: Option<String>,
+    pub service:  Option<String>,
     /// Add a note to the vault
     #[arg(short = 'o', long)]
-    pub note: Option<String>,
+    pub note:     Option<String>,
 }
 
 /// The vaults manager
@@ -65,9 +67,9 @@ pub struct Vaults {
     /// Hash of the master password
     pub master_password: [u8; 32],
     /// The json vaults file
-    pub vaults_file: PathBuf,
+    pub vaults_file:     PathBuf,
     /// The vaults
-    pub vaults: Vec<Vault>,
+    pub vaults:          Vec<Vault>,
 }
 
 impl Vault {
@@ -80,11 +82,11 @@ impl Vault {
         note: Option<impl Into<String>>,
     ) -> Self {
         Self {
-            name: name.into(),
+            name:     name.into(),
             username: username.map(Into::into),
             password: password.map(Into::into),
-            service: service.map(Into::into),
-            note: note.map(Into::into),
+            service:  service.map(Into::into),
+            note:     note.map(Into::into),
         }
     }
 

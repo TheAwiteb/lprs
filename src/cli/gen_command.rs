@@ -36,10 +36,10 @@ pub struct Gen {
     lowercase: bool,
     /// With numbers (0-9)
     #[arg(short, long)]
-    numbers: bool,
+    numbers:   bool,
     /// With symbols (!,# ...)
     #[arg(short, long)]
-    symbols: bool,
+    symbols:   bool,
 }
 
 impl LprsCommand for Gen {
