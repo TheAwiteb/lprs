@@ -29,7 +29,7 @@ mod bitwarden;
 
 pub use bitwarden::*;
 
-#[derive(Clone, Debug, ValueEnum)]
+#[derive(Clone, Debug, ValueEnum, Eq, PartialEq)]
 /// The vaults format
 pub enum Format {
     /// The lprs format, which is the default format
