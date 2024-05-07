@@ -130,11 +130,9 @@ impl Vaults {
     /// - if the encryption failed
     ///
     /// Note: The returned string is `Vec<Vault>`
-    pub fn json_export(&self) -> LprsResult<String> {
+    pub fn json_export(&self, encryption_key: &[u8; 32]) -> LprsResult<String> {
         let encrypt = |val: &str| {
-            LprsResult::Ok(
-                crate::BASE64.encode(cipher::encrypt(&self.master_password, val.as_ref())),
-            )
+            LprsResult::Ok(crate::BASE64.encode(cipher::encrypt(encryption_key, val.as_ref())))
         };
 
         serde_json::to_string(
