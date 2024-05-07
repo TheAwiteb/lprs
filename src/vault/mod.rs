@@ -45,7 +45,6 @@ pub enum Format {
 #[derive(Clone, Debug, Deserialize, Serialize, Parser)]
 pub struct Vault {
     /// The name of the vault
-    #[arg(short, long)]
     pub name:     String,
     /// The username
     #[arg(short, long)]
@@ -57,7 +56,7 @@ pub struct Vault {
     #[arg(short, long)]
     pub service:  Option<String>,
     /// Add a note to the vault
-    #[arg(short = 'o', long)]
+    #[arg(short, long)]
     pub note:     Option<String>,
 }
 
