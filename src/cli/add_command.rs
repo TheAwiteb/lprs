@@ -15,9 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
 use clap::Args;
-use inquire::{Password, PasswordDisplayMode};
 
 use crate::{
+    utils,
     vault::{Vault, Vaults},
     LprsCommand,
     LprsError,
@@ -32,31 +32,13 @@ pub struct Add {
     vault_info: Vault,
     /// The password, if there is no value for it you will prompt it
     #[arg(short, long)]
-    // FIXME: I think replacing `Option<Option<String>>` with custom type will be better
     #[allow(clippy::option_option)]
     password:   Option<Option<String>>,
 }
 
 impl LprsCommand for Add {
     fn run(mut self, mut vault_manager: Vaults) -> LprsResult<()> {
-        match self.password {
-            Some(Some(password)) => {
-                log::debug!("User provided a password");
-                self.vault_info.password = Some(password);
-            }
-            Some(None) => {
-                log::debug!("User didn't provide a password, prompting it");
-                self.vault_info.password = Some(
-                    Password::new("Vault password:")
-                        .without_confirmation()
-                        .with_formatter(&|p| "*".repeat(p.chars().count()))
-                        .with_display_mode(PasswordDisplayMode::Masked)
-                        .prompt()?,
-                );
-            }
-            None => {}
-        };
-
+        self.vault_info.password = utils::user_password(self.password)?;
         vault_manager.add_vault(self.vault_info);
         vault_manager.try_export()
     }

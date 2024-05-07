@@ -17,9 +17,9 @@
 use std::num::NonZeroU64;
 
 use clap::Args;
-use inquire::{Password, PasswordDisplayMode};
 
 use crate::{
+    utils,
     vault::{Vault, Vaults},
     LprsCommand,
     LprsError,
@@ -41,7 +41,6 @@ pub struct Edit {
     username: Option<String>,
     #[arg(short, long)]
     /// The new password, if there is no value for it you will prompt it
-    // FIXME: I think replacing `Option<Option<String>>` with custom type will be better
     #[allow(clippy::option_option)]
     password: Option<Option<String>>,
     #[arg(short, long)]
@@ -65,26 +64,13 @@ impl LprsCommand for Edit {
             )));
         };
 
-        // Get the password from stdin or from its value if provided
-        let password = match self.password {
-            Some(Some(password)) => Some(password),
-            Some(None) => {
-                Some(
-                    Password::new("New vault password:")
-                        .without_confirmation()
-                        .with_formatter(&|p| "*".repeat(p.chars().count()))
-                        .with_display_mode(PasswordDisplayMode::Masked)
-                        .prompt()?,
-                )
-            }
-            None => None,
-        };
-
         log::info!("Applying the new values to the vault");
         *vault = Vault::new(
             self.name.as_ref().unwrap_or(&vault.name),
             self.username.as_ref().or(vault.username.as_ref()),
-            password.as_ref().or(vault.password.as_ref()),
+            utils::user_password(self.password)?
+                .as_ref()
+                .or(vault.password.as_ref()),
             self.service.as_ref().or(vault.service.as_ref()),
             self.note.as_ref().or(vault.note.as_ref()),
         );

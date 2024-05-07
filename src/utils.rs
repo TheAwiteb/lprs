@@ -16,7 +16,7 @@
 
 use std::{fs, path::PathBuf};
 
-use inquire::{validator::Validation, PasswordDisplayMode};
+use inquire::{validator::Validation, Password, PasswordDisplayMode};
 use passwords::{analyzer, scorer};
 #[cfg(feature = "update-notify")]
 use reqwest::blocking::Client as BlockingClient;
@@ -41,6 +41,32 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
         fs::create_dir_all(&local_dir)?;
     }
     Ok(local_dir.join(filename))
+}
+
+/// Returns the user password if any
+///
+/// - If the `password` is `None` will return `None`
+/// - If the `password` is `Some(None)` will ask the user for a password in the
+///   stdin and return it
+/// - If the `password` is `Some(Some(password))` will return `Some(password)`
+///
+/// ## Errors
+/// - When failed to get the password from stdin
+pub fn user_password(password: Option<Option<String>>) -> LprsResult<Option<String>> {
+    Ok(match password {
+        None => None,
+        Some(Some(p)) => Some(p),
+        Some(None) => {
+            log::debug!("User didn't provide a password, prompting it");
+            Some(
+                Password::new("Vault password:")
+                    .without_confirmation()
+                    .with_formatter(&|p| "*".repeat(p.chars().count()))
+                    .with_display_mode(PasswordDisplayMode::Masked)
+                    .prompt()?,
+            )
+        }
+    })
 }
 
 /// Returns the default vaults json file
