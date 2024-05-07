@@ -38,7 +38,7 @@ pub struct Add {
 
 impl LprsCommand for Add {
     fn run(mut self, mut vault_manager: Vaults) -> LprsResult<()> {
-        self.vault_info.password = utils::user_password(self.password)?;
+        self.vault_info.password = utils::user_password(self.password, "Vault password:")?;
         vault_manager.add_vault(self.vault_info);
         vault_manager.try_export()
     }

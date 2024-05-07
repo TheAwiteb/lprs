@@ -52,14 +52,17 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
 ///
 /// ## Errors
 /// - When failed to get the password from stdin
-pub fn user_password(password: Option<Option<String>>) -> LprsResult<Option<String>> {
+pub fn user_password(
+    password: Option<Option<String>>,
+    prompt_message: &str,
+) -> LprsResult<Option<String>> {
     Ok(match password {
         None => None,
         Some(Some(p)) => Some(p),
         Some(None) => {
             log::debug!("User didn't provide a password, prompting it");
             Some(
-                Password::new("Vault password:")
+                Password::new(prompt_message)
                     .without_confirmation()
                     .with_formatter(&|p| "*".repeat(p.chars().count()))
                     .with_display_mode(PasswordDisplayMode::Masked)

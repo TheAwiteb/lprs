@@ -68,7 +68,7 @@ impl LprsCommand for Edit {
         *vault = Vault::new(
             self.name.as_ref().unwrap_or(&vault.name),
             self.username.as_ref().or(vault.username.as_ref()),
-            utils::user_password(self.password)?
+            utils::user_password(self.password, "New vault password:")?
                 .as_ref()
                 .or(vault.password.as_ref()),
             self.service.as_ref().or(vault.service.as_ref()),
