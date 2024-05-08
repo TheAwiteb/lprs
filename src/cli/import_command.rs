@@ -22,8 +22,10 @@ use std::{
 };
 
 use clap::Args;
+use sha2::Digest;
 
 use crate::{
+    utils,
     vault::{BitWardenPasswords, Format, Vault, Vaults},
     LprsCommand,
     LprsError,
@@ -40,7 +42,12 @@ pub struct Import {
 
     /// The format to import from
     #[arg(short, long, default_value_t = Format::Lprs)]
-    format: Format,
+    format:              Format,
+    /// Decryption password of the imported vaults (in `lprs` format)
+    /// if there is not, will use the master password
+    #[arg(short = 'p', long)]
+    #[allow(clippy::option_option)]
+    decryption_password: Option<Option<String>>,
 }
 
 impl LprsCommand for Import {
@@ -52,10 +59,18 @@ impl LprsCommand for Import {
             vault_manager.vaults_file.display()
         );
 
+        let decryption_key: Option<[u8; 32]> =
+            utils::user_password(self.decryption_password, "Decryption password:")?
+                .map(|p| sha2::Sha256::digest(p).into());
+
         let imported_passwords_len = match self.format {
             Format::Lprs => {
-                let vaults =
-                    Vaults::json_reload(&vault_manager.master_password, &fs::read(self.path)?)?;
+                let vaults = Vaults::json_reload(
+                    decryption_key
+                        .as_ref()
+                        .unwrap_or(&vault_manager.master_password),
+                    &fs::read(self.path)?,
+                )?;
                 let vaults_len = vaults.len();
 
                 vault_manager.vaults.extend(vaults);
@@ -81,7 +96,7 @@ impl LprsCommand for Import {
     }
 
     fn validate_args(&self) -> LprsResult<()> {
-        if self
+        if !self
             .path
             .extension()
             .is_some_and(|e| e.to_string_lossy().eq_ignore_ascii_case("json"))
@@ -103,6 +118,12 @@ impl LprsCommand for Import {
                 format!("file `{}` is a directory", self.path.display()),
             )));
         }
+        if self.decryption_password.is_some() && self.format != Format::Lprs {
+            return Err(LprsError::Other(
+                "You only can to use the decryption password with `lprs` format".to_owned(),
+            ));
+        }
+
 
         Ok(())
     }

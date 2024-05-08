@@ -17,8 +17,10 @@
 use std::{fs, io::Error as IoError, io::ErrorKind as IoErrorKind, path::PathBuf};
 
 use clap::Args;
+use sha2::Digest;
 
 use crate::{
+    utils,
     vault::{BitWardenPasswords, Format, Vaults},
     LprsCommand,
     LprsError,
@@ -30,12 +32,17 @@ use crate::{
 /// Export command, used to export the vaults in `lprs` format or `BitWarden`
 /// format. The exported file will be a json file.
 pub struct Export {
+    // TODO: `force` flag to write on existing file
     /// The path to export to
-    path:   PathBuf,
+    path:                PathBuf,
     /// Format to export vaults in
     #[arg(short, long, value_name = "FORMAT", default_value_t= Format::Lprs)]
-    format: Format,
-    // TODO: `force` flag to write on existing file
+    format:              Format,
+    /// Encryption password of the exported vaults (in `lprs` format)
+    /// if there is not, will use the master password
+    #[arg(short = 'p', long)]
+    #[allow(clippy::option_option)]
+    encryption_password: Option<Option<String>>,
 }
 
 impl LprsCommand for Export {
@@ -46,8 +53,19 @@ impl LprsCommand for Export {
             self.path.display(),
             self.format
         );
+
+        let encryption_key: Option<[u8; 32]> =
+            utils::user_password(self.encryption_password, "Encryption Password:")?
+                .map(|p| sha2::Sha256::digest(p).into());
+
         let exported_data = match self.format {
-            Format::Lprs => vault_manager.json_export()?,
+            Format::Lprs => {
+                vault_manager.json_export(
+                    encryption_key
+                        .as_ref()
+                        .unwrap_or(&vault_manager.master_password),
+                )?
+            }
             Format::BitWarden => serde_json::to_string(&BitWardenPasswords::from(vault_manager))?,
         };
 
@@ -76,6 +94,11 @@ impl LprsCommand for Export {
                 IoErrorKind::InvalidInput,
                 format!("file `{}` is a directory", self.path.display()),
             )));
+        }
+        if self.encryption_password.is_some() && self.format != Format::Lprs {
+            return Err(LprsError::Other(
+                "You only can to use the encryption password with `lprs` format".to_owned(),
+            ));
         }
 
         Ok(())
