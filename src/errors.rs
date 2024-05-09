@@ -38,6 +38,8 @@ pub enum Error {
     #[error("Invalid Vault Index Error: {0}")]
     InvalidVaultIndex(String),
     #[error("{0}")]
+    ArgParse(String),
+    #[error("{0}")]
     Other(String),
 
     #[error("CLI error: {0}")]
