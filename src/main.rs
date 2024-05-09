@@ -21,6 +21,8 @@ use std::process::ExitCode;
 use clap::Parser;
 use inquire::InquireError;
 
+/// A set of clap vaule parsers used to parse some CLI arguments
+pub mod clap_parsers;
 /// The main module of the lprs crate, contains the cli and the commands.
 pub mod cli;
 /// The errors module, contains the errors and the result type.
