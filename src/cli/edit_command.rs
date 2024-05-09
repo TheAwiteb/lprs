@@ -18,37 +18,37 @@ use std::num::NonZeroU64;
 
 use clap::Args;
 
-use crate::{
-    utils,
-    vault::{Vault, Vaults},
-    LprsCommand,
-    LprsError,
-    LprsResult,
-};
+use crate::{clap_parsers, utils, vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
 /// Edit command, used to edit the vault content
 pub struct Edit {
-    /// The password index. Check it from list command
+    /// The password index. You can get it from the list command
     index: NonZeroU64,
 
     #[arg(short, long)]
     /// The new vault name
-    name:     Option<String>,
+    name:              Option<String>,
     #[arg(short, long)]
     /// The new vault username
-    username: Option<String>,
+    username:          Option<String>,
     #[arg(short, long)]
     /// The new password, if there is no value for it you will prompt it
     #[allow(clippy::option_option)]
-    password: Option<Option<String>>,
+    password:          Option<Option<String>>,
     #[arg(short, long)]
     /// The new vault service
-    service:  Option<String>,
+    service:           Option<String>,
     #[arg(short = 'o', long)]
     /// The new vault note
-    note:     Option<String>,
+    note:              Option<String>,
+    /// The custom field, make its value empty to delete it
+    ///
+    /// If the custom field not exist will created it, if it's will update it
+    #[arg(name = "KEY=VALUE", short = 'c', long = "custom")]
+    #[arg(value_parser = clap_parsers::kv_parser)]
+    pub custom_fields: Vec<(String, String)>,
 }
 
 impl LprsCommand for Edit {
@@ -65,15 +65,23 @@ impl LprsCommand for Edit {
         };
 
         log::info!("Applying the new values to the vault");
-        *vault = Vault::new(
-            self.name.as_ref().unwrap_or(&vault.name),
-            self.username.as_ref().or(vault.username.as_ref()),
-            utils::user_password(self.password, "New vault password:")?
-                .as_ref()
-                .or(vault.password.as_ref()),
-            self.service.as_ref().or(vault.service.as_ref()),
-            self.note.as_ref().or(vault.note.as_ref()),
-        );
+        if let Some(new_name) = self.name {
+            vault.name = new_name;
+        }
+        if self.password.is_some() {
+            vault.password = utils::user_password(self.password, "New vault password:")?;
+        }
+        if let Some(new_username) = self.username {
+            vault.username = Some(new_username);
+        }
+        if let Some(new_service) = self.service {
+            vault.service = Some(new_service);
+        }
+        if let Some(new_note) = self.note {
+            vault.note = Some(new_note);
+        }
+        utils::apply_custom_fields(&mut vault.custom_fields, self.custom_fields);
+
         vault_manager.try_export()
     }
 
@@ -83,11 +91,18 @@ impl LprsCommand for Edit {
             && self.password.is_none()
             && self.service.is_none()
             && self.note.is_none()
+            && self.custom_fields.is_empty()
         {
             return Err(LprsError::Other(
                 "You must edit one option at least".to_owned(),
             ));
         }
+        if let Some(duplicated_key) = utils::get_duplicated_field(&self.custom_fields) {
+            return Err(LprsError::Other(format!(
+                "Duplication error: The custom key `{duplicated_key}` is duplicate"
+            )));
+        }
+
         Ok(())
     }
 }

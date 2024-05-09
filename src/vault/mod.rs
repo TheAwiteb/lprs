@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::{fmt, fs, path::PathBuf};
+use std::{collections::BTreeMap, fmt, fs, path::PathBuf};
 
 use base64::Engine;
 use clap::{Parser, ValueEnum};
@@ -45,19 +45,22 @@ pub enum Format {
 #[derive(Clone, Debug, Deserialize, Serialize, Parser)]
 pub struct Vault {
     /// The name of the vault
-    pub name:     String,
+    pub name:          String,
     /// The username
     #[arg(short, long)]
-    pub username: Option<String>,
+    pub username:      Option<String>,
     /// The password
     #[arg(skip)]
-    pub password: Option<String>,
+    pub password:      Option<String>,
     /// The service name. e.g the website url
     #[arg(short, long)]
-    pub service:  Option<String>,
+    pub service:       Option<String>,
     /// Add a note to the vault
     #[arg(short, long)]
-    pub note:     Option<String>,
+    pub note:          Option<String>,
+    /// The vault custom fields
+    #[arg(skip)]
+    pub custom_fields: BTreeMap<String, String>,
 }
 
 /// The vaults manager
@@ -79,13 +82,15 @@ impl Vault {
         password: Option<impl Into<String>>,
         service: Option<impl Into<String>>,
         note: Option<impl Into<String>>,
+        custom_fields: BTreeMap<String, String>,
     ) -> Self {
         Self {
-            name:     name.into(),
+            name: name.into(),
             username: username.map(Into::into),
             password: password.map(Into::into),
-            service:  service.map(Into::into),
-            note:     note.map(Into::into),
+            service: service.map(Into::into),
+            note: note.map(Into::into),
+            custom_fields,
         }
     }
 
@@ -131,9 +136,8 @@ impl Vaults {
     ///
     /// Note: The returned string is `Vec<Vault>`
     pub fn json_export(&self, encryption_key: &[u8; 32]) -> LprsResult<String> {
-        let encrypt = |val: &str| {
-            LprsResult::Ok(crate::BASE64.encode(cipher::encrypt(encryption_key, val.as_ref())))
-        };
+        let encrypt =
+            |val: &str| crate::BASE64.encode(cipher::encrypt(encryption_key, val.as_ref()));
 
         serde_json::to_string(
             &self
@@ -141,11 +145,15 @@ impl Vaults {
                 .iter()
                 .map(|v| {
                     LprsResult::Ok(Vault::new(
-                        encrypt(&v.name)?,
-                        v.username.as_ref().and_then(|u| encrypt(u).ok()),
-                        v.password.as_ref().and_then(|p| encrypt(p).ok()),
-                        v.service.as_ref().and_then(|s| encrypt(s).ok()),
-                        v.note.as_ref().and_then(|n| encrypt(n).ok()),
+                        encrypt(&v.name),
+                        v.username.as_ref().map(|u| encrypt(u)),
+                        v.password.as_ref().map(|p| encrypt(p)),
+                        v.service.as_ref().map(|s| encrypt(s)),
+                        v.note.as_ref().map(|n| encrypt(n)),
+                        v.custom_fields
+                            .iter()
+                            .map(|(key, value)| (encrypt(key), encrypt(value)))
+                            .collect(),
                     ))
                 })
                 .collect::<LprsResult<Vec<_>>>()?,
@@ -178,6 +186,10 @@ impl Vaults {
                     v.password.as_ref().and_then(|p| decrypt(p).ok()),
                     v.service.as_ref().and_then(|s| decrypt(s).ok()),
                     v.note.as_ref().and_then(|n| decrypt(n).ok()),
+                    v.custom_fields
+                        .into_iter()
+                        .map(|(key, value)| LprsResult::Ok((decrypt(&key)?, decrypt(&value)?)))
+                        .collect::<LprsResult<_>>()?,
                 ))
             })
             .collect()
@@ -244,6 +256,9 @@ impl fmt::Display for Vault {
         }
         if let Some(ref note) = self.note {
             write!(f, "\nNote:\n{note}")?;
+        }
+        for (key, value) in &self.custom_fields {
+            write!(f, "\n{key}: {value}")?;
         }
 
         Ok(())

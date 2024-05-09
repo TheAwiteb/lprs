@@ -17,6 +17,7 @@
 use clap::Args;
 
 use crate::{
+    clap_parsers,
     utils,
     vault::{Vault, Vaults},
     LprsCommand,
@@ -29,16 +30,21 @@ use crate::{
 /// Add command, used to add new vault to the vaults file
 pub struct Add {
     #[command(flatten)]
-    vault_info: Vault,
+    vault_info:    Vault,
     /// The password, if there is no value for it you will prompt it
     #[arg(short, long)]
     #[allow(clippy::option_option)]
-    password:   Option<Option<String>>,
+    password:      Option<Option<String>>,
+    /// Add a custom field to the vault
+    #[arg(name = "KEY=VALUE", short = 'c', long = "custom")]
+    #[arg(value_parser = clap_parsers::kv_parser)]
+    custom_fields: Vec<(String, String)>,
 }
 
 impl LprsCommand for Add {
     fn run(mut self, mut vault_manager: Vaults) -> LprsResult<()> {
         self.vault_info.password = utils::user_password(self.password, "Vault password:")?;
+        self.vault_info.custom_fields = self.custom_fields.into_iter().collect();
         vault_manager.add_vault(self.vault_info);
         vault_manager.try_export()
     }
@@ -48,9 +54,17 @@ impl LprsCommand for Add {
             && self.password.is_none()
             && self.vault_info.service.is_none()
             && self.vault_info.note.is_none()
+            && self.custom_fields.is_empty()
         {
             return Err(LprsError::Other("You can't add empty vault".to_owned()));
         }
+
+        if let Some(duplicated_key) = utils::get_duplicated_field(&self.custom_fields) {
+            return Err(LprsError::Other(format!(
+                "Duplication error: The custom key `{duplicated_key}` is duplicate"
+            )));
+        }
+
         Ok(())
     }
 }

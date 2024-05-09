@@ -43,12 +43,20 @@ pub struct BitWardenFolder {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct BitWardenNameValue {
+    pub name:  String,
+    pub value: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BitWardenPassword {
     #[serde(rename = "type")]
-    pub ty:    i32,
-    pub name:  String,
-    pub login: Option<BitWardenLoginData>,
-    pub notes: Option<String>,
+    pub ty:     i32,
+    pub name:   String,
+    pub login:  Option<BitWardenLoginData>,
+    pub notes:  Option<String>,
+    #[serde(default)]
+    pub fields: Vec<BitWardenNameValue>,
 }
 
 /// The bitwarden password struct
@@ -71,6 +79,11 @@ impl From<BitWardenPassword> for Vault {
                     .and_then(|p| p.first().map(|u| u.uri.clone()))
             }),
             value.notes,
+            value
+                .fields
+                .into_iter()
+                .map(|nv| (nv.name, nv.value))
+                .collect(),
         )
     }
 }
@@ -78,16 +91,21 @@ impl From<BitWardenPassword> for Vault {
 impl From<Vault> for BitWardenPassword {
     fn from(value: Vault) -> Self {
         Self {
-            ty:    1,
-            name:  value.name,
-            login: Some(BitWardenLoginData {
+            ty:     1,
+            name:   value.name,
+            login:  Some(BitWardenLoginData {
                 username: value.username,
                 password: value.password,
                 uris:     value
                     .service
                     .map(|s| vec![BitWardenUri { mt: None, uri: s }]),
             }),
-            notes: value.note,
+            notes:  value.note,
+            fields: value
+                .custom_fields
+                .into_iter()
+                .map(|(name, value)| BitWardenNameValue { name, value })
+                .collect(),
         }
     }
 }
