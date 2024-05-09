@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
+use std::collections::BTreeMap;
 use std::{fs, path::PathBuf};
 
 use inquire::{validator::Validation, Password, PasswordDisplayMode};
@@ -173,4 +174,34 @@ pub fn lprs_version() -> LprsResult<Option<String>> {
         }
     }
     Ok(None)
+}
+
+/// Returns the duplicated field from the custom field (unprocessed fields)
+pub fn get_duplicated_field(fields: &[(String, String)]) -> Option<&str> {
+    fields.iter().find_map(|(key, _)| {
+        if fields.iter().filter(|(k, _)| key == k).count() > 1 {
+            return Some(key.as_str());
+        }
+        None
+    })
+}
+
+/// Apply the edited fields to the vault fields.
+/// This will:
+/// - Add the field if it's not in the fields map.
+/// - Update the field if it's in the map.
+/// - Remove the field if its value is empty string.
+pub fn apply_custom_fields(
+    fields: &mut BTreeMap<String, String>,
+    edited_fields: Vec<(String, String)>,
+) {
+    for (key, value) in edited_fields {
+        if fields.contains_key(&key) && value.is_empty() {
+            fields.remove(&key);
+        } else {
+            // The field is not there or its value not empty,
+            // so add it or update its value
+            fields.insert(key, value);
+        }
+    }
 }
