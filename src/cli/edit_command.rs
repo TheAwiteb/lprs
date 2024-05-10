@@ -49,6 +49,11 @@ pub struct Edit {
     #[arg(name = "KEY=VALUE", short = 'c', long = "custom")]
     #[arg(value_parser = clap_parsers::kv_parser)]
     pub custom_fields: Vec<(String, String)>,
+    /// Force edit, will not return error if there is a problem with the args.
+    ///
+    /// For example, duplication in the custom fields and try to editing nothing
+    #[arg(short, long)]
+    force:             bool,
 }
 
 impl LprsCommand for Edit {
@@ -86,7 +91,8 @@ impl LprsCommand for Edit {
     }
 
     fn validate_args(&self) -> LprsResult<()> {
-        if self.name.is_none()
+        if !self.force
+            && self.name.is_none()
             && self.username.is_none()
             && self.password.is_none()
             && self.service.is_none()
@@ -98,9 +104,11 @@ impl LprsCommand for Edit {
             ));
         }
         if let Some(duplicated_key) = utils::get_duplicated_field(&self.custom_fields) {
-            return Err(LprsError::Other(format!(
-                "Duplication error: The custom key `{duplicated_key}` is duplicate"
-            )));
+            if !self.force {
+                return Err(LprsError::Other(format!(
+                    "Duplication error: The custom key `{duplicated_key}` is duplicate"
+                )));
+            }
         }
 
         Ok(())

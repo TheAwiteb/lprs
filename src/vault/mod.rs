@@ -94,6 +94,15 @@ impl Vault {
         }
     }
 
+    /// Returns true if the vault is empty
+    pub fn is_empty(&self) -> bool {
+        self.username.is_none()
+            && self.password.is_none()
+            && self.service.is_none()
+            && self.note.is_none()
+            && self.custom_fields.is_empty()
+    }
+
     /// Return the name of the vault with the service if there
     pub fn list_name(&self) -> String {
         use fmt::Write;

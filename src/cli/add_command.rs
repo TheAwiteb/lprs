@@ -39,30 +39,36 @@ pub struct Add {
     #[arg(name = "KEY=VALUE", short = 'c', long = "custom")]
     #[arg(value_parser = clap_parsers::kv_parser)]
     custom_fields: Vec<(String, String)>,
+    /// Force add, will not return error if there is a problem with the args.
+    ///
+    /// For example, duplication in the custom fields and try to adding empty
+    /// vault
+    #[arg(short, long)]
+    force:         bool,
 }
 
 impl LprsCommand for Add {
     fn run(mut self, mut vault_manager: Vaults) -> LprsResult<()> {
-        self.vault_info.password = utils::user_password(self.password, "Vault password:")?;
-        self.vault_info.custom_fields = self.custom_fields.into_iter().collect();
-        vault_manager.add_vault(self.vault_info);
-        vault_manager.try_export()
+        if !self.vault_info.is_empty() {
+            self.vault_info.password = utils::user_password(self.password, "Vault password:")?;
+            self.vault_info.custom_fields = self.custom_fields.into_iter().collect();
+            vault_manager.add_vault(self.vault_info);
+            vault_manager.try_export()?;
+        }
+        Ok(())
     }
 
     fn validate_args(&self) -> LprsResult<()> {
-        if self.vault_info.username.is_none()
-            && self.password.is_none()
-            && self.vault_info.service.is_none()
-            && self.vault_info.note.is_none()
-            && self.custom_fields.is_empty()
-        {
+        if !self.force && self.vault_info.is_empty() {
             return Err(LprsError::Other("You can't add empty vault".to_owned()));
         }
 
         if let Some(duplicated_key) = utils::get_duplicated_field(&self.custom_fields) {
-            return Err(LprsError::Other(format!(
-                "Duplication error: The custom key `{duplicated_key}` is duplicate"
-            )));
+            if !self.force {
+                return Err(LprsError::Other(format!(
+                    "Duplication error: The custom key `{duplicated_key}` is duplicate"
+                )));
+            }
         }
 
         Ok(())
