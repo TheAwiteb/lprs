@@ -44,7 +44,7 @@ pub struct Gen {
 
 impl LprsCommand for Gen {
     fn run(self, _vault_manager: Vaults) -> LprsResult<()> {
-        println!(
+        print!(
             "{}",
             passwords::PasswordGenerator::new()
                 .length(self.length.get() as usize)
@@ -52,7 +52,7 @@ impl LprsCommand for Gen {
                 .lowercase_letters(self.lowercase)
                 .numbers(self.numbers)
                 .symbols(self.symbols)
-                .strict(true)
+                .strict(false)
                 .generate_one()
                 .expect("The length cannot be zero")
         );
