@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - **BC**:  The previous format is not supported after this commit, so
 you must export your vaults in bit-warden format (before this commit)
 and then re-invoke them (after this commit)
+-  Force flag for `edit` and `add` commands ([**#42**](https://git.4rs.nl/awiteb/lprs/issues/42)) ([`add0084`](https://git.4rs.nl/awiteb/lprs/commit/add008416b37c3f8e4def891355dcbccc6786a58))
 -  Make the `name` option in `edit` & `add` as argument ([**#29**](https://git.4rs.nl/awiteb/lprs/issues/29)) ([`127f377`](https://git.4rs.nl/awiteb/lprs/commit/127f3779f8d805c7e1f5209555d8929082f85c82))
     - **BC**:  Change the `name` option to argument in `name` and `edit` commands
 -  Make the username & password optional in the vault ([**#12**](https://git.4rs.nl/awiteb/lprs/issues/12)) ([`af6664d`](https://git.4rs.nl/awiteb/lprs/commit/af6664da5c08cc39cf732d64ba74de1731095723))
