@@ -31,6 +31,8 @@ pub mod edit_command;
 pub mod export_command;
 /// Generate command, used to generate a password
 pub mod gen_command;
+/// Command to get a entire vault or single field from it
+pub mod get_command;
 /// Import command, used to import vaults from the exported files, `lprs` or
 /// `BitWarden`
 pub mod import_command;
@@ -56,13 +58,15 @@ pub enum Commands {
     Edit(edit_command::Edit),
     /// Generate a password
     Gen(gen_command::Gen),
+    /// Get a entire vault or single field from it
+    Get(get_command::Get),
     /// Export the vaults
     Export(export_command::Export),
     /// Import vaults
     Import(import_command::Import),
 }
 
-impl_commands!(Commands, Add Remove List Clean Edit Gen Export Import);
+impl_commands!(Commands, Add Remove List Clean Edit Gen Get Export Import);
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
