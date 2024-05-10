@@ -23,6 +23,7 @@ use passwords::{analyzer, scorer};
 use reqwest::blocking::Client as BlockingClient;
 use sha2::Digest;
 
+use crate::vault::Vault;
 use crate::{LprsError, LprsResult};
 
 /// Returns the local project dir joined with the given file name
@@ -204,4 +205,35 @@ pub fn apply_custom_fields(
             fields.insert(key, value);
         }
     }
+}
+
+/// Returns the vault with its index by its index or name
+///
+/// ## Errors
+/// - If there is no vault with the given index or name
+pub fn vault_by_index_or_name<'a>(
+    index_or_name: &str,
+    vaults: &'a mut [Vault],
+) -> LprsResult<(usize, &'a mut Vault)> {
+    let parsed_index = index_or_name.parse::<usize>();
+
+    let Some((index, vault)) = (if let Ok(index) = parsed_index {
+        vaults.get_mut(index - 1).map(|v| (index, v))
+    } else {
+        vaults
+            .iter_mut()
+            .enumerate()
+            .find(|(_, v)| v.name == index_or_name)
+    }) else {
+        return Err(LprsError::Other(format!(
+            "There is no vault with the given {} `{}`",
+            if parsed_index.is_ok() {
+                "index"
+            } else {
+                "name"
+            },
+            index_or_name,
+        )));
+    };
+    Ok((index, vault))
 }

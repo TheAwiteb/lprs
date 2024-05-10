@@ -19,6 +19,7 @@ use std::str::FromStr;
 use clap::Args;
 
 use crate::{
+    utils,
     vault::{Vault, Vaults},
     LprsCommand,
     LprsError,
@@ -96,27 +97,9 @@ pub struct Get {
 }
 
 impl LprsCommand for Get {
-    fn run(self, vault_manager: Vaults) -> LprsResult<()> {
-        let parsed_index = self.location.trim().parse::<usize>();
-        let Some((index, vault)) = (if let Ok(index) = parsed_index {
-            vault_manager.vaults.get(index - 1).map(|v| (index, v))
-        } else {
-            vault_manager
-                .vaults
-                .iter()
-                .enumerate()
-                .find(|(_, v)| v.name == self.location)
-        }) else {
-            return Err(LprsError::Other(format!(
-                "There is no vault with the given {} `{}`",
-                if parsed_index.is_ok() {
-                    "index"
-                } else {
-                    "name"
-                },
-                self.location.trim(),
-            )));
-        };
+    fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
+        let (index, vault) =
+            utils::vault_by_index_or_name(self.location.trim(), &mut vault_manager.vaults)?;
 
         if let Some(field) = self.field {
             if field == VaultGetField::Index {
