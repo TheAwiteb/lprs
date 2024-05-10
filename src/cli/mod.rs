@@ -17,6 +17,7 @@
 use std::{fs, path::PathBuf};
 
 use clap::Parser;
+use sha2::{Digest, Sha256};
 
 use crate::{impl_commands, utils, vault::Vaults, LprsCommand, LprsResult};
 
@@ -74,10 +75,13 @@ impl_commands!(Commands, Add Remove List Clean Edit Gen Get Export Import);
 pub struct Cli {
     /// The vaults json file
     #[arg(short = 'f', long)]
-    pub vaults_file: Option<PathBuf>,
+    pub vaults_file:     Option<PathBuf>,
     /// Show the logs in the stdout
     #[arg(short, long)]
-    pub verbose:     bool,
+    pub verbose:         bool,
+    /// The master password, or you will prompt it
+    #[arg(short, long)]
+    pub master_password: Option<String>,
 
     #[command(subcommand)]
     /// The provided command to run
@@ -121,8 +125,11 @@ impl Cli {
             }
         } else {
             log::info!("Reloading the vaults file");
-            let master_password =
-                utils::master_password_prompt(fs::read(&vaults_file)?.is_empty())?;
+            let master_password = if let Some(plain_master_password) = self.master_password {
+                Sha256::digest(plain_master_password).into()
+            } else {
+                utils::master_password_prompt(fs::read(&vaults_file)?.is_empty())?
+            };
             Vaults::try_reload(vaults_file, master_password)?
         };
 
