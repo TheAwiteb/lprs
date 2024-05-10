@@ -25,6 +25,8 @@ use crate::{impl_commands, utils, vault::Vaults, LprsCommand, LprsResult};
 pub mod add_command;
 /// Clean command, used to clean the vaults file (remove all vaults)
 pub mod clean_command;
+/// Generate shell completion
+pub mod completion_command;
 /// Edit command, used to edit the vault content
 pub mod edit_command;
 /// Export command, used to export the vaults
@@ -65,9 +67,11 @@ pub enum Commands {
     Export(export_command::Export),
     /// Import vaults
     Import(import_command::Import),
+    /// Generate shell completion
+    Completion(completion_command::Completion),
 }
 
-impl_commands!(Commands, Add Remove List Clean Edit Gen Get Export Import);
+impl_commands!(Commands, Add Remove List Clean Edit Gen Get Export Import Completion);
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -116,7 +120,10 @@ impl Cli {
 
         self.command.validate_args()?;
 
-        let vault_manager = if matches!(self.command, Commands::Clean(..) | Commands::Gen(..)) {
+        let vault_manager = if matches!(
+            self.command,
+            Commands::Clean(..) | Commands::Gen(..) | Commands::Completion(..)
+        ) {
             log::info!("Running command that don't need the vault manager");
             // Returns empty vault manager for those commands don't need it
             Vaults {
