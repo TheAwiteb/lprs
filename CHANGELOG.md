@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 -  Ability to enter password via stdin `add`&`edit` ([**#15**](https://git.4rs.nl/awiteb/lprs/issues/15)) ([`5f357b8`](https://git.4rs.nl/awiteb/lprs/commit/5f357b89cb6a49be1c5461fa4b6cd5aaec8e541f))
+-  Ability to pass the master password as option ([`62d4060`](https://git.4rs.nl/awiteb/lprs/commit/62d4060bb8ffdfb834d5c860f79414cbca211f72))
 -  Add `get` command ([`f9fbf1a`](https://git.4rs.nl/awiteb/lprs/commit/f9fbf1a0b7b85638ad64287738e05ec1a1c35d25))
 -  Encrypt the hole vault file ([`6f6966d`](https://git.4rs.nl/awiteb/lprs/commit/6f6966d5b25b2b5047081304f7597fe80ec95387))
     - **BC**:  The previous format is not supported after this commit, so
