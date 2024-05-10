@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::num::NonZeroU64;
-
 use clap::Args;
 
 use crate::{clap_parsers, utils, vault::Vaults, LprsCommand, LprsError, LprsResult};
@@ -24,8 +22,9 @@ use crate::{clap_parsers, utils, vault::Vaults, LprsCommand, LprsError, LprsResu
 #[command(author, version, about, long_about = None)]
 /// Edit command, used to edit the vault content
 pub struct Edit {
-    /// The password index. You can get it from the list command
-    index: NonZeroU64,
+    /// The vault to edit, index or name
+    #[arg(name = "INDEX-or-NAME")]
+    location: String,
 
     #[arg(short, long)]
     /// The new vault name
@@ -58,16 +57,16 @@ pub struct Edit {
 
 impl LprsCommand for Edit {
     fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
-        let index = self.index.get() as usize;
-        log::debug!("Editing vault at index: {index}");
-
-        let Some(vault) = vault_manager.vaults.get_mut(index - 1) else {
-            return Err(LprsError::InvalidVaultIndex(format!(
-                "The index `{}` is greater than the vaults count {}",
-                self.index,
-                vault_manager.vaults.len()
-            )));
-        };
+        let vault =
+            match utils::vault_by_index_or_name(self.location.trim(), &mut vault_manager.vaults) {
+                Ok((_, v)) => v,
+                Err(err) => {
+                    if self.force {
+                        return Ok(());
+                    }
+                    return Err(err);
+                }
+            };
 
         log::info!("Applying the new values to the vault");
         if let Some(new_name) = self.name {

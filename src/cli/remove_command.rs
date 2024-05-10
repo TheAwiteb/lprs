@@ -14,44 +14,37 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-use std::num::NonZeroU64;
-
 use clap::Args;
 
-use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
+use crate::{utils, vault::Vaults, LprsCommand, LprsResult};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
 /// Remove command, used to remove a vault from the vaults file
 pub struct Remove {
-    /// The password index
-    index: NonZeroU64,
+    /// The vault to remove, index or name
+    #[arg(name = "INDEX-or-NAME")]
+    location: String,
 
-    /// Force remove, will not return error if there is no password with this
-    /// index
+    /// Force remove, will not return error if there is no vault with the given
+    /// index or name
     #[arg(short, long)]
     force: bool,
 }
 
 impl LprsCommand for Remove {
     fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
-        let index = (self.index.get() - 1) as usize;
-        log::debug!("Removing vault at index: {index}");
-
-        if index > vault_manager.vaults.len() {
-            if self.force {
-                log::error!(
-                    "The index is greater than the passwords counts, but the force flag is enabled"
-                );
-            } else {
-                return Err(LprsError::Other(
-                    "The index is greater than the passwords counts".to_owned(),
-                ));
-            }
-        } else {
-            vault_manager.vaults.remove(index);
-            vault_manager.try_export()?;
-        }
-        Ok(())
+        let index =
+            match utils::vault_by_index_or_name(self.location.trim(), &mut vault_manager.vaults) {
+                Ok((idx, _)) => idx,
+                Err(err) => {
+                    if self.force {
+                        return Ok(());
+                    }
+                    return Err(err);
+                }
+            };
+        vault_manager.vaults.remove(index);
+        vault_manager.try_export()
     }
 }
