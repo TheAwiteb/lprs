@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
 use clap::Args;
-use inquire::Select;
+use inquire::{InquireError, Select};
 
 use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
@@ -29,6 +29,9 @@ pub struct List {
     /// Enable regex when use `--filter` option
     #[arg(short, long)]
     regex:  bool,
+    /// Returns the output as `json` list of vaults
+    #[arg(long)]
+    json:   bool,
 }
 
 impl LprsCommand for List {
@@ -51,29 +54,25 @@ impl LprsCommand for List {
 
         let re = regex::Regex::new(&pattern)?;
 
-        let vaults_list = vault_manager
-            .vaults
-            .iter()
-            .enumerate()
-            .filter_map(|(idx, v)| {
-                if re.is_match(&v.name)
-                    || v.username.as_deref().is_some_and(|u| re.is_match(u))
-                    || v.service.as_deref().is_some_and(|s| re.is_match(s))
-                    || v.note.as_deref().is_some_and(|n| re.is_match(n))
-                {
-                    return Some(format!("{}) {}", idx + 1, v.list_name()));
-                }
-                None
-            })
-            .collect::<Vec<_>>();
+        let vaults_list = vault_manager.vaults.iter().enumerate().filter(|(_, v)| {
+            re.is_match(&v.name)
+                || v.username.as_deref().is_some_and(|u| re.is_match(u))
+                || v.service.as_deref().is_some_and(|s| re.is_match(s))
+                || v.note.as_deref().is_some_and(|n| re.is_match(n))
+        });
 
-        if vaults_list.is_empty() {
-            return Err(LprsError::Other(
-                "There is no result match your filter".to_owned(),
-            ));
-        }
-
-        let vault_idx = Select::new("Select a vault to view:", vaults_list)
+        if self.json {
+            print!(
+                "{}",
+                serde_json::to_string(&vaults_list.map(|(_, v)| v).collect::<Vec<_>>())?
+            )
+        } else {
+            let vault_idx = Select::new(
+                "Select a vault to view:",
+                vaults_list
+                    .map(|(idx, v)| format!("{}) {}", idx + 1, v.list_name()))
+                    .collect(),
+            )
             .with_formatter(&|s| {
                 s.value
                     .split_once(") ")
@@ -81,22 +80,29 @@ impl LprsCommand for List {
                     .1
                     .to_owned()
             })
-            .prompt()?
+            .prompt()
+            .map_err(|err| {
+                if matches!(err, InquireError::InvalidConfiguration(_)) {
+                    return LprsError::Other("There is no result match your filter".to_owned());
+                }
+                err.into()
+            })?
             .split_once(')')
             .expect("The bracket are hard coded above")
             .0
             .parse::<usize>()
             .unwrap_or_default();
 
-        log::debug!("The user selected the vault at index: {vault_idx}");
+            log::debug!("The user selected the vault at index: {vault_idx}");
 
-        println!(
-            "{}",
-            vault_manager
-                .vaults
-                .get(vault_idx - 1)
-                .expect("The index is correct")
-        );
+            println!(
+                "{}",
+                vault_manager
+                    .vaults
+                    .get(vault_idx - 1)
+                    .expect("The index is correct")
+            );
+        }
 
         Ok(())
     }
