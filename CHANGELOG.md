@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## unreleased
 ### Added
 -  Ability to enter password via stdin `add`&`edit` ([**#15**](https://git.4rs.nl/awiteb/lprs/issues/15)) ([`5f357b8`](https://git.4rs.nl/awiteb/lprs/commit/5f357b89cb6a49be1c5461fa4b6cd5aaec8e541f))
+-  Add `get` command ([`f9fbf1a`](https://git.4rs.nl/awiteb/lprs/commit/f9fbf1a0b7b85638ad64287738e05ec1a1c35d25))
 -  Encrypt the hole vault file ([`6f6966d`](https://git.4rs.nl/awiteb/lprs/commit/6f6966d5b25b2b5047081304f7597fe80ec95387))
     - **BC**:  The previous format is not supported after this commit, so
 you must export your vaults in bit-warden format (before this commit)
@@ -29,6 +30,9 @@ and then re-invoke them (after this commit)
 -  Use select for vaults listing ([**#19**](https://git.4rs.nl/awiteb/lprs/issues/19)) ([`83c7296`](https://git.4rs.nl/awiteb/lprs/commit/83c7296bf7bf469423f53b024cb65e608ff6c9d9))
 ### Fixed
 -  Merge rust ci jobs into one job ([**#2**](https://git.4rs.nl/awiteb/lprs/issues/2)) ([`34eb9d1`](https://git.4rs.nl/awiteb/lprs/commit/34eb9d10f0ad514c6a7878fd8415a50f04db2be8))
+### Removed
+-  Remove `--get` option from `list` command ([`44b5b3e`](https://git.4rs.nl/awiteb/lprs/commit/44b5b3e09b6c653b0d201e268878718cfa507209))
+    - **BC**:  The deletion was in favor `get` command, which is better
 
 ## [1.2.1](https://git.4rs.nl/awiteb/lprs/compare/v1.2.0..v1.2.1) - 2024-01-07
 
