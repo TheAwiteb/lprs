@@ -1,4 +1,4 @@
-// Lprs - A local CLI vault manager
+// Lprs - A local CLI vaults manager. For human and machine use
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify

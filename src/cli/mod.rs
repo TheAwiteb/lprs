@@ -1,4 +1,4 @@
-// Lprs - A local CLI vault manager
+// Lprs - A local CLI vaults manager. For human and machine use
 // Copyright (C) 2024  Awiteb <a@4rs.nl>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -75,7 +75,7 @@ impl_commands!(Commands, Add Remove List Clean Edit Gen Get Export Import Comple
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-/// The lprs cli, manage the CLI arguments and run the commands
+/// A local CLI vaults manager. For human and machine use
 pub struct Cli {
     /// The vaults json file
     #[arg(short = 'f', long)]
