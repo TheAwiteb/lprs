@@ -44,6 +44,8 @@ pub enum Error {
          custom fields {0}"
     )]
     ReservedPrefix(&'static str),
+    #[error("Base32 Error: {0}")]
+    Base32(String),
     #[error("{0}")]
     Other(String),
 
