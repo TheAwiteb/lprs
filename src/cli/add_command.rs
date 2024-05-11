@@ -31,10 +31,14 @@ use crate::{
 pub struct Add {
     #[command(flatten)]
     vault_info:    Vault,
-    /// The password, if there is no value for it you will prompt it
+    /// The password, if there is no value you will prompt it
     #[arg(short, long)]
     #[allow(clippy::option_option)]
     password:      Option<Option<String>>,
+    /// The TOTP secret, if there is no value you will prompt it
+    #[arg(short, long)]
+    #[allow(clippy::option_option)]
+    totp_secret:   Option<Option<String>>,
     /// Add a custom field to the vault
     #[arg(name = "KEY=VALUE", short = 'c', long = "custom")]
     #[arg(value_parser = clap_parsers::kv_parser)]

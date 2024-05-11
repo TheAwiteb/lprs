@@ -20,7 +20,7 @@ use clap::Args;
 
 use crate::{
     utils,
-    vault::{Vault, Vaults},
+    vault::{cipher, Vault, Vaults},
     LprsCommand,
     LprsError,
     LprsResult,
@@ -34,6 +34,8 @@ enum VaultGetField {
     Password,
     Service,
     Note,
+    TotpSecret,
+    TotpCode,
     Custom(String),
 }
 
@@ -48,6 +50,8 @@ impl FromStr for VaultGetField {
             "password" => Self::Password,
             "service" => Self::Service,
             "note" => Self::Note,
+            "totp_secret" => Self::TotpSecret,
+            "totp_code" => Self::TotpCode,
             _ => Self::Custom(input.to_owned()),
         })
     }
@@ -63,6 +67,8 @@ impl VaultGetField {
             Self::Password => vault.password.as_deref(),
             Self::Service => vault.service.as_deref(),
             Self::Note => vault.note.as_deref(),
+            Self::TotpSecret => vault.totp_secret.as_deref(),
+            Self::TotpCode => None,
             Self::Custom(custom_field) => vault.custom_fields.get(custom_field).map(|x| x.as_str()),
         }
     }
@@ -76,6 +82,8 @@ impl VaultGetField {
             Self::Password => "password",
             Self::Service => "service",
             Self::Note => "note",
+            Self::TotpSecret => "totp_secret",
+            Self::TotpCode => "totp_code",
             Self::Custom(field) => field.as_str(),
         }
     }
@@ -90,8 +98,10 @@ pub struct Get {
     location: String,
     /// A Specific field to get.
     ///
-    /// Can be [name,username,password,service,note,"string"] where the string
-    /// means a custom field
+    /// Can be [name, username, password, service, note, totp_secret, totp_code,
+    /// "string"]
+    ///
+    /// where the string means a custom field
     #[arg(value_parser = VaultGetField::from_str)]
     field:    Option<VaultGetField>,
 }
@@ -106,13 +116,25 @@ impl LprsCommand for Get {
                 print!("{index}");
                 return Ok(());
             }
+            if field == VaultGetField::TotpCode {
+                if let Some(ref totp_secret) = vault.totp_secret {
+                    let totp_code = cipher::totp_now(totp_secret, &vault.totp_hash)?.0;
+                    print!("{totp_code}");
+                    return Ok(());
+                } else {
+                    return Err(LprsError::Other(
+                        "There is no TOTP secret to get TOTP code".to_owned(),
+                    ));
+                }
+            }
 
             if let Some(value) = field.get_from_vault(vault) {
                 print!("{value}")
             } else {
                 return Err(LprsError::Other(format!(
-                    "There is no value for `{}`",
-                    field.as_str()
+                    "There is no value for `{}` at \"{}\" vault",
+                    field.as_str(),
+                    vault.name
                 )));
             }
         } else {

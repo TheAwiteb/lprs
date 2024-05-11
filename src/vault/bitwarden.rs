@@ -20,7 +20,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::{Vault, Vaults};
+use super::{cipher::TotpHash, Vault, Vaults};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BitWardenLoginData {
@@ -84,6 +84,8 @@ impl From<BitWardenPassword> for Vault {
                 .into_iter()
                 .map(|nv| (nv.name, nv.value))
                 .collect(),
+            None::<String>,
+            TotpHash::default(),
         )
     }
 }

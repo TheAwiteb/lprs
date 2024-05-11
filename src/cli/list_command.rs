@@ -17,7 +17,13 @@
 use clap::Args;
 use inquire::{InquireError, Select};
 
-use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
+use crate::{
+    vault::{cipher, Vaults},
+    LprsCommand,
+    LprsError,
+    LprsResult,
+    RESERVED_FIELD_PREFIX,
+};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -35,7 +41,7 @@ pub struct List {
 }
 
 impl LprsCommand for List {
-    fn run(self, vault_manager: Vaults) -> LprsResult<()> {
+    fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
         if vault_manager.vaults.is_empty() {
             return Err(LprsError::Other(
                 "Looks like there is no vaults to list".to_owned(),
@@ -95,13 +101,20 @@ impl LprsCommand for List {
 
             log::debug!("The user selected the vault at index: {vault_idx}");
 
-            println!(
-                "{}",
-                vault_manager
-                    .vaults
-                    .get(vault_idx - 1)
-                    .expect("The index is correct")
-            );
+            let vault = vault_manager
+                .vaults
+                .get_mut(vault_idx - 1)
+                .expect("The index is correct");
+
+            if let Some(ref totp_secret) = vault.totp_secret {
+                let (code, remaining) = cipher::totp_now(totp_secret, &vault.totp_hash)?;
+                vault.custom_fields.insert(
+                    format!("{RESERVED_FIELD_PREFIX}TOTP Code"),
+                    format!("{code} ({remaining}s remaining)"),
+                );
+            }
+
+            println!("{vault}",);
         }
 
         Ok(())

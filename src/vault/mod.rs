@@ -29,6 +29,8 @@ mod bitwarden;
 
 pub use bitwarden::*;
 
+use self::cipher::TotpHash;
+
 #[derive(Clone, Debug, ValueEnum, Eq, PartialEq)]
 /// The vaults format
 pub enum Format {
@@ -61,6 +63,12 @@ pub struct Vault {
     /// The vault custom fields
     #[arg(skip)]
     pub custom_fields: BTreeMap<String, String>,
+    /// The TOTP secret
+    #[arg(skip)]
+    pub totp_secret:   Option<String>,
+    /// The TOTP hash function
+    #[arg(long, value_name = "HASH_FUNCTION", value_enum, default_value_t)]
+    pub totp_hash:     TotpHash,
 }
 
 /// The vaults manager
@@ -76,6 +84,7 @@ pub struct Vaults {
 
 impl Vault {
     /// Create new [`Vault`] instance
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         name: impl Into<String>,
         username: Option<impl Into<String>>,
@@ -83,6 +92,8 @@ impl Vault {
         service: Option<impl Into<String>>,
         note: Option<impl Into<String>>,
         custom_fields: BTreeMap<String, String>,
+        totp_secret: Option<impl Into<String>>,
+        totp_hash: TotpHash,
     ) -> Self {
         Self {
             name: name.into(),
@@ -91,6 +102,8 @@ impl Vault {
             service: service.map(Into::into),
             note: note.map(Into::into),
             custom_fields,
+            totp_secret: totp_secret.map(Into::into),
+            totp_hash,
         }
     }
 
@@ -163,6 +176,8 @@ impl Vaults {
                             .iter()
                             .map(|(key, value)| (encrypt(key), encrypt(value)))
                             .collect(),
+                        v.totp_secret.as_ref().map(|t| encrypt(t)),
+                        v.totp_hash.clone(),
                     ))
                 })
                 .collect::<LprsResult<Vec<_>>>()?,
@@ -199,6 +214,8 @@ impl Vaults {
                         .into_iter()
                         .map(|(key, value)| LprsResult::Ok((decrypt(&key)?, decrypt(&value)?)))
                         .collect::<LprsResult<_>>()?,
+                    v.totp_secret.as_ref().and_then(|t| decrypt(t).ok()),
+                    v.totp_hash,
                 ))
             })
             .collect()
@@ -265,6 +282,9 @@ impl fmt::Display for Vault {
         }
         if let Some(ref note) = self.note {
             write!(f, "\nNote:\n{note}")?;
+        }
+        if let Some(ref totp_secret) = self.totp_secret {
+            write!(f, "\nTOTP Secret: {totp_secret}")?;
         }
         for (key, value) in &self.custom_fields {
             write!(

@@ -17,12 +17,62 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use aes::cipher::{block_padding::Pkcs7, BlockDecryptMut, BlockEncryptMut, KeyIvInit};
+use base32::Alphabet as Base32Alphabet;
+use clap::ValueEnum;
 use rand::{rngs::StdRng, Rng, SeedableRng};
+use serde::{Deserialize, Serialize};
 
 use crate::{LprsError, LprsResult};
 
 type Aes256CbcEnc = cbc::Encryptor<aes::Aes256>;
 type Aes256CbcDec = cbc::Decryptor<aes::Aes256>;
+
+#[derive(Default, Clone, Debug, ValueEnum, Eq, PartialEq, Deserialize, Serialize)]
+/// The TOTP hash functions
+pub enum TotpHash {
+    /// Sha1 hash function
+    #[default]
+    Sha1,
+    /// Sha256 hash function
+    Sha256,
+    /// Sha512 hash function
+    Sha512,
+}
+
+
+/// Create the TOTP code of the current time
+///
+/// ## Errors
+/// - If the given `secret_base32` are vaild base32
+pub fn totp_now(secret_base32: &str, hash_function: &TotpHash) -> LprsResult<(String, u8)> {
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("SystemTime before UNIX EPOCH!")
+        .as_secs();
+    let remaining = 30 - (now % 30) as u8;
+    let secret = base32::decode(Base32Alphabet::RFC4648 { padding: true }, secret_base32)
+        .ok_or_else(|| LprsError::Base32("Can't decode the TOTP secret".to_owned()))?;
+    Ok(match hash_function {
+        TotpHash::Sha1 => {
+            (
+                totp_lite::totp_custom::<totp_lite::Sha1>(30, 6, &secret, now),
+                remaining,
+            )
+        }
+        TotpHash::Sha256 => {
+            (
+                totp_lite::totp_custom::<totp_lite::Sha256>(30, 6, &secret, now),
+                remaining,
+            )
+        }
+        TotpHash::Sha512 => {
+            (
+                totp_lite::totp_custom::<totp_lite::Sha512>(30, 6, &secret, now),
+                remaining,
+            )
+        }
+    })
+}
 
 /// Encrypt the given data by the given key using AES-256 CBC
 ///

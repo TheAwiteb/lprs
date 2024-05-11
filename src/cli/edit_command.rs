@@ -28,31 +28,35 @@ pub struct Edit {
 
     #[arg(short, long)]
     /// The new vault name
-    name:              Option<String>,
+    name:          Option<String>,
     #[arg(short, long)]
     /// The new vault username
-    username:          Option<String>,
+    username:      Option<String>,
     #[arg(short, long)]
     /// The new password, if there is no value for it you will prompt it
     #[allow(clippy::option_option)]
-    password:          Option<Option<String>>,
+    password:      Option<Option<String>>,
     #[arg(short, long)]
     /// The new vault service
-    service:           Option<String>,
+    service:       Option<String>,
     #[arg(short = 'o', long)]
     /// The new vault note
-    note:              Option<String>,
+    note:          Option<String>,
+    /// The TOTP secret, if there is no value you will prompt it
+    #[arg(short, long)]
+    #[allow(clippy::option_option)]
+    totp_secret:   Option<Option<String>>,
     /// The custom field, make its value empty to delete it
     ///
     /// If the custom field not exist will created it, if it's will update it
     #[arg(name = "KEY=VALUE", short = 'c', long = "custom")]
     #[arg(value_parser = clap_parsers::kv_parser)]
-    pub custom_fields: Vec<(String, String)>,
+    custom_fields: Vec<(String, String)>,
     /// Force edit, will not return error if there is a problem with the args.
     ///
     /// For example, duplication in the custom fields and try to editing nothing
     #[arg(short, long)]
-    force:             bool,
+    force:         bool,
 }
 
 impl LprsCommand for Edit {
@@ -74,6 +78,9 @@ impl LprsCommand for Edit {
         }
         if self.password.is_some() {
             vault.password = utils::user_secret(self.password, "New vault password:")?;
+        }
+        if self.totp_secret.is_some() {
+            vault.totp_secret = utils::user_secret(self.totp_secret, "TOTP Secret:")?;
         }
         if let Some(new_username) = self.username {
             vault.username = Some(new_username);
