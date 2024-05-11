@@ -267,7 +267,12 @@ impl fmt::Display for Vault {
             write!(f, "\nNote:\n{note}")?;
         }
         for (key, value) in &self.custom_fields {
-            write!(f, "\n{key}: {value}")?;
+            write!(
+                f,
+                "\n{}: {value}",
+                key.strip_prefix(crate::RESERVED_FIELD_PREFIX)
+                    .unwrap_or(key)
+            )?;
         }
 
         Ok(())

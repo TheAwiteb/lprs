@@ -48,6 +48,8 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 #[cfg(feature = "update-notify")]
 /// The last version check file. Used to store the last version check time.
 pub const LAST_VERSION_CHECK_FILE: &str = ".last_version_check";
+/// The prefix of the reserved custom fields
+const RESERVED_FIELD_PREFIX: &str = ".lprsfield.";
 
 fn main() -> ExitCode {
     let lprs_cli = cli::Cli::parse();

@@ -39,6 +39,11 @@ pub enum Error {
     InvalidVaultIndex(String),
     #[error("{0}")]
     ArgParse(String),
+    #[error(
+        "Reserved Prefix Error: Sorry, but the following prefix is reserved and cannot be used in \
+         custom fields {0}"
+    )]
+    ReservedPrefix(&'static str),
     #[error("{0}")]
     Other(String),
 

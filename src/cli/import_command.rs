@@ -71,6 +71,14 @@ impl LprsCommand for Import {
                         .unwrap_or(&vault_manager.master_password),
                     &fs::read(self.path)?,
                 )?;
+
+                if vaults.iter().any(|v| {
+                    v.custom_fields
+                        .iter()
+                        .any(|(k, _)| k.starts_with(crate::RESERVED_FIELD_PREFIX))
+                }) {
+                    return Err(LprsError::ReservedPrefix(crate::RESERVED_FIELD_PREFIX));
+                }
                 let vaults_len = vaults.len();
 
                 vault_manager.vaults.extend(vaults);

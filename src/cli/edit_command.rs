@@ -109,6 +109,13 @@ impl LprsCommand for Edit {
                 )));
             }
         }
+        if self
+            .custom_fields
+            .iter()
+            .any(|(k, _)| k.starts_with(crate::RESERVED_FIELD_PREFIX))
+        {
+            return Err(LprsError::ReservedPrefix(crate::RESERVED_FIELD_PREFIX));
+        }
 
         Ok(())
     }
