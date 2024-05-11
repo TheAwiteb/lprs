@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 ### Added
+-  Ability to edit & remove by name (not index only) ([`d8350e6`](https://git.4rs.nl/awiteb/lprs/commit/d8350e636e733c6d49d46d95e0c3ca6c403d72c5))
 -  Ability to enter password via stdin `add`&`edit` ([**#15**](https://git.4rs.nl/awiteb/lprs/issues/15)) ([`5f357b8`](https://git.4rs.nl/awiteb/lprs/commit/5f357b89cb6a49be1c5461fa4b6cd5aaec8e541f))
 -  Ability to pass the master password as option ([`62d4060`](https://git.4rs.nl/awiteb/lprs/commit/62d4060bb8ffdfb834d5c860f79414cbca211f72))
 -  Add `--json` flag to the `list` command ([`a7ad8b4`](https://git.4rs.nl/awiteb/lprs/commit/a7ad8b468277aa5bc1df8616d93b757c3eab303f))
