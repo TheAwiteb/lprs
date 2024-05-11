@@ -60,7 +60,7 @@ impl LprsCommand for Import {
         );
 
         let decryption_key: Option<[u8; 32]> =
-            utils::user_password(self.decryption_password, "Decryption password:")?
+            utils::user_secret(self.decryption_password, "Decryption password:")?
                 .map(|p| sha2::Sha256::digest(p).into());
 
         let imported_passwords_len = match self.format {

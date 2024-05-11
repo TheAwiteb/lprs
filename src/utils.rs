@@ -45,24 +45,24 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
     Ok(local_dir.join(filename))
 }
 
-/// Returns the user password if any
+/// Returns the user secret if any
 ///
-/// - If the `password` is `None` will return `None`
-/// - If the `password` is `Some(None)` will ask the user for a password in the
+/// - If the `secret` is `None` will return `None`
+/// - If the `secret` is `Some(None)` will ask the user for a secret in the
 ///   stdin and return it
-/// - If the `password` is `Some(Some(password))` will return `Some(password)`
+/// - If the `secret` is `Some(Some(secret))` will return `Some(secret)`
 ///
 /// ## Errors
-/// - When failed to get the password from stdin
-pub fn user_password(
-    password: Option<Option<String>>,
+/// - When failed to get the secret from stdin
+pub fn user_secret(
+    secret: Option<Option<String>>,
     prompt_message: &str,
 ) -> LprsResult<Option<String>> {
-    Ok(match password {
+    Ok(match secret {
         None => None,
         Some(Some(p)) => Some(p),
         Some(None) => {
-            log::debug!("User didn't provide a password, prompting it");
+            log::debug!("User didn't provide a secret, prompting it");
             Some(
                 Password::new(prompt_message)
                     .without_confirmation()
