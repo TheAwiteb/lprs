@@ -1,0 +1,6 @@
+[book]
+authors = ["Awiteb"]
+language = "en"
+multilingual = false
+src = "docs"
+title = "Lprs Documentation"

@@ -1,94 +1,89 @@
+
+<div align="center">
+
 # Lprs
+A local vault manager designed to securely store and manage your vaults.
 
-Lprs is a local vault manager designed to securely store and manage your vaults.
+[![Docs](https://img.shields.io/badge/docs-lprs.4rs.nl-purple)](https://lprs.4rs.nl)
+[![Crates.io](https://img.shields.io/crates/v/lprs?color=orange)](https://crates.io/crates/lprs)
+[![Forgejo CI Status](https://git.4rs.nl/awiteb/lprs/badges/workflows/ci.yml/badge.svg)](https://git.4rs.nl/awiteb/lprs)
+[![Forgejo CD Status](https://git.4rs.nl/awiteb/lprs/badges/workflows/cd.yml/badge.svg)](https://git.4rs.nl/awiteb/lprs)
 
-### MSRV
-The Minimum Supported Rust Version (MSRV) is `1.70.0`.
+</div>
+
+## Features
+- Auto checks for updates (Can be disabled).
+- Passing the master password as an argument and via stdin.
+- Changing the master password.
+- Generating a passwords.
+- Store username, password, service name and notes in a vault.
+- Custom fields, you can store any key-value pair in a vault.
+- TOTP (Time-based One-Time Password) generation. Which can be used to generate
+  2FA codes.
+- Searching for vaults. And list all vaults in json format.
+- Importing and exporting encrypted vaults (in json format).
+- Importing and exporting from/to Bitwarden json format. (Unencrypted)
+- Editing vaults. (The secrets can be passed as arguments or via stdin)
+- Deleting vaults.
+- Getting single field from a vault. (Useful for scripts)
+- Ability to edit, get and remove a vault using its index or name.
+- Auto completion for bash, elvish, fish, powershell and zsh
+- Ability to import and export vaults with different master passwords. (Useful
+  for sharing vaults with others)
 
 ## Installation
 
-To install Lprs, you will need to have the Cargo package manager installed. If you do not have Cargo installed, you can install it by following the instructions [here](https://doc.rust-lang.org/cargo/getting-started/installation.html).
-
-
-1. Install using [cargo-install](https://doc.rust-lang.org/cargo/commands/cargo-install.html):
+### Build from source (MSRV: `1.74.0`)
 ```bash
-cargo install lprs --locked
-```
-This will enable the update notifications for Lprs. If you don't want to enable update notifications, you can install Lprs using:
-```bash
-cargo install lprs --locked --no-default-features
+# From crates.io
+cargo install lprs 
+# From source (after cloning the repository)
+# The binary will be in target/release/lprs
+cargo build --release
 ```
 
-2. Run Lprs:
-```bash
-lprs --help
-```
+This will build Lprs with update checking enabled. If you want to disable update checking, you can build Lprs without the default features by passing the `--no-default-features` flag.
 
-## Uninstallation
-```bash
-cargo uninstall lprs
-```
+### Pre-built binaries
+Pre-built binaries are available for Linux only, you can download them from the [releases page](https://git.4rs.nl/awiteb/lprs/releases/latest).
 
 ## Usage
 
 Lprs provides a command-line interface for managing your vaults. The following commands are available:
 
 ```
-A local CLI password manager
+A local CLI vaults manager. For human and machine use
 
 Usage: lprs [OPTIONS] <COMMAND>
 
 Commands:
-  add     Add new vault
-  remove  Remove vault
-  list    List your vaults and search
-  clean   Clean the vaults file
-  edit    Edit the vault content
-  gen     Generate a password
-  export  Export the vaults
-  import  Import vaults
-  help    Print this message or the help of the given subcommand(s)
+  add                     Add new vault
+  remove                  Remove vault [alias `rm`]
+  list                    List your vaults and search [alias `ls`]
+  clean                   Clean the vaults file
+  edit                    Edit the vault content
+  gen                     Generate a password
+  get                     Get a entire vault or single field from it
+  export                  Export the vaults
+  import                  Import vaults
+  change-master-password  Change the master password
+  completion              Generate shell completion
+  help                    Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --vaults-file <VAULTS_FILE>  The vaults json file
-  -h, --help                       Print help
-  -V, --version                    Print version
+  -f, --vaults-file <VAULTS_FILE>          The vaults json file
+  -v, --verbose                            Show the logs in the stdout
+  -m, --master-password <MASTER_PASSWORD>  The master password, or you will prompt it
+  -h, --help                               Print help
+  -V, --version                            Print version
 ```
 
-### Example
-```bash
-lprs add -n "Gmail" -u "some@gmail.com" -p $(lprs gen 19 -u -l -s) -s "https://mail.google.com"
-```
-
-#### Result
-This is the result when search for it
-```
-$ lprs list -e "mail" -p -s
-Master Password: ***************
-+-------+-------+----------------+---------------------+-------------------------+
-| Index | Name  | Username       | Password            | Service                 |
-+================================================================================+
-| 31    | Gmail | some@gmail.com | >NC`q$%+Nno<y&<y]VB | https://mail.google.com |
-+-------+-------+----------------+---------------------+-------------------------+
-```
-
-
-### Backup
-
-It is important to regularly backup your vaults to prevent data loss. Lprs does not provide an automatic backup feature. To backup your vaults, you can use the `export` command provided by Lprs. This command allows you to export your encrypted vaults to a json file, which you can then manually backup to a secure location.
-
-#### Formats
-The format of the exported file can be specified using the `--format` option. The following formats are supported:
-
--  `lprs`: The default format used by Lprs. This format is encrypted and can be imported back into Lprs using the `import` command. This is the recommended format to use for backups as it is encrypted and can be imported back into Lprs.
-- `bit-warden`: The format used by [Bitwarden](https://bitwarden.com/). This format is not encrypted and can be imported into Bitwarden. This format is useful if you want to switch to Bitwarden or another password manager that supports this format.
-
-
+## Documentation
+You can find the full documentation for Lprs on the official website at https://lprs.4rs.nl.
 
 ## Contributing
 
-Contributions to Lprs are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING]
-(CONTRIBUTING.md) file.
+Contributions to Lprs are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## Mirrors
 This repository is mirrored on the following platforms:
