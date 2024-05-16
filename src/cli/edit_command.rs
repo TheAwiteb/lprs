@@ -77,10 +77,10 @@ impl LprsCommand for Edit {
             vault.name = new_name;
         }
         if self.password.is_some() {
-            vault.password = utils::user_secret(self.password, "New vault password:")?;
+            vault.password = utils::user_secret(self.password, "New vault password:", false)?;
         }
         if self.totp_secret.is_some() {
-            vault.totp_secret = utils::user_secret(self.totp_secret, "TOTP Secret:")?;
+            vault.totp_secret = utils::user_secret(self.totp_secret, "TOTP Secret:", false)?;
         }
         if let Some(new_username) = self.username {
             vault.username = Some(new_username);

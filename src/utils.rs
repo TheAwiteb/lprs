@@ -57,6 +57,7 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
 pub fn user_secret(
     secret: Option<Option<String>>,
     prompt_message: &str,
+    confirmation: bool,
 ) -> LprsResult<Option<String>> {
     Ok(match secret {
         None => None,
@@ -64,11 +65,13 @@ pub fn user_secret(
         Some(None) => {
             log::debug!("User didn't provide a secret, prompting it");
             Some(
-                Password::new(prompt_message)
-                    .without_confirmation()
-                    .with_formatter(&|p| "*".repeat(p.chars().count()))
-                    .with_display_mode(PasswordDisplayMode::Masked)
-                    .prompt()?,
+                Password {
+                    enable_confirmation: confirmation,
+                    ..Password::new(prompt_message)
+                        .with_formatter(&|p| "*".repeat(p.chars().count()))
+                        .with_display_mode(PasswordDisplayMode::Masked)
+                }
+                .prompt()?,
             )
         }
     })

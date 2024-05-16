@@ -55,7 +55,7 @@ impl LprsCommand for Export {
         );
 
         let encryption_key: Option<[u8; 32]> =
-            utils::user_secret(self.encryption_password, "Encryption Password:")?
+            utils::user_secret(self.encryption_password, "Encryption Password:", false)?
                 .map(|p| sha2::Sha256::digest(p).into());
 
         let exported_data = match self.format {

@@ -23,6 +23,8 @@ use crate::{impl_commands, utils, vault::Vaults, LprsCommand, LprsResult};
 
 /// Add command, used to add new vault to the vaults file
 pub mod add_command;
+/// Change master password, reencrypt the vaults with new password
+pub mod change_master_password_command;
 /// Clean command, used to clean the vaults file (remove all vaults)
 pub mod clean_command;
 /// Generate shell completion
@@ -67,11 +69,13 @@ pub enum Commands {
     Export(export_command::Export),
     /// Import vaults
     Import(import_command::Import),
+    /// Change master password, reencrypt the vaults with new password
+    ChangeMasterPassword(change_master_password_command::ChangeMasterPassword),
     /// Generate shell completion
     Completion(completion_command::Completion),
 }
 
-impl_commands!(Commands, Add Remove List Clean Edit Gen Get Export Import Completion);
+impl_commands!(Commands, Add Remove List Clean Edit Gen Get Export Import ChangeMasterPassword Completion);
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]

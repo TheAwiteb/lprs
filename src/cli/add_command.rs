@@ -55,8 +55,9 @@ impl LprsCommand for Add {
     fn run(mut self, mut vault_manager: Vaults) -> LprsResult<()> {
         if !self.vault_info.is_empty() {
             self.vault_info.name = self.vault_info.name.trim().to_string();
-            self.vault_info.password = utils::user_secret(self.password, "Vault password:")?;
-            self.vault_info.totp_secret = utils::user_secret(self.totp_secret, "TOTP Secret:")?;
+            self.vault_info.password = utils::user_secret(self.password, "Vault password:", false)?;
+            self.vault_info.totp_secret =
+                utils::user_secret(self.totp_secret, "TOTP Secret:", false)?;
             self.vault_info.custom_fields = self.custom_fields.into_iter().collect();
             vault_manager.add_vault(self.vault_info);
             vault_manager.try_export()?;
