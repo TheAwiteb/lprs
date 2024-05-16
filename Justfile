@@ -28,3 +28,24 @@ _default:
     echo "Checking MSRV ({{msrv}})"
     cargo +{{msrv}} check -q
     echo "MSRV is correct"
+
+# Deploy the book to Github Pages
+@deploy:
+    #!/usr/bin/env bash
+    mdbook build
+    cd book
+    git init .
+    git checkout -B gh-pages
+    touch .nojekyll
+
+    git add .
+    git commit -m "Deploy the book to github pages"
+    git remote add origin "https://github.com/TheAwiteb/lprs-book"
+    git push origin gh-pages -f
+    cd ..
+    rm -fr book
+
+# Install book dependencies
+@install-book-tools:
+    cargo install mdbook
+
