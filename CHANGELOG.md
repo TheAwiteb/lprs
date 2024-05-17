@@ -38,9 +38,9 @@ and then re-invoke them (after this commit)
 -  Use select for vaults listing ([**#19**](https://git.4rs.nl/awiteb/lprs/issues/19)) ([`83c7296`](https://git.4rs.nl/awiteb/lprs/commit/83c7296bf7bf469423f53b024cb65e608ff6c9d9))
 ### Fixed
 -  Merge rust ci jobs into one job ([**#2**](https://git.4rs.nl/awiteb/lprs/issues/2)) ([`34eb9d1`](https://git.4rs.nl/awiteb/lprs/commit/34eb9d10f0ad514c6a7878fd8415a50f04db2be8))
--  Overflow in utils::vault_by_index_or_name function ([`b71baa7`](https://git.4rs.nl/awiteb/lprs/commit/b71baa72d7368e481b149d8748a24561645948dc))
--  Show the totp code in `get` command ([`0d9e7a1`](https://git.4rs.nl/awiteb/lprs/commit/0d9e7a1ece5a02e53b72ec75b45d3b44e514c1d7))
--  Validate all fields in `add` & `edit` ([`c40e11d`](https://git.4rs.nl/awiteb/lprs/commit/c40e11dbe64488b31c166f7dfe050130dc568efa))
+-  Overflow in utils::vault_by_index_or_name function ([`40e49bf`](https://git.4rs.nl/awiteb/lprs/commit/40e49bffe4e9ecd682eb746deafd68bd088dd415))
+-  Show the totp code in `get` command ([`38f6447`](https://git.4rs.nl/awiteb/lprs/commit/38f6447681d20cef313ed270cc67edc99a5ab3e2))
+-  Validate all fields in `add` & `edit` ([`02bf53b`](https://git.4rs.nl/awiteb/lprs/commit/02bf53b2a1fd420bf66ac571531d060499559c29))
 ### Removed
 -  Remove `--get` option from `list` command ([`44b5b3e`](https://git.4rs.nl/awiteb/lprs/commit/44b5b3e09b6c653b0d201e268878718cfa507209))
     - **BC**:  The deletion was in favor `get` command, which is better
