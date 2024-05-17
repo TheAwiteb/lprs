@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 you must export your vaults in bit-warden format (before this commit)
 and then re-invoke them (after this commit)
 -  Force flag for `edit` and `add` commands ([**#42**](https://git.4rs.nl/awiteb/lprs/issues/42)) ([`add0084`](https://git.4rs.nl/awiteb/lprs/commit/add008416b37c3f8e4def891355dcbccc6786a58))
+-  Lprs docs ([**#49**](https://git.4rs.nl/awiteb/lprs/issues/49)) ([`f9d36a2`](https://git.4rs.nl/awiteb/lprs/commit/f9d36a2dd781154e2dc0596874b7c9e27eff0b90))
 -  Make the `name` option in `edit` & `add` as argument ([**#29**](https://git.4rs.nl/awiteb/lprs/issues/29)) ([`127f377`](https://git.4rs.nl/awiteb/lprs/commit/127f3779f8d805c7e1f5209555d8929082f85c82))
     - **BC**:  Change the `name` option to argument in `name` and `edit` commands
 -  Make the username & password optional in the vault ([**#12**](https://git.4rs.nl/awiteb/lprs/issues/12)) ([`af6664d`](https://git.4rs.nl/awiteb/lprs/commit/af6664da5c08cc39cf732d64ba74de1731095723))
@@ -37,6 +38,9 @@ and then re-invoke them (after this commit)
 -  Use select for vaults listing ([**#19**](https://git.4rs.nl/awiteb/lprs/issues/19)) ([`83c7296`](https://git.4rs.nl/awiteb/lprs/commit/83c7296bf7bf469423f53b024cb65e608ff6c9d9))
 ### Fixed
 -  Merge rust ci jobs into one job ([**#2**](https://git.4rs.nl/awiteb/lprs/issues/2)) ([`34eb9d1`](https://git.4rs.nl/awiteb/lprs/commit/34eb9d10f0ad514c6a7878fd8415a50f04db2be8))
+-  Overflow in utils::vault_by_index_or_name function ([`b71baa7`](https://git.4rs.nl/awiteb/lprs/commit/b71baa72d7368e481b149d8748a24561645948dc))
+-  Show the totp code in `get` command ([`0d9e7a1`](https://git.4rs.nl/awiteb/lprs/commit/0d9e7a1ece5a02e53b72ec75b45d3b44e514c1d7))
+-  Validate all fields in `add` & `edit` ([`c40e11d`](https://git.4rs.nl/awiteb/lprs/commit/c40e11dbe64488b31c166f7dfe050130dc568efa))
 ### Removed
 -  Remove `--get` option from `list` command ([`44b5b3e`](https://git.4rs.nl/awiteb/lprs/commit/44b5b3e09b6c653b0d201e268878718cfa507209))
     - **BC**:  The deletion was in favor `get` command, which is better
