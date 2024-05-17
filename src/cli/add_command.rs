@@ -51,9 +51,19 @@ pub struct Add {
     force:         bool,
 }
 
+impl Add {
+    /// Check if there is nothing to add
+    fn is_empty(&self) -> bool {
+        self.vault_info.is_empty()
+            && self.password.is_none()
+            && self.totp_secret.is_none()
+            && self.custom_fields.is_empty()
+    }
+}
+
 impl LprsCommand for Add {
     fn run(mut self, mut vault_manager: Vaults) -> LprsResult<()> {
-        if !self.vault_info.is_empty() {
+        if !self.is_empty() {
             self.vault_info.name = self.vault_info.name.trim().to_string();
             self.vault_info.password = utils::user_secret(self.password, "Vault password:", false)?;
             self.vault_info.totp_secret =
@@ -66,7 +76,7 @@ impl LprsCommand for Add {
     }
 
     fn validate_args(&self) -> LprsResult<()> {
-        if !self.force && self.vault_info.is_empty() {
+        if !self.force && self.is_empty() {
             return Err(LprsError::Other("You can't add empty vault".to_owned()));
         }
 

@@ -103,6 +103,7 @@ impl LprsCommand for Edit {
             && self.password.is_none()
             && self.service.is_none()
             && self.note.is_none()
+            && self.totp_secret.is_none()
             && self.custom_fields.is_empty()
         {
             return Err(LprsError::Other(
