@@ -24,6 +24,7 @@ use crate::{
     LprsCommand,
     LprsError,
     LprsResult,
+    RESERVED_FIELD_PREFIX,
 };
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -138,6 +139,12 @@ impl LprsCommand for Get {
                 )));
             }
         } else {
+            if let Some(ref totp_secret) = vault.totp_secret {
+                let code = cipher::totp_now(totp_secret, &vault.totp_hash)?.0;
+                vault
+                    .custom_fields
+                    .insert(format!("{RESERVED_FIELD_PREFIX}TOTP Code"), code);
+            }
             println!("{vault}");
         }
         Ok(())
