@@ -221,7 +221,9 @@ pub fn vault_by_index_or_name<'a>(
     let parsed_index = index_or_name.parse::<usize>();
 
     let Some((index, vault)) = (if let Ok(index) = parsed_index {
-        vaults.get_mut(index - 1).map(|v| (index, v))
+        index
+            .checked_sub(1)
+            .and_then(|zeroindex| vaults.get_mut(zeroindex).map(|v| (index, v)))
     } else {
         vaults
             .iter_mut()
