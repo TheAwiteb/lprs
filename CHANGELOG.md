@@ -44,6 +44,8 @@ and then re-invoke them (after this commit)
 ### Removed
 -  Remove `--get` option from `list` command ([`44b5b3e`](https://git.4rs.nl/awiteb/lprs/commit/44b5b3e09b6c653b0d201e268878718cfa507209))
     - **BC**:  The deletion was in favor `get` command, which is better
+### Security
+-  Use system seeded rng for IV ([`920ff2a`](https://git.4rs.nl/awiteb/lprs/commit/920ff2a2d49af7fb01c731c129bb5905e404f4c1))
 
 ## [1.2.1](https://git.4rs.nl/awiteb/lprs/compare/v1.2.0..v1.2.1) - 2024-01-07
 
