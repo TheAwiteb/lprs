@@ -37,6 +37,7 @@ _default:
     git init .
     git checkout -B gh-pages
     touch .nojekyll
+    echo "lprs.4rs.nl" > CNAME
 
     git add .
     git commit -m "Deploy the book to github pages"
