@@ -19,7 +19,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use aes::cipher::{block_padding::Pkcs7, BlockDecryptMut, BlockEncryptMut, KeyIvInit};
 use base32::Alphabet as Base32Alphabet;
 use clap::ValueEnum;
-use rand::{rngs::StdRng, Rng, SeedableRng};
+use rand::{thread_rng, RngCore};
 use serde::{Deserialize, Serialize};
 
 use crate::{LprsError, LprsResult};
@@ -78,13 +78,8 @@ pub fn totp_now(secret_base32: &str, hash_function: &TotpHash) -> LprsResult<(St
 ///
 /// Note: The IV will be add it to the end of the ciphertext (Last 16 bytes)
 pub(crate) fn encrypt(master_password: &[u8; 32], data: &[u8]) -> Vec<u8> {
-    let iv: [u8; 16] = StdRng::seed_from_u64(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("SystemTime before UNIX EPOCH!")
-            .as_secs(),
-    )
-    .gen();
+    let mut iv = [0u8; 16];
+    thread_rng().fill_bytes(&mut iv);
 
     let mut ciphertext =
         Aes256CbcEnc::new(master_password.into(), &iv.into()).encrypt_padded_vec_mut::<Pkcs7>(data);
