@@ -78,7 +78,7 @@ pub fn totp_now(secret_base32: &str, hash_function: &TotpHash) -> LprsResult<(St
 /// ## Errors
 /// - If the given string not valid base32 string
 pub fn base32_decode(base32_string: &str) -> LprsResult<Vec<u8>> {
-    base32::decode(Base32Alphabet::RFC4648 { padding: true }, base32_string)
+    base32::decode(Base32Alphabet::Rfc4648 { padding: true }, base32_string)
         .ok_or_else(|| LprsError::Base32("Invalid base32 string".to_owned()))
 }
 
