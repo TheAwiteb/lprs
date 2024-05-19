@@ -7,7 +7,7 @@ authors = ["Awiteb <a@4rs.nl>"]
 readme = "README.md"
 description = "A local CLI vaults manager. For human and machine use"
 repository = "https://git.4rs.nl/awiteb/lprs"
-rust-version = "1.74.0"
+rust-version = "1.74.1"
 keywords = ["password", "vault", "manager", "CLI"]
 categories = ["command-line-utilities"]
 
@@ -36,7 +36,6 @@ base32 = "0.4.0"
 [features]
 default = ["update-notify"]
 update-notify = ["reqwest/blocking"]
-reqwest = ["dep:reqwest"]
 
 [lints.rust]
 unsafe_code = "forbid"
