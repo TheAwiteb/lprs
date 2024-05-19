@@ -20,7 +20,7 @@ jobs:
           wget "https://github.com/orhun/git-cliff/releases/download/v$version/git-cliff-$version-x86_64-unknown-linux-gnu.tar.gz"
           tar -xvzf git-cliff-*.tar.gz
           mv "git-cliff-$version/git-cliff" /usr/local/bin
-          rm -fr git-cliff-*          
+          rm -fr git-cliff-*
       - name: Write changelog
         run: |
           git config user.name forgejo-actions
