@@ -50,8 +50,7 @@ pub fn totp_now(secret_base32: &str, hash_function: &TotpHash) -> LprsResult<(St
         .expect("SystemTime before UNIX EPOCH!")
         .as_secs();
     let remaining = 30 - (now % 30) as u8;
-    let secret = base32::decode(Base32Alphabet::RFC4648 { padding: true }, secret_base32)
-        .ok_or_else(|| LprsError::Base32("Can't decode the TOTP secret".to_owned()))?;
+    let secret = base32_decode(secret_base32)?;
     Ok(match hash_function {
         TotpHash::Sha1 => {
             (
@@ -72,6 +71,15 @@ pub fn totp_now(secret_base32: &str, hash_function: &TotpHash) -> LprsResult<(St
             )
         }
     })
+}
+
+/// Base32 decode
+///
+/// ## Errors
+/// - If the given string not valid base32 string
+pub fn base32_decode(base32_string: &str) -> LprsResult<Vec<u8>> {
+    base32::decode(Base32Alphabet::RFC4648 { padding: true }, base32_string)
+        .ok_or_else(|| LprsError::Base32("Invalid base32 string".to_owned()))
 }
 
 /// Encrypt the given data by the given key using AES-256 CBC
