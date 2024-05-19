@@ -21,7 +21,6 @@ use clap::Args;
 use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
-#[command(author, version, about, long_about = None)]
 /// Clean command, used to clean the vaults file (remove all vaults)
 pub struct Clean;
 

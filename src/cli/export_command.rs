@@ -28,7 +28,6 @@ use crate::{
 };
 
 #[derive(Debug, Args)]
-#[command(author, version, about, long_about = None)]
 /// Export command, used to export the vaults in `lprs` format or `BitWarden`
 /// format. The exported file will be a json file.
 pub struct Export {

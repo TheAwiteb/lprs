@@ -26,7 +26,6 @@ use crate::{
 };
 
 #[derive(Debug, Args)]
-#[command(author, version, about, long_about = None)]
 /// Edit command, used to edit the vault content
 pub struct Edit {
     /// The vault to edit, index or name

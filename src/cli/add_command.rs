@@ -26,7 +26,6 @@ use crate::{
 };
 
 #[derive(Debug, Args)]
-#[command(author, version, about, long_about = None)]
 /// Add command, used to add new vault to the vaults file
 pub struct Add {
     #[command(flatten)]

@@ -19,7 +19,6 @@ use clap::Args;
 use crate::{utils, vault::Vaults, LprsCommand, LprsResult};
 
 #[derive(Debug, Args)]
-#[command(author, version, about, long_about = None)]
 /// Remove command, used to remove a vault from the vaults file
 pub struct Remove {
     /// The vault to remove, index or name

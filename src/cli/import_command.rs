@@ -33,7 +33,6 @@ use crate::{
 };
 
 #[derive(Debug, Args)]
-#[command(author, version, about, long_about = None)]
 /// Import command, used to import vaults from the exported files, `lprs` or
 /// `BitWarden`
 pub struct Import {

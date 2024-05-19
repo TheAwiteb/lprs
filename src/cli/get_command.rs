@@ -91,7 +91,6 @@ impl VaultGetField {
 }
 
 #[derive(Debug, Args)]
-#[command(author, version, about, long_about = None)]
 /// Command to get a entire vault or single field from it
 pub struct Get {
     /// Whether the index of the vault or its name

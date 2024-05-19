@@ -21,7 +21,6 @@ use clap::Args;
 use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
 
 #[derive(Debug, Args)]
-#[command(author, version, about, long_about = None)]
 /// Generate command, used to generate a password
 pub struct Gen {
     /// The password length

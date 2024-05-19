@@ -26,7 +26,6 @@ use crate::{
 };
 
 #[derive(Debug, Args)]
-#[command(author, version, about, long_about = None)]
 /// List command, used to list the vaults and search
 pub struct List {
     /// Filter the select list
