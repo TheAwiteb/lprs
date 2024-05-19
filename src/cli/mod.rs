@@ -77,8 +77,20 @@ pub enum Commands {
 
 impl_commands!(Commands, Add Remove List Clean Edit Gen Get Export Import ChangeMasterPassword Completion);
 
+/// Header message, used in the help message
+const HEADER: &str = r#"Copyright (C) 2024 Awiteb <a@4rs.nl>
+License GNU GPL-3.0-or-later <https://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Git repository: https://git.4rs.nl/awiteb/lprs
+Documentation: https://lprs.4rs.nl"#;
+
+/// Footer message, used in the help message
+const FOOTER: &str = r#"Please report bugs to <https://git.4rs.nl/awiteb/lprs/issues>."#;
+
 #[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
+#[command(about, version, before_long_help = HEADER, after_help = FOOTER)]
 /// A local CLI vaults manager. For human and machine use
 pub struct Cli {
     /// The vaults json file
