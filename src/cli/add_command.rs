@@ -19,7 +19,7 @@ use clap::Args;
 use crate::{
     clap_parsers,
     utils,
-    vault::{Vault, Vaults},
+    vault::{cipher, Vault, Vaults},
     LprsCommand,
     LprsError,
     LprsResult,
@@ -64,10 +64,16 @@ impl Add {
 impl LprsCommand for Add {
     fn run(mut self, mut vault_manager: Vaults) -> LprsResult<()> {
         if !self.is_empty() {
+            if let Some(totp_secret) = utils::user_secret(self.totp_secret, "TOTP Secret:", false)?
+            {
+                cipher::base32_decode(&totp_secret).map_err(|_| {
+                    LprsError::Base32("Invalid TOTP secret, must be valid base32 string".to_owned())
+                })?;
+                self.vault_info.totp_secret = Some(totp_secret);
+            }
+
             self.vault_info.name = self.vault_info.name.trim().to_string();
             self.vault_info.password = utils::user_secret(self.password, "Vault password:", false)?;
-            self.vault_info.totp_secret =
-                utils::user_secret(self.totp_secret, "TOTP Secret:", false)?;
             self.vault_info.custom_fields = self.custom_fields.into_iter().collect();
             vault_manager.add_vault(self.vault_info);
             vault_manager.try_export()?;

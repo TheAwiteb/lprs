@@ -16,7 +16,14 @@
 
 use clap::Args;
 
-use crate::{clap_parsers, utils, vault::Vaults, LprsCommand, LprsError, LprsResult};
+use crate::{
+    clap_parsers,
+    utils,
+    vault::{cipher, Vaults},
+    LprsCommand,
+    LprsError,
+    LprsResult,
+};
 
 #[derive(Debug, Args)]
 #[command(author, version, about, long_about = None)]
@@ -79,8 +86,11 @@ impl LprsCommand for Edit {
         if self.password.is_some() {
             vault.password = utils::user_secret(self.password, "New vault password:", false)?;
         }
-        if self.totp_secret.is_some() {
-            vault.totp_secret = utils::user_secret(self.totp_secret, "TOTP Secret:", false)?;
+        if let Some(totp_secret) = utils::user_secret(self.totp_secret, "TOTP Secret:", false)? {
+            cipher::base32_decode(&totp_secret).map_err(|_| {
+                LprsError::Base32("Invalid TOTP secret, must be valid base32 string".to_owned())
+            })?;
+            vault.totp_secret = Some(totp_secret);
         }
         if let Some(new_username) = self.username {
             vault.username = Some(new_username);
