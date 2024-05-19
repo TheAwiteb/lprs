@@ -16,25 +16,29 @@ jobs:
           - x86_64-unknown-linux-musl
           - aarch64-unknown-linux-gnu
           - aarch64-unknown-linux-musl
+          - x86_64-pc-windows-gnu
     steps:
       - uses: actions/checkout@v4
         with:
           ref: master
           fetch-depth: 1
-      - uses: https://codeberg.org/TheAwiteb/rust-action@v1.78
+      - uses: https://codeberg.org/TheAwiteb/rust-action@v1.74
       - name: Install musl-tools
-        if: contains(${{ matrix.target }}, 'musl')
         run: |
           apt-get update
           apt-get install -y musl-tools
+        if: ${{ contains(matrix.target, 'musl') }}
       - name: Install gcc-aarch64-linux-gnu linker
-        if: contains(${{ matrix.target }}, 'aarch64')
         run: |
           apt-get update
           apt-get install -y gcc-aarch64-linux-gnu
-      - name: Install ${{ matrix.target }} target
-        run: rustup target install ${{ matrix.target }}
-      - name: Setup environment
+        if: ${{ contains(matrix.target, 'aarch64') }}
+      - name: Install gcc-mingw-w64 linker
+        run: |
+          apt-get update
+          apt-get install -y gcc-mingw-w64
+        if: ${{ contains(matrix.target, 'windows') }}
+      - name: Preparing the environment
         run: |
           BIN_NAME="$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)"
           echo "BIN_NAME=$BIN_NAME" >> $GITHUB_ENV
@@ -43,23 +47,29 @@ jobs:
           echo 'target.aarch64-unknown-linux-gnu.linker = "aarch64-linux-gnu-gcc"' > .cargo/config.toml
           echo 'target.aarch64-unknown-linux-musl.linker = "aarch64-linux-gnu-gcc"' >> .cargo/config.toml
 
-      - name: Build ${{ matrix.target }} asset
+      - name: Install the target
+        run: rustup target install ${{ matrix.target }}
+
+      - name: Build the asset
         run: |
           APP_NAME="$BIN_NAME-$GITHUB_REF_NAME-${{ matrix.target }}"
           cargo clean
           cargo build --release --no-default-features --target ${{ matrix.target }}
-          cp target/${{ matrix.target }}/release/$BIN_NAME release-dir/$APP_NAME
+          cp target/${{ matrix.target }}/release/$BIN_NAME.exe release-dir/$APP_NAME.exe || true
+          cp target/${{ matrix.target }}/release/$BIN_NAME release-dir/$APP_NAME || true
           cd release-dir
-          chmod +x $APP_NAME
-          sha256sum $APP_NAME > $APP_NAME.sha256
-      - name: Build ${{ matrix.target }} asset (update-notify)
+          sha256sum $APP_NAME > $APP_NAME.sha256 || true
+          sha256sum $APP_NAME.exe > $APP_NAME.exe.sha256 || true
+
+      - name: Build the asset (update-notify)
         run: |
           APP_NAME="$BIN_NAME-update-notify-$GITHUB_REF_NAME-${{ matrix.target }}"
           cargo build --release -F update-notify --target ${{ matrix.target }}
-          cp ./target/${{ matrix.target }}/release/$BIN_NAME release-dir/$APP_NAME
+          cp target/${{ matrix.target }}/release/$BIN_NAME.exe release-dir/$APP_NAME.exe || true
+          cp target/${{ matrix.target }}/release/$BIN_NAME release-dir/$APP_NAME || true
           cd release-dir
-          chmod +x $APP_NAME
-          sha256sum $APP_NAME > $APP_NAME.sha256
+          sha256sum $APP_NAME > $APP_NAME.sha256 || true
+          sha256sum $APP_NAME.exe > $APP_NAME.exe.sha256 || true
 
       - uses: actions/upload-artifact@v3
         with:
@@ -81,7 +91,7 @@ jobs:
           path: ${{ env.GITHUB_WORKSPACE }}/release-dir
       - name: Install git-cliff
         run: |
-          version="2.1.2"
+          version="2.2.1"
           wget "https://github.com/orhun/git-cliff/releases/download/v$version/git-cliff-$version-x86_64-unknown-linux-gnu.tar.gz"
           tar -xvzf git-cliff-*.tar.gz
           mv "git-cliff-$version/git-cliff" /usr/local/bin
