@@ -9,6 +9,8 @@ A local vault manager designed to securely store and manage your vaults.
 [![Forgejo CI Status](https://git.4rs.nl/awiteb/lprs/badges/workflows/ci.yml/badge.svg)](https://git.4rs.nl/awiteb/lprs)
 [![Forgejo CD Status](https://git.4rs.nl/awiteb/lprs/badges/workflows/cd.yml/badge.svg)](https://git.4rs.nl/awiteb/lprs)
 
+[![gplv3-or-later](https://www.gnu.org/graphics/gplv3-or-later-sm.png)](https://www.gnu.org/licenses/gpl-3.0.html)
+
 </div>
 
 ## Features
