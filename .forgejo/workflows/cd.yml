@@ -58,8 +58,8 @@ jobs:
           cp target/${{ matrix.target }}/release/$BIN_NAME.exe release-dir/$APP_NAME.exe || true
           cp target/${{ matrix.target }}/release/$BIN_NAME release-dir/$APP_NAME || true
           cd release-dir
-          sha256sum $APP_NAME > $APP_NAME.sha256 || true
-          sha256sum $APP_NAME.exe > $APP_NAME.exe.sha256 || true
+          test -f $APP_NAME && sha256sum $APP_NAME > $APP_NAME.sha256 || true
+          test -f $APP_NAME.exe && sha256sum $APP_NAME.exe > $APP_NAME.exe.sha256 || true
 
       - name: Build the asset (update-notify)
         run: |
@@ -68,8 +68,8 @@ jobs:
           cp target/${{ matrix.target }}/release/$BIN_NAME.exe release-dir/$APP_NAME.exe || true
           cp target/${{ matrix.target }}/release/$BIN_NAME release-dir/$APP_NAME || true
           cd release-dir
-          sha256sum $APP_NAME > $APP_NAME.sha256 || true
-          sha256sum $APP_NAME.exe > $APP_NAME.exe.sha256 || true
+          test -f $APP_NAME && sha256sum $APP_NAME > $APP_NAME.sha256 || true
+          test -f $APP_NAME.exe && sha256sum $APP_NAME.exe > $APP_NAME.exe.sha256 || true
 
       - uses: actions/upload-artifact@v3
         with:
