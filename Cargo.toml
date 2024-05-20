@@ -2,7 +2,7 @@
 name = "lprs"
 version = "1.2.1"
 edition = "2021"
-license = "GPL-3.0-only"
+license = "GPL-3.0-or-later"
 authors = ["Awiteb <a@4rs.nl>"]
 readme = "README.md"
 description = "A local CLI vaults manager. For human and machine use"
