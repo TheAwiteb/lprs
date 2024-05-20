@@ -101,7 +101,7 @@ jobs:
           git config user.name forgejo-actions
           git config user.email forgejo-actions@noreply.localhost
           echo 'TAG_CHANGELOG=$(if [[ $(git tag --sort=committerdate | tail -n 1) == *"-rc"* ]]; then git-cliff --strip all $(git tag --sort=committerdate | tail -n 2 | sed ":a; N; $!ba; s/\n/../g") | sed "s/## unreleased.*$//g"; else git-cliff -l --strip all | sed "s/^## \[.*$//g";fi)' | sed "s/\"/'/g" >> $GITHUB_ENV
-          if [[ $(git tag --sort=committerdate | tail -n 1) != *'-rc'* ]]; then
+          if [[ $(git tag --sort=creatordate | tail -n 1) != *'-rc'* ]]; then
             echo "The latest tag is not a release candidate, updating changelog for $GITHUB_REF_NAME"
             git-cliff > CHANGELOG.md
             git add CHANGELOG.md
