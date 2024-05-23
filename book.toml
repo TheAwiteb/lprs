@@ -4,3 +4,9 @@ language = "en"
 multilingual = false
 src = "docs"
 title = "Lprs Documentation"
+
+[output.html]
+edit-url-template = "https://git.4rs.nl/awiteb/lprs/_edit/master/{path}"
+git-repository-icon = "fa-git"
+git-repository-url = "https://git.4rs.nl/awiteb/lprs"
+
