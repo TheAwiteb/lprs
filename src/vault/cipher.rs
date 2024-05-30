@@ -40,37 +40,22 @@ pub enum TotpHash {
 }
 
 
-/// Create the TOTP code of the current time
+/// Create the TOTP code of the current time with its remainig time in seconds
 ///
 /// ## Errors
-/// - If the given `secret_base32` are vaild base32
+/// - If the given `secret_base32` are invalid base32
 pub fn totp_now(secret_base32: &str, hash_function: &TotpHash) -> LprsResult<(String, u8)> {
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("SystemTime before UNIX EPOCH!")
         .as_secs();
-    let remaining = 30 - (now % 30) as u8;
     let secret = base32_decode(secret_base32)?;
-    Ok(match hash_function {
-        TotpHash::Sha1 => {
-            (
-                totp_lite::totp_custom::<totp_lite::Sha1>(30, 6, &secret, now),
-                remaining,
-            )
-        }
-        TotpHash::Sha256 => {
-            (
-                totp_lite::totp_custom::<totp_lite::Sha256>(30, 6, &secret, now),
-                remaining,
-            )
-        }
-        TotpHash::Sha512 => {
-            (
-                totp_lite::totp_custom::<totp_lite::Sha512>(30, 6, &secret, now),
-                remaining,
-            )
-        }
-    })
+    let totp_code = match hash_function {
+        TotpHash::Sha1 => totp_lite::totp_custom::<totp_lite::Sha1>(30, 6, &secret, now),
+        TotpHash::Sha256 => totp_lite::totp_custom::<totp_lite::Sha256>(30, 6, &secret, now),
+        TotpHash::Sha512 => totp_lite::totp_custom::<totp_lite::Sha512>(30, 6, &secret, now),
+    };
+    Ok((totp_code, 30 - (now % 30) as u8))
 }
 
 /// Base32 decode
