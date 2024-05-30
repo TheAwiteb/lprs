@@ -30,6 +30,7 @@ and then re-invoke them (after this commit)
 -  Validate args before ask for the master password ([**#17**](https://git.4rs.nl/awiteb/lprs/issues/17)) ([`b4bcaa9`](https://git.4rs.nl/awiteb/lprs/commit/b4bcaa92ca63b7c71ea5c28d5e9a6af3ecb88a91))
 ### Changed
 -  Change 'password manager' to 'vault manager' ([`bae0cf1`](https://git.4rs.nl/awiteb/lprs/commit/bae0cf174736d9a1cd61becd20f7d87cf137249c))
+-  Make the `totp_now` function better ([`9a417e7`](https://git.4rs.nl/awiteb/lprs/commit/9a417e7d0b1a242a5ca2a41ed2a9f72ce8685b5f))
 -  Rename just file ([`e231352`](https://git.4rs.nl/awiteb/lprs/commit/e231352009c21886772b8f039d3e51ba0aeb7616))
 -  Add a ecryption state to the vault ([`4def4aa`](https://git.4rs.nl/awiteb/lprs/commit/4def4aadb20cc367d57466dc5e88c3043e468d20))
     - **BC**:  Moving from password to vault
