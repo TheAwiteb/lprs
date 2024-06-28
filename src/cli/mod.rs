@@ -122,11 +122,16 @@ impl Cli {
             log::info!("Using the given vaults file");
             if let Some(parent) = path.parent() {
                 if parent.to_str() != Some("") && !parent.exists() {
-                    log::info!("Creating the parent vaults file directory");
+                    log::info!(
+                        "Creating the parent vaults file directory: {}",
+                        parent.display()
+                    );
                     fs::create_dir_all(parent)?;
                 }
             }
-            fs::File::create(&path)?;
+            if !path.exists() {
+                fs::File::create(&path)?;
+            }
             path
         } else {
             log::info!("Using the default vaults file");
