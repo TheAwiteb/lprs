@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -  Ability to pass the master password as option ([`62d4060`](https://git.4rs.nl/awiteb/lprs/commit/62d4060bb8ffdfb834d5c860f79414cbca211f72))
 -  Add `--json` flag to the `list` command ([`a7ad8b4`](https://git.4rs.nl/awiteb/lprs/commit/a7ad8b468277aa5bc1df8616d93b757c3eab303f))
 -  Add `get` command ([`f9fbf1a`](https://git.4rs.nl/awiteb/lprs/commit/f9fbf1a0b7b85638ad64287738e05ec1a1c35d25))
+-  Case insensitive filter ([**#61**](https://git.4rs.nl/awiteb/lprs/issues/61)) ([`e023104`](https://git.4rs.nl/awiteb/lprs/commit/e02310401add677170bd402d1430ec34e2aded6d))
 -  Encrypt the hole vault file ([`6f6966d`](https://git.4rs.nl/awiteb/lprs/commit/6f6966d5b25b2b5047081304f7597fe80ec95387))
     - **BC**:  The previous format is not supported after this commit, so
 you must export your vaults in bit-warden format (before this commit)
