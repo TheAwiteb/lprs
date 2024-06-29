@@ -47,23 +47,30 @@ impl LprsCommand for List {
             ));
         }
 
-        let pattern = if self.regex || self.filter.is_none() {
-            self.filter.unwrap_or_else(|| ".".to_owned())
+        let pattern = if self.regex {
+            self.filter
+                .expect("Is required if the `regex` option is `true`")
         } else {
             format!(
                 ".*{}.*",
-                regex::escape(self.filter.as_deref().unwrap_or(""))
+                regex::escape(self.filter.as_deref().unwrap_or_default())
             )
         };
         log::debug!("Listing vaults filtered by: {pattern}");
 
-        let re = regex::Regex::new(&pattern)?;
+        let re = regex::Regex::new(&pattern.to_lowercase())?;
 
         let vaults_list = vault_manager.vaults.iter().enumerate().filter(|(_, v)| {
-            re.is_match(&v.name)
-                || v.username.as_deref().is_some_and(|u| re.is_match(u))
-                || v.service.as_deref().is_some_and(|s| re.is_match(s))
-                || v.note.as_deref().is_some_and(|n| re.is_match(n))
+            re.is_match(&v.name.to_lowercase())
+                || v.username
+                    .as_deref()
+                    .is_some_and(|u| re.is_match(&u.to_lowercase()))
+                || v.service
+                    .as_deref()
+                    .is_some_and(|s| re.is_match(&s.to_lowercase()))
+                || v.note
+                    .as_deref()
+                    .is_some_and(|n| re.is_match(&n.to_lowercase()))
         });
 
         if self.json {
