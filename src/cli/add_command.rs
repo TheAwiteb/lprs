@@ -93,6 +93,29 @@ impl LprsCommand for Add {
             }
         }
         if self
+            .password
+            .as_ref()
+            .is_some_and(|p| p.as_ref().is_some_and(|p| p.is_empty()))
+            || self.vault_info.name.is_empty()
+            || self
+                .vault_info
+                .username
+                .as_ref()
+                .is_some_and(|u| u.is_empty())
+            || self
+                .vault_info
+                .service
+                .as_ref()
+                .is_some_and(|s| s.is_empty())
+            || self.vault_info.note.as_ref().is_some_and(|n| n.is_empty())
+            || self
+                .custom_fields
+                .iter()
+                .any(|(k, v)| k.is_empty() || v.is_empty())
+        {
+            return Err(LprsError::EmptyValue);
+        }
+        if self
             .custom_fields
             .iter()
             .any(|(k, _)| k.starts_with(crate::RESERVED_FIELD_PREFIX))

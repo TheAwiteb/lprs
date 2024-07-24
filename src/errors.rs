@@ -44,6 +44,8 @@ pub enum Error {
          custom fields {0}"
     )]
     ReservedPrefix(&'static str),
+    #[error("Invalid Field Value: Field value cannot be empty")]
+    EmptyValue,
     #[error("Base32 Error: {0}")]
     Base32(String),
     #[error("{0}")]
