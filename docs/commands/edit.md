@@ -55,6 +55,10 @@ custom fields.
 For secrets like the password and TOTP secret, you can provide them as arguments
 or you will be prompted for them.
 
+## Field removal
+If you want to remove a field from the vault, you can provide an empty value for
+it, e.g. `-o ""`.
+
 ## Custom fields
 If you want to add a custom field to the vault, you can use the `-c, --custom`
 option, and provide the key-value pair. If you want to delete a custom field,
