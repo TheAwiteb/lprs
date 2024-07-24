@@ -43,6 +43,7 @@ and then re-invoke them (after this commit)
 -  Merge rust ci jobs into one job ([**#2**](https://git.4rs.nl/awiteb/lprs/issues/2)) ([`34eb9d1`](https://git.4rs.nl/awiteb/lprs/commit/34eb9d10f0ad514c6a7878fd8415a50f04db2be8))
 -  Create the vaults file if it's not exist ([**#60**](https://git.4rs.nl/awiteb/lprs/issues/60)) ([`81a3605`](https://git.4rs.nl/awiteb/lprs/commit/81a360519ec97e63c542bef6cc69f1707198c81f))
 -  Overflow in utils::vault_by_index_or_name function ([`40e49bf`](https://git.4rs.nl/awiteb/lprs/commit/40e49bffe4e9ecd682eb746deafd68bd088dd415))
+-  Reject empty string field value ([`6f5ca5f`](https://git.4rs.nl/awiteb/lprs/commit/6f5ca5f4524bec3cda2990f352080f08524e578b))
 -  Show the totp code in `get` command ([`38f6447`](https://git.4rs.nl/awiteb/lprs/commit/38f6447681d20cef313ed270cc67edc99a5ab3e2))
 -  Validate all fields in `add` & `edit` ([`02bf53b`](https://git.4rs.nl/awiteb/lprs/commit/02bf53b2a1fd420bf66ac571531d060499559c29))
 ### Removed
