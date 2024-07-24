@@ -82,23 +82,43 @@ impl LprsCommand for Edit {
         if let Some(new_name) = self.name {
             vault.name = new_name;
         }
-        if self.password.is_some() {
-            vault.password = utils::user_secret(self.password, "New vault password:", false)?;
+        if let Some(ref new_password) = self.password {
+            if new_password.as_deref().is_some_and(|s| s.is_empty()) {
+                vault.password = None;
+            } else {
+                vault.password = utils::user_secret(self.password, "New vault password:", false)?;
+            }
         }
         if let Some(totp_secret) = utils::user_secret(self.totp_secret, "TOTP Secret:", false)? {
-            cipher::base32_decode(&totp_secret).map_err(|_| {
-                LprsError::Base32("Invalid TOTP secret, must be valid base32 string".to_owned())
-            })?;
-            vault.totp_secret = Some(totp_secret);
+            if totp_secret.is_empty() {
+                vault.totp_secret = None;
+            } else {
+                cipher::base32_decode(&totp_secret).map_err(|_| {
+                    LprsError::Base32("Invalid TOTP secret, must be valid base32 string".to_owned())
+                })?;
+                vault.totp_secret = Some(totp_secret);
+            }
         }
         if let Some(new_username) = self.username {
-            vault.username = Some(new_username);
+            if new_username.is_empty() {
+                vault.username = None;
+            } else {
+                vault.username = Some(new_username);
+            }
         }
         if let Some(new_service) = self.service {
-            vault.service = Some(new_service);
+            if new_service.is_empty() {
+                vault.service = None;
+            } else {
+                vault.service = Some(new_service);
+            }
         }
         if let Some(new_note) = self.note {
-            vault.note = Some(new_note);
+            if new_note.is_empty() {
+                vault.note = None;
+            } else {
+                vault.note = Some(new_note);
+            }
         }
         utils::apply_custom_fields(&mut vault.custom_fields, self.custom_fields);
 
