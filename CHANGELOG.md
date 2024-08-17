@@ -28,6 +28,7 @@ and then re-invoke them (after this commit)
 -  Support changing master password ([**#50**](https://git.4rs.nl/awiteb/lprs/issues/50)) ([`ced363a`](https://git.4rs.nl/awiteb/lprs/commit/ced363a37f6f64282ca1a1fb022aa3d030edff79))
 -  Support completion generating ([`f022574`](https://git.4rs.nl/awiteb/lprs/commit/f022574631bfb1b6a62f95d3259617f302059781))
 -  Support custom fields ([`da568ab`](https://git.4rs.nl/awiteb/lprs/commit/da568ab5e9414ef77831066eb9b09621c0fedaee))
+-  Support entering custom keys value via STDIN ([**#64**](https://git.4rs.nl/awiteb/lprs/issues/64)) ([`5e4fb0e`](https://git.4rs.nl/awiteb/lprs/commit/5e4fb0ea7cafd62fc93d443a659215889e0520d5))
 -  Support export and import with different password ([`a6483cf`](https://git.4rs.nl/awiteb/lprs/commit/a6483cf333e6a5f3a0d48317b50c6304cfd956bb))
 -  Validate args before ask for the master password ([**#17**](https://git.4rs.nl/awiteb/lprs/issues/17)) ([`b4bcaa9`](https://git.4rs.nl/awiteb/lprs/commit/b4bcaa92ca63b7c71ea5c28d5e9a6af3ecb88a91))
 ### Changed
