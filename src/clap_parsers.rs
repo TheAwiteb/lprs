@@ -19,12 +19,14 @@ use crate::{LprsError, LprsResult};
 /// Parse the key & value arguments.
 /// ## Errors
 /// - If the argument value syntax not `key=value`
-pub fn kv_parser(value: &str) -> LprsResult<(String, String)> {
+pub fn kv_parser(value: &str) -> LprsResult<(String, Option<String>)> {
     if let Some((key, value)) = value.split_once('=') {
-        Ok((key.trim().to_owned(), value.trim().to_owned()))
-    } else {
+        Ok((key.trim().to_owned(), Some(value.trim().to_owned())))
+    } else if value.trim().is_empty() {
         Err(LprsError::ArgParse(
-            "There is no value, the syntax is `KEY=VALUE`".to_owned(),
+            "Invalid key, the syntax is `KEY(=VALUE)?`".to_owned(),
         ))
+    } else {
+        Ok((value.trim().to_owned(), None))
     }
 }

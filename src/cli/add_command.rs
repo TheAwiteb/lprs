@@ -39,9 +39,11 @@ pub struct Add {
     #[allow(clippy::option_option)]
     totp_secret:   Option<Option<String>>,
     /// Add a custom field to the vault
-    #[arg(name = "KEY=VALUE", short = 'c', long = "custom")]
+    ///
+    /// If there is no value, you will enter it through a prompt
+    #[arg(name = "KEY(=VALUE)?", short = 'c', long = "custom")]
     #[arg(value_parser = clap_parsers::kv_parser)]
-    custom_fields: Vec<(String, String)>,
+    custom_fields: Vec<(String, Option<String>)>,
     /// Force add, will not return error if there is a problem with the args.
     ///
     /// For example, duplication in the custom fields and try to adding empty
@@ -73,7 +75,9 @@ impl LprsCommand for Add {
 
             self.vault_info.name = self.vault_info.name.trim().to_string();
             self.vault_info.password = utils::user_secret(self.password, "Vault password:", false)?;
-            self.vault_info.custom_fields = self.custom_fields.into_iter().collect();
+            self.vault_info.custom_fields = utils::prompt_custom(self.custom_fields)?
+                .into_iter()
+                .collect();
             vault_manager.add_vault(self.vault_info);
             vault_manager.try_export()?;
         }
@@ -95,23 +99,23 @@ impl LprsCommand for Add {
         if self
             .password
             .as_ref()
-            .is_some_and(|p| p.as_ref().is_some_and(|p| p.is_empty()))
+            .is_some_and(|p| p.as_ref().is_some_and(String::is_empty))
             || self.vault_info.name.is_empty()
             || self
                 .vault_info
                 .username
                 .as_ref()
-                .is_some_and(|u| u.is_empty())
+                .is_some_and(String::is_empty)
             || self
                 .vault_info
                 .service
                 .as_ref()
-                .is_some_and(|s| s.is_empty())
-            || self.vault_info.note.as_ref().is_some_and(|n| n.is_empty())
+                .is_some_and(String::is_empty)
+            || self.vault_info.note.as_ref().is_some_and(String::is_empty)
             || self
                 .custom_fields
                 .iter()
-                .any(|(k, v)| k.is_empty() || v.is_empty())
+                .any(|(k, v)| k.is_empty() || v.as_ref().is_some_and(String::is_empty))
         {
             return Err(LprsError::EmptyValue);
         }

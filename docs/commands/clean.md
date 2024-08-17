@@ -4,10 +4,6 @@
 
 ```
 Usage: lprs clean
-
-Options:
-  -h, --help     Print help
-  -V, --version  Print version
 ```
 
 Is simple, just run `lprs clean` and the vaults file will be cleaned, removing

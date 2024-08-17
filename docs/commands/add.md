@@ -35,8 +35,10 @@ Options:
   -t, --totp-secret [<TOTP_SECRET>]
           The TOTP secret, if there is no value you will prompt it
 
-  -c, --custom <KEY=VALUE>
+  -c, --custom <KEY(=VALUE)?>
           Add a custom field to the vault
+          
+          If there is no value, you will enter it through a prompt
 
   -f, --force
           Force add, will not return error if there is a problem with the args.
@@ -45,9 +47,6 @@ Options:
 
   -h, --help
           Print help (see a summary with '-h')
-
-  -V, --version
-          Print version
 ```
 
 So, to add a vault you need to provide a name for the vault, and you can provide

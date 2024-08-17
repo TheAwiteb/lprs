@@ -181,7 +181,7 @@ pub fn lprs_version() -> LprsResult<Option<String>> {
 }
 
 /// Returns the duplicated field from the custom field (unprocessed fields)
-pub fn get_duplicated_field(fields: &[(String, String)]) -> Option<&str> {
+pub fn get_duplicated_field(fields: &[(String, Option<String>)]) -> Option<&str> {
     fields.iter().find_map(|(key, _)| {
         if fields.iter().filter(|(k, _)| key == k).count() > 1 {
             return Some(key.as_str());
@@ -208,6 +208,27 @@ pub fn apply_custom_fields(
             fields.insert(key, value);
         }
     }
+}
+
+/// Make sure all custom field values are there, if not, ask the user for it
+///
+/// ## Errors
+/// - If can't read the user input
+pub fn prompt_custom(
+    custom_fields: Vec<(String, Option<String>)>,
+) -> LprsResult<Vec<(String, String)>> {
+    let mut new_fields = Vec::new();
+
+    for (key, value) in custom_fields {
+        if let Some(value) = value {
+            new_fields.push((key, value));
+        } else {
+            let value = inquire::Text::new(&format!("Value of `{key}`:")).prompt()?;
+            new_fields.push((key, value));
+        }
+    }
+
+    Ok(new_fields)
 }
 
 /// Returns the vault with its index by its index or name

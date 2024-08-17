@@ -14,7 +14,6 @@ Options:
   -n, --numbers    With numbers (0-9)
   -s, --symbols    With symbols (!,# ...)
   -h, --help       Print help
-  -V, --version    Print version
 ```
 
 Generate a password with the specified length, by default the length is `18`,

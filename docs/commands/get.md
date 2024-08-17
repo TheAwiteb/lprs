@@ -19,9 +19,6 @@ Arguments:
 Options:
   -h, --help
           Print help (see a summary with '-h')
-
-  -V, --version
-          Print version
 ```
 
 Get a single field from a vault, if the field is not provided, the whole vault

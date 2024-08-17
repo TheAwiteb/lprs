@@ -36,28 +36,33 @@ pub struct Edit {
     /// The new vault name
     name:          Option<String>,
     #[arg(short, long)]
-    /// The new vault username
+    /// The new vault username, make it empty string to delete it
     username:      Option<String>,
     #[arg(short, long)]
-    /// The new password, if there is no value for it you will prompt it
+    /// The new password, make it empty string to delete it
+    ///
+    /// If there is no value for it you will prompt it
     #[allow(clippy::option_option)]
     password:      Option<Option<String>>,
     #[arg(short, long)]
-    /// The new vault service
+    /// The new vault service, make it empty string to delete it
     service:       Option<String>,
     #[arg(short = 'o', long)]
     /// The new vault note
     note:          Option<String>,
-    /// The TOTP secret, if there is no value you will prompt it
+    /// The TOTP secret, make it empty string to delete it
+    ///
+    /// If there is no value you will prompt it
     #[arg(short, long)]
     #[allow(clippy::option_option)]
     totp_secret:   Option<Option<String>>,
-    /// The custom field, make its value empty to delete it
+    /// The custom field, make it empty string to delete it
     ///
-    /// If the custom field not exist will created it, if it's will update it
+    /// If the custom field not exist will created it, if it's will update it,
+    /// if there is no value, you will enter it through a prompt (e.g `-c key`)
     #[arg(name = "KEY=VALUE", short = 'c', long = "custom")]
     #[arg(value_parser = clap_parsers::kv_parser)]
-    custom_fields: Vec<(String, String)>,
+    custom_fields: Vec<(String, Option<String>)>,
     /// Force edit, will not return error if there is a problem with the args.
     ///
     /// For example, duplication in the custom fields and try to editing nothing
@@ -120,7 +125,10 @@ impl LprsCommand for Edit {
                 vault.note = Some(new_note);
             }
         }
-        utils::apply_custom_fields(&mut vault.custom_fields, self.custom_fields);
+        utils::apply_custom_fields(
+            &mut vault.custom_fields,
+            utils::prompt_custom(self.custom_fields)?,
+        );
 
         vault_manager.try_export()
     }

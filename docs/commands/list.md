@@ -10,7 +10,6 @@ Options:
   -r, --regex          Enable regex when use `--filter` option
       --json           Returns the output as `json` list of vaults
   -h, --help           Print help
-  -V, --version        Print version
 ```
 
 Lprs `list` command is used to list all vaults in the vaults file, you can also
@@ -21,4 +20,5 @@ work with it with `jq`).
 
 
 ### Examples
+
 <script src="https://asciinema.org/a/eEVkDi0NroBjKNILg7KW3hSKY.js" id="asciicast-eEVkDi0NroBjKNILg7KW3hSKY" async="true" data-cols=48 data-rows=10></script>

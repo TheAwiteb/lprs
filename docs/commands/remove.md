@@ -11,7 +11,6 @@ Arguments:
 Options:
   -f, --force    Force remove, will not return error if there is no vault with the given index or name
   -h, --help     Print help
-  -V, --version  Print version
 ```
 
 To remove a vault you need to provide the index or the name of the vault. If you

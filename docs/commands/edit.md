@@ -14,24 +14,28 @@ Options:
           The new vault name
 
   -u, --username <USERNAME>
-          The new vault username
+          The new vault username, make it empty string to delete it
 
   -p, --password [<PASSWORD>]
-          The new password, if there is no value for it you will prompt it
+          The new password, make it empty string to delete it
+          
+          If there is no value for it you will prompt it
 
   -s, --service <SERVICE>
-          The new vault service
+          The new vault service, make it empty string to delete it
 
   -o, --note <NOTE>
           The new vault note
 
   -t, --totp-secret [<TOTP_SECRET>]
-          The TOTP secret, if there is no value you will prompt it
+          The TOTP secret, make it empty string to delete it
+          
+          If there is no value you will prompt it
 
   -c, --custom <KEY=VALUE>
-          The custom field, make its value empty to delete it
+          The custom field, make it empty string to delete it
           
-          If the custom field not exist will created it, if it's will update it
+          If the custom field not exist will created it, if it's will update it, if there is no value, you will enter it through a prompt (e.g `-c key`)
 
   -f, --force
           Force edit, will not return error if there is a problem with the args.
@@ -40,9 +44,6 @@ Options:
 
   -h, --help
           Print help (see a summary with '-h')
-
-  -V, --version
-          Print version
 ```
 
 To edit a vault you need to provide the index or the name of the vault. If you
