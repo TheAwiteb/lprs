@@ -19,7 +19,11 @@ use std::num::NonZeroUsize;
 use std::{fs, path::PathBuf};
 
 use either::Either;
-use inquire::{validator::Validation, Password, PasswordDisplayMode};
+use inquire::{
+    validator::{StringValidator, Validation},
+    Password,
+    PasswordDisplayMode,
+};
 use passwords::{analyzer, scorer};
 #[cfg(feature = "update-notify")]
 use reqwest::blocking::Client as BlockingClient;
@@ -47,6 +51,26 @@ pub fn local_project_file(filename: &str) -> LprsResult<PathBuf> {
     Ok(local_dir.join(filename))
 }
 
+/// Ask the user for a secret in the stdin
+///
+/// ## Errors
+/// - If can't read the user input
+fn secret_prompt(
+    prompt_message: &str,
+    confirmation: bool,
+    validators: Option<Vec<Box<dyn StringValidator>>>,
+) -> LprsResult<String> {
+    Password {
+        validators: validators.unwrap_or_default(),
+        enable_confirmation: confirmation,
+        ..Password::new(prompt_message)
+            .with_formatter(&|p| "*".repeat(p.chars().count()))
+            .with_display_mode(PasswordDisplayMode::Masked)
+    }
+    .prompt()
+    .map_err(LprsError::Inquire)
+}
+
 /// Returns the user secret if any
 ///
 /// - If the `secret` is `None` will return `None`
@@ -66,15 +90,7 @@ pub fn user_secret(
         Some(Some(p)) => Some(p),
         Some(None) => {
             log::debug!("User didn't provide a secret, prompting it");
-            Some(
-                Password {
-                    enable_confirmation: confirmation,
-                    ..Password::new(prompt_message)
-                        .with_formatter(&|p| "*".repeat(p.chars().count()))
-                        .with_display_mode(PasswordDisplayMode::Masked)
-                }
-                .prompt()?,
-            )
+            Some(secret_prompt(prompt_message, confirmation, None)?)
         }
     })
 }
@@ -119,21 +135,12 @@ pub fn password_validator(password: &str) -> Result<Validation, inquire::CustomU
 ///
 /// Return's the password as 32 bytes after hash it (256 bit)
 pub fn master_password_prompt(is_new_vaults_file: bool) -> LprsResult<[u8; 32]> {
-    inquire::Password {
-        message: "Master Password:",
-        enable_confirmation: is_new_vaults_file,
-        validators: if is_new_vaults_file {
-            vec![Box::new(password_validator)]
-        } else {
-            vec![]
-        },
-        ..inquire::Password::new("")
-    }
-    .with_formatter(&|p| "*".repeat(p.chars().count()))
-    .with_display_mode(PasswordDisplayMode::Masked)
-    .prompt()
+    secret_prompt(
+        "Master Password:",
+        is_new_vaults_file,
+        Some(vec![Box::new(password_validator)]),
+    )
     .map(|p| sha2::Sha256::digest(p).into())
-    .map_err(Into::into)
 }
 
 /// Retuns the current lprs version from `crates.io`
@@ -225,7 +232,7 @@ pub fn prompt_custom(
         if let Some(value) = value {
             new_fields.push((key, value));
         } else {
-            let value = inquire::Text::new(&format!("Value of `{key}`:")).prompt()?;
+            let value = secret_prompt(&format!("Value of `{key}`:"), false, None)?;
             new_fields.push((key, value));
         }
     }
