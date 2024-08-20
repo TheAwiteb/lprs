@@ -44,7 +44,7 @@ pub enum Format {
 }
 
 /// The vault struct
-#[derive(Clone, Debug, Deserialize, Serialize, Parser)]
+#[derive(Clone, Debug, Deserialize, Serialize, Parser, Eq, PartialEq)]
 pub struct Vault {
     /// The name of the vault
     pub name:          String,
