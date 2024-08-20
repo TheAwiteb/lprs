@@ -244,16 +244,17 @@ pub fn prompt_custom(
 ///
 /// ## Errors
 /// - If there is no vault with the given index or name
-pub fn vault_by_index_or_name(
-    location: Either<NonZeroUsize, String>,
-    vaults: &mut [Vault],
-) -> LprsResult<(usize, &mut Vault)> {
+pub fn vault_by_index_or_name<'v>(
+    location: &Either<NonZeroUsize, String>,
+    vaults: &'v mut [Vault],
+) -> LprsResult<(usize, &'v mut Vault)> {
     let idx = location
+        .as_ref()
         .map_right(|name| {
             vaults
                 .iter()
                 .enumerate()
-                .find_map(|(idx, v)| (v.name == name).then_some(idx))
+                .find_map(|(idx, v)| (&v.name == name).then_some(idx))
                 .ok_or_else(|| {
                     LprsError::Other(format!("There is no vault with the given name `{name}`"))
                 })

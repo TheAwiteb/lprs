@@ -112,7 +112,7 @@ pub struct Get {
 impl LprsCommand for Get {
     fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
         let (index, vault) =
-            utils::vault_by_index_or_name(self.location, &mut vault_manager.vaults)?;
+            utils::vault_by_index_or_name(&self.location, &mut vault_manager.vaults)?;
 
         if let Some(field) = self.field {
             if field == VaultGetField::Index {

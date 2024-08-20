@@ -75,7 +75,7 @@ pub struct Edit {
 
 impl LprsCommand for Edit {
     fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
-        let vault = match utils::vault_by_index_or_name(self.location, &mut vault_manager.vaults) {
+        let vault = match utils::vault_by_index_or_name(&self.location, &mut vault_manager.vaults) {
             Ok((_, v)) => v,
             Err(err) => {
                 if self.force {
