@@ -15,8 +15,10 @@
 // along with this program. If not, see <https://gnu.org/licenses/gpl-3.0.html>.
 
 use std::collections::BTreeMap;
+use std::num::NonZeroUsize;
 use std::{fs, path::PathBuf};
 
+use either::Either;
 use inquire::{validator::Validation, Password, PasswordDisplayMode};
 use passwords::{analyzer, scorer};
 #[cfg(feature = "update-notify")]
@@ -231,35 +233,31 @@ pub fn prompt_custom(
     Ok(new_fields)
 }
 
-/// Returns the vault with its index by its index or name
+/// Returns the vault with its index by either its index or name
 ///
 /// ## Errors
 /// - If there is no vault with the given index or name
-pub fn vault_by_index_or_name<'a>(
-    index_or_name: &str,
-    vaults: &'a mut [Vault],
-) -> LprsResult<(usize, &'a mut Vault)> {
-    let parsed_index = index_or_name.parse::<usize>();
+pub fn vault_by_index_or_name(
+    location: Either<NonZeroUsize, String>,
+    vaults: &mut [Vault],
+) -> LprsResult<(usize, &mut Vault)> {
+    let idx = location
+        .map_right(|name| {
+            vaults
+                .iter()
+                .enumerate()
+                .find_map(|(idx, v)| (v.name == name).then_some(idx))
+                .ok_or_else(|| {
+                    LprsError::Other(format!("There is no vault with the given name `{name}`"))
+                })
+        })
+        .map_left(|idx| LprsResult::Ok(idx.get() - 1))
+        .into_inner()?;
 
-    let Some((index, vault)) = (if let Ok(index) = parsed_index {
-        index
-            .checked_sub(1)
-            .and_then(|zeroindex| vaults.get_mut(zeroindex).map(|v| (index, v)))
-    } else {
-        vaults
-            .iter_mut()
-            .enumerate()
-            .find(|(_, v)| v.name == index_or_name)
-    }) else {
-        return Err(LprsError::Other(format!(
-            "There is no vault with the given {} `{}`",
-            if parsed_index.is_ok() {
-                "index"
-            } else {
-                "name"
-            },
-            index_or_name,
-        )));
-    };
-    Ok((index, vault))
+    Ok((
+        idx,
+        vaults.get_mut(idx).ok_or_else(|| {
+            LprsError::Other(format!("There is no vault with the given index `{idx}`"))
+        })?,
+    ))
 }

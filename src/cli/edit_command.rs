@@ -14,10 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://gnu.org/licenses/gpl-3.0.html>.
 
+use std::num::NonZeroUsize;
+
 use clap::Args;
+use either::Either;
 
 use crate::{
-    clap_parsers,
+    clap_parsers::{either_parser, kv_parser},
     utils,
     vault::{cipher, Vaults},
     LprsCommand,
@@ -29,8 +32,8 @@ use crate::{
 /// Edit command, used to edit the vault content
 pub struct Edit {
     /// The vault to edit, index or name
-    #[arg(name = "INDEX-or-NAME")]
-    location: String,
+    #[arg(name = "INDEX-or-NAME", value_parser = either_parser::<NonZeroUsize, String>)]
+    location: Either<NonZeroUsize, String>,
 
     #[arg(short, long)]
     /// The new vault name
@@ -61,7 +64,7 @@ pub struct Edit {
     /// If the custom field not exist will created it, if it's will update it,
     /// if there is no value, you will enter it through a prompt (e.g `-c key`)
     #[arg(name = "KEY=VALUE", short = 'c', long = "custom")]
-    #[arg(value_parser = clap_parsers::kv_parser)]
+    #[arg(value_parser = kv_parser)]
     custom_fields: Vec<(String, Option<String>)>,
     /// Force edit, will not return error if there is a problem with the args.
     ///
@@ -72,16 +75,15 @@ pub struct Edit {
 
 impl LprsCommand for Edit {
     fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
-        let vault =
-            match utils::vault_by_index_or_name(self.location.trim(), &mut vault_manager.vaults) {
-                Ok((_, v)) => v,
-                Err(err) => {
-                    if self.force {
-                        return Ok(());
-                    }
-                    return Err(err);
+        let vault = match utils::vault_by_index_or_name(self.location, &mut vault_manager.vaults) {
+            Ok((_, v)) => v,
+            Err(err) => {
+                if self.force {
+                    return Ok(());
                 }
-            };
+                return Err(err);
+            }
+        };
 
         log::info!("Applying the new values to the vault");
         if let Some(new_name) = self.name {

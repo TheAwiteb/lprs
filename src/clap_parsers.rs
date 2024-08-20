@@ -14,9 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://gnu.org/licenses/gpl-3.0.html>.
 
+use std::{fmt::Display, str::FromStr};
+
+use either::Either::{self, Left, Right};
+
 use crate::{LprsError, LprsResult};
 
 /// Parse the key & value arguments.
+///
 /// ## Errors
 /// - If the argument value syntax not `key=value`
 pub fn kv_parser(value: &str) -> LprsResult<(String, Option<String>)> {
@@ -29,4 +34,28 @@ pub fn kv_parser(value: &str) -> LprsResult<(String, Option<String>)> {
     } else {
         Ok((value.trim().to_owned(), None))
     }
+}
+
+/// Parse `Either` type arguments.
+///
+/// ## Errors
+/// - If the argument value can't be parsed to `L` or `R`
+pub fn either_parser<L, R>(value: &str) -> LprsResult<Either<L, R>>
+where
+    L: FromStr,
+    R: FromStr,
+    <L as FromStr>::Err: Display,
+    <R as FromStr>::Err: Display,
+{
+    value
+        .trim()
+        .parse::<L>()
+        .map_err(|err| LprsError::ArgParse(err.to_string()))
+        .map(Left)
+        .or_else(|_| {
+            value
+                .parse::<R>()
+                .map_err(|err| LprsError::ArgParse(err.to_string()))
+                .map(Right)
+        })
 }

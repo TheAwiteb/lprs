@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://gnu.org/licenses/gpl-3.0.html>.
 
-use std::str::FromStr;
+use std::{num::NonZeroUsize, str::FromStr};
 
 use clap::Args;
+use either::Either;
 
 use crate::{
+    clap_parsers::either_parser,
     utils,
     vault::{cipher, Vault, Vaults},
     LprsCommand,
@@ -94,8 +96,9 @@ impl VaultGetField {
 /// Command to get a entire vault or single field from it
 pub struct Get {
     /// Whether the index of the vault or its name
-    #[arg(value_name = "INDEX-or-NAME")]
-    location: String,
+    #[arg(name = "INDEX-or-NAME", value_parser = either_parser::<NonZeroUsize, String>)]
+    location: Either<NonZeroUsize, String>,
+
     /// A Specific field to get.
     ///
     /// Can be [name, username, password, service, note, totp_secret, totp_code,
@@ -103,13 +106,13 @@ pub struct Get {
     ///
     /// where the string means a custom field
     #[arg(value_parser = VaultGetField::from_str)]
-    field:    Option<VaultGetField>,
+    field: Option<VaultGetField>,
 }
 
 impl LprsCommand for Get {
     fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
         let (index, vault) =
-            utils::vault_by_index_or_name(self.location.trim(), &mut vault_manager.vaults)?;
+            utils::vault_by_index_or_name(self.location, &mut vault_manager.vaults)?;
 
         if let Some(field) = self.field {
             if field == VaultGetField::Index {

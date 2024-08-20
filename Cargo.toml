@@ -32,6 +32,7 @@ base64 = "0.22.1"
 clap_complete = "4.5.2"
 totp-lite = "2.0.1"
 base32 = "0.5.0"
+either = { version = "1.13.0", default-features = false }
 
 [features]
 default = ["update-notify"]

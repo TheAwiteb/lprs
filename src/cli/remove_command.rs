@@ -14,16 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://gnu.org/licenses/gpl-3.0.html>.
 
-use clap::Args;
+use std::num::NonZeroUsize;
 
-use crate::{utils, vault::Vaults, LprsCommand, LprsResult};
+use clap::Args;
+use either::Either;
+
+use crate::{clap_parsers::either_parser, utils, vault::Vaults, LprsCommand, LprsResult};
 
 #[derive(Debug, Args)]
 /// Remove command, used to remove a vault from the vaults file
 pub struct Remove {
     /// The vault to remove, index or name
-    #[arg(name = "INDEX-or-NAME")]
-    location: String,
+    #[arg(name = "INDEX-or-NAME", value_parser = either_parser::<NonZeroUsize, String>)]
+    location: Either<NonZeroUsize, String>,
 
     /// Force remove, will not return error if there is no vault with the given
     /// index or name
@@ -33,16 +36,15 @@ pub struct Remove {
 
 impl LprsCommand for Remove {
     fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
-        let index =
-            match utils::vault_by_index_or_name(self.location.trim(), &mut vault_manager.vaults) {
-                Ok((idx, _)) => idx,
-                Err(err) => {
-                    if self.force {
-                        return Ok(());
-                    }
-                    return Err(err);
+        let index = match utils::vault_by_index_or_name(self.location, &mut vault_manager.vaults) {
+            Ok((idx, _)) => idx,
+            Err(err) => {
+                if self.force {
+                    return Ok(());
                 }
-            };
+                return Err(err);
+            }
+        };
         vault_manager.vaults.remove(index);
         vault_manager.try_export()
     }
