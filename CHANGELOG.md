@@ -39,6 +39,7 @@ and then re-invoke them (after this commit)
     - **BC**:  Moving from password to vault
 -  Move from GitHub to Forgejo ([`6163c3f`](https://git.4rs.nl/awiteb/lprs/commit/6163c3ff26ab81b07490a798f4047a09565ab1ac))
 -  Rename `Password`s `Vault`s ([`f6aaecb`](https://git.4rs.nl/awiteb/lprs/commit/f6aaecb9cf43d7dfa3ef653ff0cd117b3197308b))
+-  Use `Either<usize, String>` type instade of `String` for index or name ([**#65**](https://git.4rs.nl/awiteb/lprs/issues/65)) ([`1c90a82`](https://git.4rs.nl/awiteb/lprs/commit/1c90a825440b1c8ad4eee627407797e0b017a279))
 -  Use select for vaults listing ([**#19**](https://git.4rs.nl/awiteb/lprs/issues/19)) ([`83c7296`](https://git.4rs.nl/awiteb/lprs/commit/83c7296bf7bf469423f53b024cb65e608ff6c9d9))
 ### Fixed
 -  Merge rust ci jobs into one job ([**#2**](https://git.4rs.nl/awiteb/lprs/issues/2)) ([`34eb9d1`](https://git.4rs.nl/awiteb/lprs/commit/34eb9d10f0ad514c6a7878fd8415a50f04db2be8))
