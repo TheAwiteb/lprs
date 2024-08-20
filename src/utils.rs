@@ -265,7 +265,10 @@ pub fn vault_by_index_or_name<'v>(
     Ok((
         idx,
         vaults.get_mut(idx).ok_or_else(|| {
-            LprsError::Other(format!("There is no vault with the given index `{idx}`"))
+            LprsError::Other(format!(
+                "There is no vault with the given index `{}`",
+                idx + 1
+            ))
         })?,
     ))
 }
