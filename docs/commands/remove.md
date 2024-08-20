@@ -3,17 +3,17 @@
 ## Usage
 
 ```
-Usage: lprs remove [OPTIONS] <INDEX-or-NAME>
+Usage: lprs remove [OPTIONS] [INDEX-or-NAME]...
 
 Arguments:
-  <INDEX-or-NAME>  The vault to remove, index or name
+  [INDEX-or-NAME]...  The vaults to remove, index or name
 
 Options:
-  -f, --force    Force remove, will not return error if there is no vault with the given index or name
-  -h, --help     Print help
+  -f, --force  Force remove, will not return error if there is no vault with the given index or name
+  -h, --help   Print help
 ```
 
-To remove a vault you need to provide the index or the name of the vault. If you
+To remove a vaults you need to provide the index or the name of each vault. If you
 provide the index, the vault will be removed by its index, if you provide the
 name, the vault will be removed the first vault with the given name.
 
@@ -22,17 +22,17 @@ unless you provide the `--force` option, in which case the command will not
 return an error if there is no vault with the given index or name.
 
 ## Examples
-Remove a vault by its index:
+Remove a vaults by its index:
 ```sh
-lprs remove 1
+lprs remove 1 10 14
 ```
 
 Remove a vault by its name:
 ```sh
-lprs remove my-vault
+lprs remove my-vault 'another vault' "third vault"
 ```
 
-Force remove a vault by its index:
+Force remove a vault by its index (will not return an error if there is no vault with the given index):
 ```sh
 lprs remove 234 --force
 ```
