@@ -30,6 +30,7 @@ and then re-invoke them (after this commit)
 -  Support custom fields ([`da568ab`](https://git.4rs.nl/awiteb/lprs/commit/da568ab5e9414ef77831066eb9b09621c0fedaee))
 -  Support entering custom keys value via STDIN ([**#64**](https://git.4rs.nl/awiteb/lprs/issues/64)) ([`5e4fb0e`](https://git.4rs.nl/awiteb/lprs/commit/5e4fb0ea7cafd62fc93d443a659215889e0520d5))
 -  Support export and import with different password ([`a6483cf`](https://git.4rs.nl/awiteb/lprs/commit/a6483cf333e6a5f3a0d48317b50c6304cfd956bb))
+-  Support removing multiple vaults in single command ([**#66**](https://git.4rs.nl/awiteb/lprs/issues/66)) ([`6293ead`](https://git.4rs.nl/awiteb/lprs/commit/6293eadafb604d822a8bd376c9d170d8c9c50524))
 -  Validate args before ask for the master password ([**#17**](https://git.4rs.nl/awiteb/lprs/issues/17)) ([`b4bcaa9`](https://git.4rs.nl/awiteb/lprs/commit/b4bcaa92ca63b7c71ea5c28d5e9a6af3ecb88a91))
 ### Changed
 -  Change 'password manager' to 'vault manager' ([`bae0cf1`](https://git.4rs.nl/awiteb/lprs/commit/bae0cf174736d9a1cd61becd20f7d87cf137249c))
