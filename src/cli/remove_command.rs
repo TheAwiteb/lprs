@@ -19,14 +19,20 @@ use std::num::NonZeroUsize;
 use clap::Args;
 use either::Either;
 
-use crate::{clap_parsers::either_parser, utils, vault::Vaults, LprsCommand, LprsResult};
+use crate::{
+    clap_parsers::either_parser,
+    utils,
+    vault::{Vault, Vaults},
+    LprsCommand,
+    LprsResult,
+};
 
 #[derive(Debug, Args)]
 /// Remove command, used to remove a vault from the vaults file
 pub struct Remove {
-    /// The vault to remove, index or name
+    /// The vaults to remove, index or name
     #[arg(name = "INDEX-or-NAME", value_parser = either_parser::<NonZeroUsize, String>)]
-    location: Either<NonZeroUsize, String>,
+    locations: Vec<Either<NonZeroUsize, String>>,
 
     /// Force remove, will not return error if there is no vault with the given
     /// index or name
@@ -36,16 +42,26 @@ pub struct Remove {
 
 impl LprsCommand for Remove {
     fn run(self, mut vault_manager: Vaults) -> LprsResult<()> {
-        let index = match utils::vault_by_index_or_name(self.location, &mut vault_manager.vaults) {
-            Ok((idx, _)) => idx,
+        let indexes = self
+            .locations
+            .iter()
+            .map(|location| {
+                utils::vault_by_index_or_name(location, &mut vault_manager.vaults)
+                    .map(|(_, v)| v.clone())
+            })
+            .collect::<LprsResult<Vec<Vault>>>();
+
+        match indexes {
+            Ok(indexes) => vault_manager.vaults.retain(|v| !indexes.contains(v)),
             Err(err) => {
                 if self.force {
+                    log::warn!("Ignoring error: {err}");
                     return Ok(());
                 }
                 return Err(err);
             }
-        };
-        vault_manager.vaults.remove(index);
+        }
+
         vault_manager.try_export()
     }
 }
