@@ -1,4 +1,4 @@
-# Clening the vaults
+# Cleaning the vaults
 
 ## Usage
 

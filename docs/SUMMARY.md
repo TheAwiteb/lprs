@@ -8,7 +8,7 @@
   - [Editing a vault](commands/edit.md)
   - [Getting a vault](commands/get.md)
   - [Listing all vaults](commands/list.md)
-  - [Clening the vaults](commands/clean.md)
+  - [Cleaning the vaults](commands/clean.md)
   - [Generating a password](commands/gen.md)
   - [Importing and exporting vaults](commands/import-export.md)
   - [Changing the master password](commands/change-master-password.md)

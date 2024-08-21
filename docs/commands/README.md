@@ -36,7 +36,7 @@ Now let's take a look at the available commands and how to use them.
 - [Editing a vault](commands/edit.md)
 - [Getting a vault](commands/get.md)
 - [Listing all vaults](commands/list.md)
-- [Clening the vaults](commands/clean.md)
+- [Cleaning the vaults](commands/clean.md)
 - [Generating a password](commands/generate-password.md)
 - [Importing and exporting vaults](commands/import-export.md)
 - [Changing the master password](commands/change-master-password.md)
