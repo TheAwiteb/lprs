@@ -1,7 +1,7 @@
-
 <div align="center">
 
 # Lprs
+
 A local vault manager designed to securely store and manage your vaults.
 
 [![Docs](https://img.shields.io/badge/docs-lprs.4rs.nl-purple)](https://lprs.4rs.nl)
@@ -14,6 +14,7 @@ A local vault manager designed to securely store and manage your vaults.
 </div>
 
 ## Features
+
 - Auto checks for updates (Can be disabled).
 - Passing the master password as an argument and via stdin.
 - Changing the master password.
@@ -36,17 +37,21 @@ A local vault manager designed to securely store and manage your vaults.
 ## Installation
 
 ### Build from source (MSRV: `1.74.0`)
+
 ```bash
 # From crates.io
-cargo install lprs 
+cargo install lprs
 # From source (after cloning the repository)
 # The binary will be in target/release/lprs
 cargo build --release
 ```
 
-This will build Lprs with update checking enabled. If you want to disable update checking, you can build Lprs without the default features by passing the `--no-default-features` flag.
+This will build Lprs with update checking enabled. If you want to disable update
+checking, you can build Lprs without the default features by passing the
+`--no-default-features` flag.
 
 ### Pre-built binaries
+
 Pre-built binaries are available for Linux and Windows on the [releases
 page](https://git.4rs.nl/awiteb/lprs/releases/latest). There is tow version of
 the binary, one with update checking enabled and other not, the binaries with
@@ -54,7 +59,8 @@ update checking enabled have the `lrps-update-notify` prefix.
 
 ## Usage
 
-Lprs provides a command-line interface for managing your vaults. The following commands are available:
+Lprs provides a command-line interface for managing your vaults. The following
+commands are available:
 
 ```
 A local CLI vaults manager. For human and machine use
@@ -71,7 +77,7 @@ Commands:
   get                     Get a entire vault or single field from it
   export                  Export the vaults
   import                  Import vaults
-  change-master-password  Change the master password
+  change-master-password  Change master password, reencrypt the vaults with new password
   completion              Generate shell completion
   help                    Print this message or the help of the given subcommand(s)
 
@@ -79,26 +85,37 @@ Options:
   -f, --vaults-file <VAULTS_FILE>          The vaults json file
   -v, --verbose                            Show the logs in the stdout
   -m, --master-password <MASTER_PASSWORD>  The master password, or you will prompt it
-  -h, --help                               Print help
+  -h, --help                               Print help (see more with '--help')
   -V, --version                            Print version
 ```
 
 ## Documentation
-You can find the full documentation for Lprs on the official website at https://lprs.4rs.nl.
+
+You can find the full documentation for Lprs here <https://lprs.4rs.nl>.
 
 ## Contributing
 
-Contributions to Lprs are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+Contributions to Lprs are welcome! If you would like to contribute, please
+follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## Mirrors
+
 This repository is mirrored on the following platforms:
+
 - [GitHub](https://github.com/TheAwiteb/lprs)
 - [Codeberg](https://codeberg.org/awiteb/lprs)
 
 ## License
 
-Lprs is licensed under the GPL-3.0 License. This means that you are free to use, modify, and distribute the software under the terms of this license. Please refer to the [LICENSE](LICENSE) file for more details.
+Lprs is licensed under the GPL-3.0 License. This means that you are free to use,
+modify, and distribute the software under the terms of this license. Please
+refer to the [LICENSE](LICENSE) file for more details.
 
 ---
+
+## Support
+
+If you like this project and want to support it, you can do so by donating via
+[Ko-fi](https://ko-fi.com/awiteb).
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/awiteb)
