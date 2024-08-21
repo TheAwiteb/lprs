@@ -12,5 +12,5 @@ For the location, please provide a link to the code or the documentation.
 
 | Location | Suggestion |
 |----------|------------|
-| Code-link| Suggestion |
+| location | Suggestion |
 

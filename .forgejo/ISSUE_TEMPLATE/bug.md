@@ -9,16 +9,12 @@ assignees: ''
 ## Checks
 
 * [ ] I added a descriptive title to this issue
-* [ ] I have searched Google for similar issues and couldn't find anything
-* [ ] I have read [the README](https://git.4rs.nl/awiteb/lprs/src/branch/master/README.md) and still think this is a bug
+* [ ] I have read [the documentation](https://lprs.4rs.nl) and still think this it's a bug
 
 ## Version
 <!-- Report for the bug only if it's present in the latest version of Lprs.
 If you are not using the latest version, please update and check if the bug is still present. -->
 
-<!-- Run `rustc --version` to get the version -->
-Rustc version: `...`
-<!-- Run `lprs --version` to get the version, and make sure it's the latest one -->
 Lprs version: `...`
 
 ## Description
