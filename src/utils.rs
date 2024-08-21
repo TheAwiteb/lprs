@@ -138,7 +138,7 @@ pub fn master_password_prompt(is_new_vaults_file: bool) -> LprsResult<[u8; 32]> 
     secret_prompt(
         "Master Password:",
         is_new_vaults_file,
-        Some(vec![Box::new(password_validator)]),
+        is_new_vaults_file.then(|| vec![Box::new(password_validator) as Box<dyn StringValidator>]),
     )
     .map(|p| sha2::Sha256::digest(p).into())
 }
