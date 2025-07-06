@@ -1,17 +1,8 @@
-<div align="center">
-
 # Lprs
 
 A local vault manager designed to securely store and manage your vaults.
 
-[![Docs](https://img.shields.io/badge/docs-lprs.4rs.nl-purple)](https://lprs.4rs.nl)
-[![Crates.io](https://img.shields.io/crates/v/lprs?color=orange)](https://crates.io/crates/lprs)
-[![Forgejo CI Status](https://git.4rs.nl/awiteb/lprs/badges/workflows/ci.yml/badge.svg)](https://git.4rs.nl/awiteb/lprs)
-[![Forgejo CD Status](https://git.4rs.nl/awiteb/lprs/badges/workflows/cd.yml/badge.svg)](https://git.4rs.nl/awiteb/lprs)
-
-[![gplv3-or-later](https://www.gnu.org/graphics/gplv3-or-later-sm.png)](https://www.gnu.org/licenses/gpl-3.0.html)
-
-</div>
+---
 
 ## Features
 
@@ -80,11 +71,6 @@ Options:
 ## Documentation
 
 You can find the full documentation for Lprs here <https://lprs.4rs.nl>.
-
-## Contributing
-
-Contributions to Lprs are welcome! If you would like to contribute, please
-follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## Mirrors
 
