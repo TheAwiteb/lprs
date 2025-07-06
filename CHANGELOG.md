@@ -6,64 +6,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
-## [2.0.0](https://git.4rs.nl/awiteb/lprs/compare/v1.2.1..v2.0.0) - 2025-01-03
+### Removed
+-  Remove `update-notify` feature
+
+## 2.0.0 - 2025-01-03
+
 ### Added
--  Ability to edit & remove by name (not index only) ([`d8350e6`](https://git.4rs.nl/awiteb/lprs/commit/d8350e636e733c6d49d46d95e0c3ca6c403d72c5))
--  Ability to enter password via stdin `add`&`edit` ([**#15**](https://git.4rs.nl/awiteb/lprs/issues/15)) ([`5f357b8`](https://git.4rs.nl/awiteb/lprs/commit/5f357b89cb6a49be1c5461fa4b6cd5aaec8e541f))
--  Ability to pass the master password as option ([`62d4060`](https://git.4rs.nl/awiteb/lprs/commit/62d4060bb8ffdfb834d5c860f79414cbca211f72))
--  Add `--json` flag to the `list` command ([`a7ad8b4`](https://git.4rs.nl/awiteb/lprs/commit/a7ad8b468277aa5bc1df8616d93b757c3eab303f))
--  Add `get` command ([`f9fbf1a`](https://git.4rs.nl/awiteb/lprs/commit/f9fbf1a0b7b85638ad64287738e05ec1a1c35d25))
--  Case insensitive filter ([**#61**](https://git.4rs.nl/awiteb/lprs/issues/61)) ([`e023104`](https://git.4rs.nl/awiteb/lprs/commit/e02310401add677170bd402d1430ec34e2aded6d))
--  Encrypt the hole vault file ([`6f6966d`](https://git.4rs.nl/awiteb/lprs/commit/6f6966d5b25b2b5047081304f7597fe80ec95387))
+-  Ability to edit & remove by name (not index only)
+-  Ability to enter password via stdin `add`&`edit` (#15)
+-  Ability to pass the master password as option
+-  Add `--json` flag to the `list` command
+-  Add `get` command
+-  Case insensitive filter (#61)
+-  Encrypt the hole vault file
     - **BC**:  The previous format is not supported after this commit, so
 you must export your vaults in bit-warden format (before this commit)
 and then re-invoke them (after this commit)
--  Force flag for `edit` and `add` commands ([**#42**](https://git.4rs.nl/awiteb/lprs/issues/42)) ([`add0084`](https://git.4rs.nl/awiteb/lprs/commit/add008416b37c3f8e4def891355dcbccc6786a58))
--  Lprs docs ([**#49**](https://git.4rs.nl/awiteb/lprs/issues/49)) ([`f9d36a2`](https://git.4rs.nl/awiteb/lprs/commit/f9d36a2dd781154e2dc0596874b7c9e27eff0b90))
--  Make the `name` option in `edit` & `add` as argument ([**#29**](https://git.4rs.nl/awiteb/lprs/issues/29)) ([`127f377`](https://git.4rs.nl/awiteb/lprs/commit/127f3779f8d805c7e1f5209555d8929082f85c82))
+-  Force flag for `edit` and `add` commands (#42)
+-  Lprs docs (#49)
+-  Make the `name` option in `edit` & `add` as argument (#29)
     - **BC**:  Change the `name` option to argument in `name` and `edit` commands
--  Make the username & password optional in the vault ([**#12**](https://git.4rs.nl/awiteb/lprs/issues/12)) ([`af6664d`](https://git.4rs.nl/awiteb/lprs/commit/af6664da5c08cc39cf732d64ba74de1731095723))
--  Remove vault field if its value is empty string ([`5d30b8b`](https://git.4rs.nl/awiteb/lprs/commit/5d30b8b021d5e2172aa8bbaafaa31c10980c4107))
--  Support TOTP ([`6f83bcc`](https://git.4rs.nl/awiteb/lprs/commit/6f83bcccf94b88181d86358a922e61e3d3a2dad8))
--  Support `--verbose` flag ([**#23**](https://git.4rs.nl/awiteb/lprs/issues/23)) ([`31a68b9`](https://git.4rs.nl/awiteb/lprs/commit/31a68b927764a7eb0b38539f630b70fa258ae7aa))
--  Support `rm` and `ls` aliases ([**#22**](https://git.4rs.nl/awiteb/lprs/issues/22)) ([`791d390`](https://git.4rs.nl/awiteb/lprs/commit/791d390e636c1c29af23b343edb66279b791b121))
--  Support changing master password ([**#50**](https://git.4rs.nl/awiteb/lprs/issues/50)) ([`ced363a`](https://git.4rs.nl/awiteb/lprs/commit/ced363a37f6f64282ca1a1fb022aa3d030edff79))
--  Support completion generating ([`f022574`](https://git.4rs.nl/awiteb/lprs/commit/f022574631bfb1b6a62f95d3259617f302059781))
--  Support custom fields ([`da568ab`](https://git.4rs.nl/awiteb/lprs/commit/da568ab5e9414ef77831066eb9b09621c0fedaee))
--  Support entering custom keys value via STDIN ([**#64**](https://git.4rs.nl/awiteb/lprs/issues/64)) ([`5e4fb0e`](https://git.4rs.nl/awiteb/lprs/commit/5e4fb0ea7cafd62fc93d443a659215889e0520d5))
--  Support export and import with different password ([`a6483cf`](https://git.4rs.nl/awiteb/lprs/commit/a6483cf333e6a5f3a0d48317b50c6304cfd956bb))
--  Support removing multiple vaults in single command ([**#66**](https://git.4rs.nl/awiteb/lprs/issues/66)) ([`6293ead`](https://git.4rs.nl/awiteb/lprs/commit/6293eadafb604d822a8bd376c9d170d8c9c50524))
--  Validate args before ask for the master password ([**#17**](https://git.4rs.nl/awiteb/lprs/issues/17)) ([`b4bcaa9`](https://git.4rs.nl/awiteb/lprs/commit/b4bcaa92ca63b7c71ea5c28d5e9a6af3ecb88a91))
+-  Make the username & password optional in the vault (#12)
+-  Remove vault field if its value is empty string
+-  Support TOTP
+-  Support `--verbose` flag (#23)
+-  Support `rm` and `ls` aliases (#22)
+-  Support changing master password (#50)
+-  Support completion generating
+-  Support custom fields
+-  Support entering custom keys value via STDIN (#64)
+-  Support export and import with different password
+-  Support removing multiple vaults in single command (#66)
+-  Validate args before ask for the master password (#17)
+
 ### Changed
--  Change 'password manager' to 'vault manager' ([`bae0cf1`](https://git.4rs.nl/awiteb/lprs/commit/bae0cf174736d9a1cd61becd20f7d87cf137249c))
--  Make the `totp_now` function better ([`9a417e7`](https://git.4rs.nl/awiteb/lprs/commit/9a417e7d0b1a242a5ca2a41ed2a9f72ce8685b5f))
--  Rename just file ([`e231352`](https://git.4rs.nl/awiteb/lprs/commit/e231352009c21886772b8f039d3e51ba0aeb7616))
--  Add a ecryption state to the vault ([`4def4aa`](https://git.4rs.nl/awiteb/lprs/commit/4def4aadb20cc367d57466dc5e88c3043e468d20))
+-  Change 'password manager' to 'vault manager'
+-  Make the `totp_now` function better
+-  Rename just file
+-  Add a ecryption state to the vault
     - **BC**:  Moving from password to vault
--  Move from GitHub to Forgejo ([`6163c3f`](https://git.4rs.nl/awiteb/lprs/commit/6163c3ff26ab81b07490a798f4047a09565ab1ac))
--  Rename `Password`s `Vault`s ([`f6aaecb`](https://git.4rs.nl/awiteb/lprs/commit/f6aaecb9cf43d7dfa3ef653ff0cd117b3197308b))
--  Use `Either<usize, String>` type instade of `String` for index or name ([**#65**](https://git.4rs.nl/awiteb/lprs/issues/65)) ([`1c90a82`](https://git.4rs.nl/awiteb/lprs/commit/1c90a825440b1c8ad4eee627407797e0b017a279))
--  Use select for vaults listing ([**#19**](https://git.4rs.nl/awiteb/lprs/issues/19)) ([`83c7296`](https://git.4rs.nl/awiteb/lprs/commit/83c7296bf7bf469423f53b024cb65e608ff6c9d9))
+-  Move from GitHub to Forgejo
+-  Rename `Password`s `Vault`s
+-  Use `Either<usize, String>` type instade of `String` for index or name (#65)
+-  Use select for vaults listing (#19)
+
 ### Fixed
--  Merge rust ci jobs into one job ([**#2**](https://git.4rs.nl/awiteb/lprs/issues/2)) ([`34eb9d1`](https://git.4rs.nl/awiteb/lprs/commit/34eb9d10f0ad514c6a7878fd8415a50f04db2be8))
--  Create the vaults file if it's not exist ([**#60**](https://git.4rs.nl/awiteb/lprs/issues/60)) ([`81a3605`](https://git.4rs.nl/awiteb/lprs/commit/81a360519ec97e63c542bef6cc69f1707198c81f))
--  Overflow in utils::vault_by_index_or_name function ([`40e49bf`](https://git.4rs.nl/awiteb/lprs/commit/40e49bffe4e9ecd682eb746deafd68bd088dd415))
--  Reject empty string field value ([`6f5ca5f`](https://git.4rs.nl/awiteb/lprs/commit/6f5ca5f4524bec3cda2990f352080f08524e578b))
--  Show the totp code in `get` command ([`38f6447`](https://git.4rs.nl/awiteb/lprs/commit/38f6447681d20cef313ed270cc67edc99a5ab3e2))
--  Validate all fields in `add` & `edit` ([`02bf53b`](https://git.4rs.nl/awiteb/lprs/commit/02bf53b2a1fd420bf66ac571531d060499559c29))
+-  Merge rust ci jobs into one job (#2)
+-  Create the vaults file if it's not exist (#60)
+-  Overflow in utils::vault_by_index_or_name function
+-  Reject empty string field value
+-  Show the totp code in `get` command
+-  Validate all fields in `add` & `edit`
+
 ### Removed
--  Remove `--get` option from `list` command ([`44b5b3e`](https://git.4rs.nl/awiteb/lprs/commit/44b5b3e09b6c653b0d201e268878718cfa507209))
+-  Remove `--get` option from `list` command
     - **BC**:  The deletion was in favor `get` command, which is better
+
 ### Security
--  Use system seeded rng for IV ([`920ff2a`](https://git.4rs.nl/awiteb/lprs/commit/920ff2a2d49af7fb01c731c129bb5905e404f4c1))
+-  Use system seeded rng for IV
 
-## [1.2.1](https://git.4rs.nl/awiteb/lprs/compare/v1.2.0..v1.2.1) - 2024-01-07
+## 1.2.1 - 2024-01-07
 
-## [1.2.0](https://git.4rs.nl/awiteb/lprs/compare/v1.1.0..v1.2.0) - 2024-01-07
+## 1.2.0 - 2024-01-07
 
-## [1.1.0](https://git.4rs.nl/awiteb/lprs/compare/v1.0.0..v1.1.0) - 2024-01-03
+## 1.1.0 - 2024-01-03
 
-## [1.0.0](https://git.4rs.nl/awiteb/lprs/compare/v0.1.0..v1.0.0) - 2023-12-31
+## 1.0.0 - 2023-12-31
 
 ## 0.1.0 - 2023-12-23
 
