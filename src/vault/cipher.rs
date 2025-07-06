@@ -16,10 +16,10 @@
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use aes::cipher::{block_padding::Pkcs7, BlockDecryptMut, BlockEncryptMut, KeyIvInit};
+use aes::cipher::{BlockDecryptMut, BlockEncryptMut, KeyIvInit, block_padding::Pkcs7};
 use base32::Alphabet as Base32Alphabet;
 use clap::ValueEnum;
-use rand::{thread_rng, RngCore};
+use rand::{RngCore, thread_rng};
 use serde::{Deserialize, Serialize};
 
 use crate::{LprsError, LprsResult};

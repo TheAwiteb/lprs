@@ -18,7 +18,7 @@ use std::io;
 
 use clap::{Args, CommandFactory};
 
-use crate::{cli::Cli, vault::Vaults, LprsCommand, LprsResult};
+use crate::{LprsCommand, LprsResult, cli::Cli, vault::Vaults};
 
 
 /// Generate shell auto completion

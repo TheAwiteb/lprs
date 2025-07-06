@@ -20,13 +20,13 @@ use clap::Args;
 use either::Either;
 
 use crate::{
-    clap_parsers::either_parser,
-    utils,
-    vault::{cipher, Vault, Vaults},
     LprsCommand,
     LprsError,
     LprsResult,
     RESERVED_FIELD_PREFIX,
+    clap_parsers::either_parser,
+    utils,
+    vault::{Vault, Vaults, cipher},
 };
 
 #[derive(Debug, Clone, Eq, PartialEq)]

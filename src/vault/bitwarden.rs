@@ -20,7 +20,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::{cipher::TotpHash, Vault, Vaults};
+use super::{Vault, Vaults, cipher::TotpHash};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BitWardenLoginData {

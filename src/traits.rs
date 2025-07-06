@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://gnu.org/licenses/gpl-3.0.html>.
 
-use crate::{vault::Vaults, LprsResult};
+use crate::{LprsResult, vault::Vaults};
 
 /// Trait to work with the commands
 #[allow(clippy::missing_errors_doc)]

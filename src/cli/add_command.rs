@@ -17,12 +17,12 @@
 use clap::Args;
 
 use crate::{
-    clap_parsers,
-    utils,
-    vault::{cipher, Vault, Vaults},
     LprsCommand,
     LprsError,
     LprsResult,
+    clap_parsers,
+    utils,
+    vault::{Vault, Vaults, cipher},
 };
 
 #[derive(Debug, Args)]

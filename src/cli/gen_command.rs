@@ -18,7 +18,7 @@ use std::num::NonZeroU64;
 
 use clap::Args;
 
-use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
+use crate::{LprsCommand, LprsError, LprsResult, vault::Vaults};
 
 #[derive(Debug, Args)]
 /// Generate command, used to generate a password

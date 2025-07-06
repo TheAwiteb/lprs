@@ -18,7 +18,7 @@ use std::fs;
 
 use clap::Args;
 
-use crate::{vault::Vaults, LprsCommand, LprsError, LprsResult};
+use crate::{LprsCommand, LprsError, LprsResult, vault::Vaults};
 
 #[derive(Debug, Args)]
 /// Clean command, used to clean the vaults file (remove all vaults)

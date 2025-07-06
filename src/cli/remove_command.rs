@@ -20,11 +20,11 @@ use clap::Args;
 use either::Either;
 
 use crate::{
+    LprsCommand,
+    LprsResult,
     clap_parsers::either_parser,
     utils,
     vault::{Vault, Vaults},
-    LprsCommand,
-    LprsResult,
 };
 
 #[derive(Debug, Args)]

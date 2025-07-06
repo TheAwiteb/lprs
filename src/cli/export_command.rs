@@ -20,11 +20,11 @@ use clap::Args;
 use sha2::Digest;
 
 use crate::{
-    utils,
-    vault::{BitWardenPasswords, Format, Vaults},
     LprsCommand,
     LprsError,
     LprsResult,
+    utils,
+    vault::{BitWardenPasswords, Format, Vaults},
 };
 
 #[derive(Debug, Args)]

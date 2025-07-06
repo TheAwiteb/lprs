@@ -18,11 +18,11 @@ use clap::Args;
 use inquire::{InquireError, Select};
 
 use crate::{
-    vault::{cipher, Vaults},
     LprsCommand,
     LprsError,
     LprsResult,
     RESERVED_FIELD_PREFIX,
+    vault::{Vaults, cipher},
 };
 
 #[derive(Debug, Args)]

@@ -17,7 +17,7 @@
 use clap::Args;
 use sha2::{Digest, Sha256};
 
-use crate::{utils, vault::Vaults, LprsCommand, LprsResult};
+use crate::{LprsCommand, LprsResult, utils, vault::Vaults};
 
 #[derive(Debug, Args)]
 /// Change master password, reencrypt the vaults with new password
