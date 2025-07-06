@@ -43,12 +43,6 @@ pub use traits::*;
 /// The default vaults file name. Used to store the vaults.
 pub const DEFAULT_VAULTS_FILE: &str = "vaults.lprs";
 
-#[cfg(feature = "update-notify")]
-/// The version of the lprs crate.
-pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-#[cfg(feature = "update-notify")]
-/// The last version check file. Used to store the last version check time.
-pub const LAST_VERSION_CHECK_FILE: &str = ".last_version_check";
 /// The prefix of the reserved custom fields
 const RESERVED_FIELD_PREFIX: &str = ".lprsfield.";
 
@@ -58,28 +52,6 @@ fn main() -> ExitCode {
         env::set_var("RUST_LOG", "lprs");
     }
     pretty_env_logger::init();
-
-    #[cfg(feature = "update-notify")]
-    {
-        log::info!("Checking for new version of lprs...");
-        match utils::lprs_version() {
-            Ok(Some(new_version)) if new_version != VERSION => {
-                println!(
-                    "Warning: The version you are using of lprs is outdated. There is a newer version, which is `{new_version}`, and your version is `{VERSION}`
-                    \rYou can update via: `cargo install lprs --locked`
-                    \rOr via git repo: `cargo install --locked --git https://git.4rs.nl/awiteb/lprs.git`
-                    \rTo disable update notification: `cargo install lprs --locked --no-default-features`\n\n"
-                )
-            }
-            Err(err) => {
-                eprintln!("{err}");
-                return ExitCode::FAILURE;
-            }
-            _ => {
-                log::info!("No new version found.");
-            }
-        }
-    }
 
     if let Err(err) = lprs_cli.run() {
         if !matches!(

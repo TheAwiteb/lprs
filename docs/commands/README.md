@@ -43,4 +43,4 @@ Now let's take a look at the available commands and how to use them.
 - [Auto completion](commands/auto-completion.md)
 
 ## Donations
-You can support the development of my projects by donating me, check out my profile at [git.4rs.nl](https://git.4rs.nl/awiteb#donations)
+You can support the development of my projects by donating me, check out my profile at [git.4rs.nl](https://git.4rs.nl/awiteb)

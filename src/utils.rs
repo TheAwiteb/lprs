@@ -20,13 +20,11 @@ use std::{fs, path::PathBuf};
 
 use either::Either;
 use inquire::{
-    validator::{StringValidator, Validation},
     Password,
     PasswordDisplayMode,
+    validator::{StringValidator, Validation},
 };
 use passwords::{analyzer, scorer};
-#[cfg(feature = "update-notify")]
-use reqwest::blocking::Client as BlockingClient;
 use sha2::Digest;
 
 use crate::vault::Vault;
@@ -141,52 +139,6 @@ pub fn master_password_prompt(is_new_vaults_file: bool) -> LprsResult<[u8; 32]> 
         is_new_vaults_file.then(|| vec![Box::new(password_validator) as Box<dyn StringValidator>]),
     )
     .map(|p| sha2::Sha256::digest(p).into())
-}
-
-/// Retuns the current lprs version from `crates.io`
-///
-/// ## Errors
-/// - The project dir can't be extracted from the OS
-/// - If the last version check file can't be created
-#[cfg(feature = "update-notify")]
-pub fn lprs_version() -> LprsResult<Option<String>> {
-    use std::time::SystemTime;
-
-    let last_version_check_file = local_project_file(crate::LAST_VERSION_CHECK_FILE)?;
-    let current_time = SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .map_err(|_| LprsError::Other("The system time is before UNIX EPOCH!".to_owned()))?
-        .as_secs();
-    let last_check: u64 = fs::read_to_string(&last_version_check_file)
-        .unwrap_or_else(|_| current_time.to_string())
-        .parse()
-        .map_err(|err| {
-            LprsError::Other(format!(
-                "Check update file content is invalid time `{}`: {err}",
-                last_version_check_file.display()
-            ))
-        })?;
-    fs::write(last_version_check_file, current_time.to_string())?;
-
-    // Check if the last check is before one hour or not
-    if (current_time - last_check) >= (60 * 60) || current_time == last_check {
-        if let Ok(Ok(response)) = BlockingClient::new()
-            .get("https://crates.io/api/v1/crates/lprs")
-            .header(
-                "User-Agent",
-                format!("Lprs <{current_time}> (https://git.4rs.nl/awiteb/lprs)"),
-            )
-            .send()
-            .map(|r| r.text())
-        {
-            let re = regex::Regex::new(r#""max_stable_version":"(?<version>\d+\.\d+\.\d+)""#)
-                .expect("The regex is correct");
-            if let Some(cap) = re.captures(&response) {
-                return Ok(cap.name("version").map(|m| m.as_str().to_string()));
-            }
-        }
-    }
-    Ok(None)
 }
 
 /// Returns the duplicated field from the custom field (unprocessed fields)

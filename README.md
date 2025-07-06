@@ -15,7 +15,6 @@ A local vault manager designed to securely store and manage your vaults.
 
 ## Features
 
-- Auto checks for updates (Can be disabled).
 - Passing the master password as an argument and via stdin.
 - Changing the master password.
 - Generating a passwords.
@@ -36,7 +35,7 @@ A local vault manager designed to securely store and manage your vaults.
 
 ## Installation
 
-### Build from source (MSRV: `1.74.0`)
+### Build from source (MSRV: `1.74.1`)
 
 ```bash
 # From crates.io
@@ -45,17 +44,6 @@ cargo install lprs
 # The binary will be in target/release/lprs
 cargo build --release
 ```
-
-This will build Lprs with update checking enabled. If you want to disable update
-checking, you can build Lprs without the default features by passing the
-`--no-default-features` flag.
-
-### Pre-built binaries
-
-Pre-built binaries are available for Linux and Windows on the [releases
-page](https://git.4rs.nl/awiteb/lprs/releases/latest). There is tow version of
-the binary, one with update checking enabled and other not, the binaries with
-update checking enabled have the `lrps-update-notify` prefix.
 
 ## Usage
 

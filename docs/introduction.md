@@ -38,7 +38,6 @@ the locations for the different operating systems:
 The list of vaults is stored in encrypted binary format.
 
 ## Features
-- Auto checks for updates (Can be disabled).
 - Passing the master password as an argument and via stdin.
 - Changing the master password.
 - Generating a passwords.

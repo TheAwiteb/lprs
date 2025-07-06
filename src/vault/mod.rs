@@ -135,7 +135,7 @@ impl Vault {
 
 impl Vaults {
     /// Create new [`Vaults`] instnce
-    pub fn new(master_password: [u8; 32], vaults_file: PathBuf, vaults: Vec<Vault>) -> Self {
+    pub const fn new(master_password: [u8; 32], vaults_file: PathBuf, vaults: Vec<Vault>) -> Self {
         Self {
             master_password,
             vaults_file,
