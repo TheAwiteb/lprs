@@ -19,7 +19,7 @@ use std::{fs, path::PathBuf};
 use clap::Parser;
 use sha2::{Digest, Sha256};
 
-use crate::{impl_commands, utils, vault::Vaults, LprsCommand, LprsResult};
+use crate::{LprsCommand, LprsResult, impl_commands, utils, vault::Vaults};
 
 /// Add command, used to add new vault to the vaults file
 pub mod add_command;
@@ -83,11 +83,11 @@ License GNU GPL-3.0-or-later <https://gnu.org/licenses/gpl-3.0.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 
-Git repository: https://git.4rs.nl/awiteb/lprs
+Git repository: https://git.4rs.nl/awiteb/lprs.git
 Documentation: https://lprs.4rs.nl"#;
 
 /// Footer message, used in the help message
-const FOOTER: &str = r#"Please report bugs to <https://git.4rs.nl/awiteb/lprs/issues>."#;
+const FOOTER: &str = r#"Please report bugs to <a@4rs.nl>."#;
 
 #[derive(Parser, Debug)]
 #[command(about, version, before_long_help = HEADER, after_help = FOOTER)]
