@@ -36,7 +36,7 @@ _default:
 
     git add .
     git commit -m "Deploy the book to github pages"
-    git remote add origin "https://github.com/TheAwiteb/lprs-book"
+    git remote add origin "git@github.com:TheAwiteb/lprs-book"
     git push origin gh-pages -f
     cd ..
     rm -fr book
