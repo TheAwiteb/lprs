@@ -19,26 +19,16 @@ use std::{fs, io::Error as IoError, io::ErrorKind as IoErrorKind, path::PathBuf}
 use clap::Args;
 use sha2::Digest;
 
-use crate::{
-    LprsCommand,
-    LprsError,
-    LprsResult,
-    utils,
-    vault::{BitWardenPasswords, Format, Vaults},
-};
+use crate::{LprsCommand, LprsError, LprsResult, utils, vault::Vaults};
 
 #[derive(Debug, Args)]
-/// Export command, used to export the vaults in `lprs` format or `BitWarden`
-/// format. The exported file will be a json file.
+/// Export command. The exported file will be a json file.
 pub struct Export {
     // TODO: `force` flag to write on existing file
     /// The path to export to
     path:                PathBuf,
-    /// Format to export vaults in
-    #[arg(short, long, value_name = "FORMAT", default_value_t= Format::Lprs)]
-    format:              Format,
-    /// Encryption password of the exported vaults (in `lprs` format)
-    /// if there is not, will use the master password
+    /// Encryption password of the exported vaults, if there is not, will use
+    /// the master password
     #[arg(short = 'p', long)]
     #[allow(clippy::option_option)]
     encryption_password: Option<Option<String>>,
@@ -47,26 +37,20 @@ pub struct Export {
 impl LprsCommand for Export {
     fn run(self, vault_manager: Vaults) -> LprsResult<()> {
         log::debug!(
-            "Exporting vault {} to: {} with format: {}",
+            "Exporting vault {} to: {}",
             vault_manager.vaults_file.display(),
             self.path.display(),
-            self.format
         );
 
         let encryption_key: Option<[u8; 32]> =
             utils::user_secret(self.encryption_password, "Encryption Password:", false)?
                 .map(|p| sha2::Sha256::digest(p).into());
 
-        let exported_data = match self.format {
-            Format::Lprs => {
-                vault_manager.json_export(
-                    encryption_key
-                        .as_ref()
-                        .unwrap_or(&vault_manager.master_password),
-                )?
-            }
-            Format::BitWarden => serde_json::to_string(&BitWardenPasswords::from(vault_manager))?,
-        };
+        let exported_data = vault_manager.json_export(
+            encryption_key
+                .as_ref()
+                .unwrap_or(&vault_manager.master_password),
+        )?;
 
         fs::write(&self.path, exported_data).map_err(LprsError::from)
     }
@@ -93,11 +77,6 @@ impl LprsCommand for Export {
                 IoErrorKind::InvalidInput,
                 format!("file `{}` is a directory", self.path.display()),
             )));
-        }
-        if self.encryption_password.is_some() && self.format != Format::Lprs {
-            return Err(LprsError::Other(
-                "You only can to use the encryption password with `lprs` format".to_owned(),
-            ));
         }
 
         Ok(())

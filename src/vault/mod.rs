@@ -17,31 +17,13 @@
 use std::{collections::BTreeMap, fmt, fs, path::PathBuf};
 
 use base64::Engine;
-use clap::{Parser, ValueEnum};
+use clap::Parser;
 use serde::{Deserialize, Serialize};
 
 use crate::{LprsError, LprsResult};
 
 /// The chiper module, used to encrypt and decrypt the vaults
 pub mod cipher;
-
-mod bitwarden;
-
-pub use bitwarden::*;
-
-use self::cipher::TotpHash;
-
-#[derive(Clone, Debug, ValueEnum, Eq, PartialEq)]
-/// The vaults format
-pub enum Format {
-    /// The lprs format, which is the default format
-    /// and is is the result of the serialization/deserialization of the Vaults
-    /// struct
-    Lprs,
-    /// The BitWarden format, which is the result of the
-    /// serialization/deserialization of the BitWardenPasswords struct
-    BitWarden,
-}
 
 /// The vault struct
 #[derive(Clone, Debug, Deserialize, Serialize, Parser, Eq, PartialEq)]
@@ -68,7 +50,7 @@ pub struct Vault {
     pub totp_secret:   Option<String>,
     /// The TOTP hash function
     #[arg(long, value_name = "HASH_FUNCTION", value_enum, default_value_t)]
-    pub totp_hash:     TotpHash,
+    pub totp_hash:     cipher::TotpHash,
 }
 
 /// The vaults manager
@@ -93,7 +75,7 @@ impl Vault {
         note: Option<impl Into<String>>,
         custom_fields: BTreeMap<String, String>,
         totp_secret: Option<impl Into<String>>,
-        totp_hash: TotpHash,
+        totp_hash: cipher::TotpHash,
     ) -> Self {
         Self {
             name: name.into(),
@@ -201,7 +183,7 @@ impl Vaults {
             .map_err(|err| LprsError::Other(err.to_string()))
         };
 
-        serde_json::from_slice::<Vec<Vault>>(json_data)?
+        let vaults = serde_json::from_slice::<Vec<Vault>>(json_data)?
             .into_iter()
             .map(|v| {
                 LprsResult::Ok(Vault::new(
@@ -218,7 +200,17 @@ impl Vaults {
                     v.totp_hash,
                 ))
             })
-            .collect()
+            .collect::<LprsResult<Vec<_>>>()?;
+
+        if vaults.iter().any(|v| {
+            v.custom_fields
+                .iter()
+                .any(|(k, _)| k.starts_with(crate::RESERVED_FIELD_PREFIX))
+        }) {
+            return Err(LprsError::ReservedPrefix(crate::RESERVED_FIELD_PREFIX));
+        }
+
+        Ok(vaults)
     }
 
     /// Encrypt the vaults then export it to the file
@@ -253,18 +245,6 @@ impl Vaults {
         };
 
         Ok(Self::new(master_password, vaults_file, vaults))
-    }
-}
-
-impl fmt::Display for Format {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            self.to_possible_value()
-                .expect("There is no skiped values")
-                .get_name()
-        )
     }
 }
 

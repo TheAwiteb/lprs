@@ -10,17 +10,8 @@ Arguments:
           The file path to import from
 
 Options:
-  -f, --format <FORMAT>
-          The format to import from
-          
-          [default: lprs]
-
-          Possible values:
-          - lprs:       The lprs format, which is the default format and is is the result of the serialization/deserialization of the Vaults struct
-          - bit-warden: The BitWarden format, which is the result of the serialization/deserialization of the BitWardenPasswords struct
-
   -p, --decryption-password [<DECRYPTION_PASSWORD>]
-          Decryption password of the imported vaults (in `lprs` format) if there is not, will use the master password
+          Decryption password of the imported vaults, if there is not, will use the master password
 
   -h, --help
           Print help (see a summary with '-h')
@@ -36,17 +27,8 @@ Arguments:
           The path to export to
 
 Options:
-  -f, --format <FORMAT>
-          Format to export vaults in
-          
-          [default: lprs]
-
-          Possible values:
-          - lprs:       The lprs format, which is the default format and is is the result of the serialization/deserialization of the Vaults struct
-          - bit-warden: The BitWarden format, which is the result of the serialization/deserialization of the BitWardenPasswords struct
-
   -p, --encryption-password [<ENCRYPTION_PASSWORD>]
-          Encryption password of the exported vaults (in `lprs` format) if there is not, will use the master password
+          Encryption password of the exported vaults, if there is not, will use the master password
 
   -h, --help
           Print help (see a summary with '-h')
