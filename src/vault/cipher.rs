@@ -19,7 +19,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use aes::cipher::{BlockDecryptMut, BlockEncryptMut, KeyIvInit, block_padding::Pkcs7};
 use base32::Alphabet as Base32Alphabet;
 use clap::ValueEnum;
-use rand::{RngCore, thread_rng};
 use serde::{Deserialize, Serialize};
 
 use crate::{LprsError, LprsResult};
@@ -72,7 +71,7 @@ pub fn base32_decode(base32_string: &str) -> LprsResult<Vec<u8>> {
 /// Note: The IV will be add it to the end of the ciphertext (Last 16 bytes)
 pub(crate) fn encrypt(master_password: &[u8; 32], data: &[u8]) -> Vec<u8> {
     let mut iv = [0u8; 16];
-    thread_rng().fill_bytes(&mut iv);
+    rand::RngCore::fill_bytes(&mut rand::rng(), &mut iv);
 
     let mut ciphertext =
         Aes256CbcEnc::new(master_password.into(), &iv.into()).encrypt_padded_vec_mut::<Pkcs7>(data);
