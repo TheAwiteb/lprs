@@ -93,7 +93,7 @@ const FOOTER: &str = r#"Please report bugs to <a@4rs.nl>."#;
 #[command(about, version, before_long_help = HEADER, after_help = FOOTER)]
 /// A local CLI vaults manager. For human and machine use
 pub struct Cli {
-    /// The vaults json file
+    /// The vault file
     #[arg(short = 'f', long)]
     pub vaults_file:     Option<PathBuf>,
     /// Show the logs in the stdout

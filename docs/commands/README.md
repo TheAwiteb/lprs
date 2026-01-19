@@ -8,7 +8,7 @@ options, which are available for all commands.
 
 ```
 Options:
-  -f, --vaults-file <VAULTS_FILE>          The vaults json file
+  -f, --vaults-file <VAULTS_FILE>          The vault file
   -v, --verbose                            Show the logs in the stdout
   -m, --master-password <MASTER_PASSWORD>  The master password, or you will prompt it
   -h, --help                               Print help
@@ -18,7 +18,7 @@ Options:
 As you can see, the `lprs` command line tool has a few options that are
 available for all commands, which are:
 
-- `-f, --vaults-file <VAULTS_FILE>`: The vaults json file, this is the file
+- `-f, --vaults-file <VAULTS_FILE>`: The vault file, this is the file
   where the vaults are stored. By default, the vaults are stored in the
   program's directory, in a directory called `lprs` and the file called
   `vaults.lprs`.

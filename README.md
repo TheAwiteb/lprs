@@ -61,7 +61,7 @@ Commands:
   help                    Print this message or the help of the given subcommand(s)
 
 Options:
-  -f, --vaults-file <VAULTS_FILE>          The vaults json file
+  -f, --vaults-file <VAULTS_FILE>          The vault file
   -v, --verbose                            Show the logs in the stdout
   -m, --master-password <MASTER_PASSWORD>  The master password, or you will prompt it
   -h, --help                               Print help (see more with '--help')
