@@ -24,7 +24,7 @@ Usage: lprs export [OPTIONS] <PATH>
 
 Arguments:
   <PATH>
-          The path to export to
+          The path to export to. Use `-` to export to the stdout
 
 Options:
   -p, --encryption-password [<ENCRYPTION_PASSWORD>]

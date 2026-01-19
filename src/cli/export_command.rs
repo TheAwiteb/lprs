@@ -14,7 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://gnu.org/licenses/gpl-3.0.html>.
 
-use std::{fs, io::Error as IoError, io::ErrorKind as IoErrorKind, path::PathBuf};
+use std::{
+    fs,
+    io::{self, Error as IoError, ErrorKind as IoErrorKind, Write},
+    path::PathBuf,
+};
 
 use clap::Args;
 use sha2::Digest;
@@ -25,7 +29,7 @@ use crate::{LprsCommand, LprsError, LprsResult, utils, vault::Vaults};
 /// Export command. The exported file will be a json file.
 pub struct Export {
     // TODO: `force` flag to write on existing file
-    /// The path to export to
+    /// The path to export to. Use `-` to export to the stdout.
     path:                PathBuf,
     /// Encryption password of the exported vaults, if there is not, will use
     /// the master password
@@ -52,10 +56,25 @@ impl LprsCommand for Export {
                 .unwrap_or(&vault_manager.master_password),
         )?;
 
-        fs::write(&self.path, exported_data).map_err(LprsError::from)
+        // if the path is not `-` write to it
+        if self.path.as_os_str() != "-" {
+            return fs::write(&self.path, exported_data).map_err(LprsError::from);
+        }
+
+        // Write in the stdout if the path is `-`
+        let mut stdout = io::stdout();
+        stdout.write_all(exported_data.as_bytes())?;
+        stdout.flush()?;
+
+        Ok(())
     }
 
     fn validate_args(&self) -> LprsResult<()> {
+        // Skip checking the path if we will export to the stdout
+        if self.path.as_os_str() == "-" {
+            return Ok(());
+        }
+
         if !self
             .path
             .extension()
