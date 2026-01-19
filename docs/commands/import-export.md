@@ -7,7 +7,7 @@ Usage: lprs import [OPTIONS] <PATH>
 
 Arguments:
   <PATH>
-          The file path to import from
+          The file path to import from. Use `-` to import from the stdin
 
 Options:
   -p, --decryption-password [<DECRYPTION_PASSWORD>]

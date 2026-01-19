@@ -14,7 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://gnu.org/licenses/gpl-3.0.html>.
 
-use std::{fs, io::Error as IoError, io::ErrorKind as IoErrorKind, path::PathBuf};
+use std::{
+    fs,
+    io::{self, Error as IoError, ErrorKind as IoErrorKind, Read},
+    path::PathBuf,
+};
 
 use clap::Args;
 use sha2::Digest;
@@ -24,7 +28,7 @@ use crate::{LprsCommand, LprsError, LprsResult, utils, vault::Vaults};
 /// Import command, used to import vaults from the exported files.
 #[derive(Debug, Args)]
 pub struct Import {
-    /// The file path to import from
+    /// The file path to import from. Use `-` to import from the stdin.
     path: PathBuf,
 
     /// Decryption password of the imported vaults, if there is not, will use
@@ -46,11 +50,21 @@ impl LprsCommand for Import {
             utils::user_secret(self.decryption_password, "Decryption password:", false)?
                 .map(|p| sha2::Sha256::digest(p).into());
 
+        // Read from stdin if path is "-", otherwise read from the specified
+        // file
+        let json_data = if self.path.as_os_str() == "-" {
+            let mut buf = Vec::new();
+            io::stdin().read_to_end(&mut buf)?;
+            buf
+        } else {
+            fs::read(self.path)?
+        };
+
         let vaults = Vaults::json_reload(
             decryption_key
                 .as_ref()
                 .unwrap_or(&vault_manager.master_password),
-            &fs::read(self.path)?,
+            &json_data,
         )?;
         let vaults_len = vaults.len();
 
@@ -65,6 +79,11 @@ impl LprsCommand for Import {
     }
 
     fn validate_args(&self) -> LprsResult<()> {
+        // Skip checking the path if we will read from the stdin
+        if self.path.as_os_str() == "-" {
+            return Ok(());
+        }
+
         if !self
             .path
             .extension()
