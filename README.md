@@ -15,7 +15,6 @@ A local vault manager designed to securely store and manage your vaults.
   2FA codes.
 - Searching for vaults. And list all vaults in json format.
 - Importing and exporting encrypted vaults (in json format).
-- Importing and exporting from/to Bitwarden json format. (Unencrypted)
 - Editing vaults. (The secrets can be passed as arguments or via stdin)
 - Deleting vaults.
 - Getting single field from a vault. (Useful for scripts)
