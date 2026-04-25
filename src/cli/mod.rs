@@ -32,14 +32,12 @@ pub mod completion_command;
 /// Edit command, used to edit the vault content
 pub mod edit_command;
 /// Export command, used to export the vaults
-/// in `lprs` format or `BitWarden` format
 pub mod export_command;
 /// Generate command, used to generate a password
 pub mod gen_command;
 /// Command to get a entire vault or single field from it
 pub mod get_command;
-/// Import command, used to import vaults from the exported files, `lprs` or
-/// `BitWarden`
+/// Import command, used to import vaults from the exported files
 pub mod import_command;
 /// List command, used to list the vaults and search
 pub mod list_command;
