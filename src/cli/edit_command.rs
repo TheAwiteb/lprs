@@ -51,7 +51,7 @@ pub struct Edit {
     /// The new vault service, make it empty string to delete it
     service:       Option<String>,
     #[arg(short = 'o', long)]
-    /// The new vault note
+    /// The new vault note, make it empty string to delete it
     note:          Option<String>,
     /// The TOTP secret, make it empty string to delete it
     ///
