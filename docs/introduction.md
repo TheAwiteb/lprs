@@ -35,7 +35,7 @@ the locations for the different operating systems:
 
 
 ### File format
-The list of vaults is stored in encrypted binary format.
+A list of vaults stored in encrypted binary format.
 
 ## Features
 - Passing the master password as an argument and via stdin.
