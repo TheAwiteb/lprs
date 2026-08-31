@@ -96,7 +96,13 @@ impl LprsCommand for Edit {
                 vault.password = utils::user_secret(self.password, "New vault password:", false)?;
             }
         }
-        if let Some(totp_secret) = utils::user_secret(self.totp_secret, "TOTP Secret:", false)? {
+
+        // Some services format TOTP secrets with spaces for readability (e.g.,
+        // `AAAA AAAA AAAA AAAA`). We remove all spaces before validation and
+        // storage to ensure proper base32 decoding.
+        if let Some(totp_secret) =
+            utils::user_secret(self.totp_secret, "TOTP Secret:", false)?.map(|s| s.replace(" ", ""))
+        {
             if totp_secret.is_empty() {
                 vault.totp_secret = None;
             } else {

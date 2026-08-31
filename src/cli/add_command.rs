@@ -65,7 +65,11 @@ impl Add {
 impl LprsCommand for Add {
     fn run(mut self, mut vault_manager: Vaults) -> LprsResult<()> {
         if !self.is_empty() {
+            // Some services format TOTP secrets with spaces for readability
+            // (e.g., `AAAA AAAA AAAA AAAA`). We remove all spaces before
+            // validation and storage to ensure proper base32 decoding.
             if let Some(totp_secret) = utils::user_secret(self.totp_secret, "TOTP Secret:", false)?
+                .map(|s| s.replace(" ", ""))
             {
                 cipher::base32_decode(&totp_secret).map_err(|_| {
                     LprsError::Base32("Invalid TOTP secret, must be valid base32 string".to_owned())
