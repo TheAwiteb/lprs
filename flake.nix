@@ -22,8 +22,6 @@
       {
         devShells.default = mkShell {
           packages = [
-            cargo-msrv
-            git-cliff
             just
             mdbook
           ];
